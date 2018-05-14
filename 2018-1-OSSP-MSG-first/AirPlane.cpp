@@ -66,10 +66,12 @@ Enemy_standard::Enemy_standard(int mode)
   enemy = load_image("assets/3.gif");// 비행기 이미지
   //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거
   SDL_SetColorKey(enemy, SDL_SRCCOLORKEY,SDL_MapRGB(enemy->format,255,255,255));
-  srand(time(NULL));
-  int x = rand()%200 + 100;
-  pos_x = x;//처음 시작 위치 지정
-  pos_y = -ENEMY_HEIGHT;//처음 시작 위치 지정
+
+  this->mode = mode;
+  int y = rand()%200 + 10;
+  if(mode == 0) pos_x = -ENEMY_WIDTH;//처음 시작 위치 지정
+  else pos_x = SCREEN_WIDTH+ENEMY_WIDTH;
+  pos_y = y;//처음 시작 위치 지정
   life = 1;
 }
 
@@ -115,10 +117,16 @@ void Enemy_standard::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* cli
   SDL_BlitSurface( enemy, clip, destination, &offset );
 }
 
-void Enemy_standard::control_plane(int x, int y)
+void Enemy_standard::control_plane(int x, int y, _bullets &A)
 {
-  pos_x += x;
-  pos_y += y;
+  int pos = rand()%75+75;
+  if(count % 30 == 0 ) this->shooting(A);
+  if(count < pos){
+      if(mode == 0) pos_x += 3;
+      else pos_x -= 3;
+      pos_y += 0;
+  }
+  count++;
 }
 
 SDL_Surface *Enemy_standard::Get_plane()

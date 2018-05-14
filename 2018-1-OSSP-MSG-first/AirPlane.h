@@ -74,7 +74,8 @@ private:
 
   int pos_x,pos_y;// 비행기 x,y 좌표;
   int life;
-  this->mode;
+  int mode;
+  int count = 0;
 public:
 
   Enemy_standard(int mode);
@@ -82,7 +83,7 @@ public:
   bool Got_shot(_bullets &A);
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
-  void control_plane(int x, int y);
+  void control_plane(int x, int y, _bullets &A);
   SDL_Surface *Get_plane();
 
 };

@@ -64,10 +64,8 @@ int main(){
 
     keystates = SDL_GetKeyState(NULL);
 
-      if(count++ % 30 == 0 && number == 1 )//임시
-        E.shooting(enemy_bullets);
       if(count % 5 == 0 && number == 1)//임시
-        E.control_plane(0,5);
+        E.control_plane(0,5, enemy_bullets);
 
       if(keystates[SDLK_a])
       {
