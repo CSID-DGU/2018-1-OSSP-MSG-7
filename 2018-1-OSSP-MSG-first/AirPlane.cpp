@@ -61,7 +61,7 @@ bool AirPlane::Got_shot(vector<bullets> enemy_bullets)
 
 
 
-Enemy_standard::Enemy_standard()
+Enemy_standard::Enemy_standard(int mode)
 {
   enemy = load_image("assets/3.gif");// 비행기 이미지
   //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거

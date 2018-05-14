@@ -30,12 +30,14 @@ bool load_files()
 int main(){
   init();//초기화 함수
   load_files();//이미지,폰트,bgm 로드하는 함수
+  srand(time(NULL));
 
   int start_time = 0;
   int delay = 0;
   int count = 0; int number = 1; //임시변수
+  int mode = 1;
 
-  Enemy_standard E;
+  Enemy_standard E(mode);
   AirPlane A;
 
   while(true){

@@ -74,9 +74,10 @@ private:
 
   int pos_x,pos_y;// 비행기 x,y 좌표;
   int life;
+  this->mode;
 public:
 
-  Enemy_standard();
+  Enemy_standard(int mode);
   ~Enemy_standard();
   bool Got_shot(_bullets &A);
   void shooting(_bullets &A);
