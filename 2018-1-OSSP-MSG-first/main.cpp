@@ -37,11 +37,13 @@ int main(){
   int shootcnt = 0;
   int count = 0; int number = 1; //임시변수
   int mode = rand()%2;// to select the place and direction where enemy comes and goes
+  int temp_cnt = 0;
 
   Enemy_standard_2 E(mode);
   AirPlane A;
 
   while(true){
+    if(temp_cnt % 5 == 0) shootcnt=0;
     start_time = SDL_GetTicks();//나중에 프레임 계산할 변수
 
     if(player_bullets.blt.size() > 0 )
@@ -70,8 +72,10 @@ int main(){
 
       if(keystates[SDLK_a])
       {
-        if(shootcnt == 0) A.shooting(player_bullets);
-        else continue;
+        if(shootcnt == 0) {
+            A.shooting(player_bullets);
+            shootcnt = 1;
+        }
       }
 
       if(keystates[SDLK_UP])
@@ -99,6 +103,7 @@ int main(){
       SDL_Delay(delay);//이거 fps를 고려해서 Delay해야됨 프레임 설정안하면 cpu마다 게임 속도 다르대
 
       SDL_Flip(screen);
+      temp_cnt ++;
   }
 
   SDL_FreeSurface(bullet);
