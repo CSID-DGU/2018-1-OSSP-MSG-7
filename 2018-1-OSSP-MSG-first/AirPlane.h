@@ -57,6 +57,7 @@ private:
   SDL_Rect offset;
   int pos_x,pos_y;// 비행기 x,y 좌표;
   int life;
+
 public:
   AirPlane();
   ~AirPlane();
@@ -67,7 +68,7 @@ public:
   SDL_Rect Get_plane();//plane 변수 getter
 };
 
-class Enemy_standard
+class Enemy_standard_2
 {
 private:
   SDL_Surface *enemy;
@@ -76,10 +77,13 @@ private:
   int life;
   int mode;
   int count = 0;
+  bool first_exe = true;   // to initialize count in control for only one time
+  int pos;  // enemy's movement location
+
 public:
 
-  Enemy_standard(int mode);
-  ~Enemy_standard();
+  Enemy_standard_2(int mode);
+  ~Enemy_standard_2();
   bool Got_shot(_bullets &A);
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);

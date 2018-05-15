@@ -34,10 +34,11 @@ int main(){
 
   int start_time = 0;
   int delay = 0;
+  int shootcnt = 0;
   int count = 0; int number = 1; //임시변수
-  int mode = 1;
+  int mode = rand()%2;// to select the place and direction where enemy comes and goes
 
-  Enemy_standard E(mode);
+  Enemy_standard_2 E(mode);
   AirPlane A;
 
   while(true){
@@ -54,7 +55,7 @@ int main(){
 
     if(number == 1 && E.Got_shot(player_bullets))//임시 코딩.적 맞으면 끝
       {
-        E.~Enemy_standard();
+        E.~Enemy_standard_2();
         number = 0;
       }
     if(SDL_PollEvent(&event)){
@@ -69,7 +70,8 @@ int main(){
 
       if(keystates[SDLK_a])
       {
-        A.shooting(player_bullets);
+        if(shootcnt == 0) A.shooting(player_bullets);
+        else continue;
       }
 
       if(keystates[SDLK_UP])

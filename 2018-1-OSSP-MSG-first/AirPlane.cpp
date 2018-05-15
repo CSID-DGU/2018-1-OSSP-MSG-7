@@ -61,26 +61,26 @@ bool AirPlane::Got_shot(vector<bullets> enemy_bullets)
 
 
 
-Enemy_standard::Enemy_standard(int mode)
+Enemy_standard_2::Enemy_standard_2(int mode)
 {
   enemy = load_image("assets/3.gif");// 비행기 이미지
   //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거
   SDL_SetColorKey(enemy, SDL_SRCCOLORKEY,SDL_MapRGB(enemy->format,255,255,255));
 
   this->mode = mode;
-  int y = rand()%200 + 10;
+  int y = rand()%100 + 10;
   if(mode == 0) pos_x = -ENEMY_WIDTH;//처음 시작 위치 지정
   else pos_x = SCREEN_WIDTH+ENEMY_WIDTH;
   pos_y = y;//처음 시작 위치 지정
   life = 1;
 }
 
-Enemy_standard::~Enemy_standard()
+Enemy_standard_2::~Enemy_standard_2()
 {
   SDL_FreeSurface(enemy);//enemy변수 없애는거
 }
 
-bool Enemy_standard::Got_shot(_bullets &A)
+bool Enemy_standard_2::Got_shot(_bullets &A)
 {
 
   vector<bullets>::iterator iter;
@@ -104,12 +104,12 @@ bool Enemy_standard::Got_shot(_bullets &A)
   return flag;
 }
 
-void Enemy_standard::shooting(_bullets &A)
+void Enemy_standard_2::shooting(_bullets &A)
 {
   A.add_blt( 0, 5,pos_x + 2,pos_y + 15);
 }
 
-void Enemy_standard::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip )
+void Enemy_standard_2::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip )
 {
   SDL_Rect offset;
   offset.x = pos_x;
@@ -117,19 +117,31 @@ void Enemy_standard::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* cli
   SDL_BlitSurface( enemy, clip, destination, &offset );
 }
 
-void Enemy_standard::control_plane(int x, int y, _bullets &A)
+void Enemy_standard_2::control_plane(int x, int y, _bullets &A)
 {
-  int pos = rand()%75+75;
+  if(first_exe==true){
+    pos = rand()%75+75;
+    first_exe=false;
+  }
   if(count % 30 == 0 ) this->shooting(A);
   if(count < pos){
       if(mode == 0) pos_x += 3;
       else pos_x -= 3;
-      pos_y += 0;
+  }
+  else {
+      if(mode == 0){
+          pos_x -= 3;
+          pos_y += 3;
+      }
+      else {
+          pos_x += 3;
+          pos_y += 3;
+      }
   }
   count++;
 }
 
-SDL_Surface *Enemy_standard::Get_plane()
+SDL_Surface *Enemy_standard_2::Get_plane()
 {
   return this->enemy;
 }
