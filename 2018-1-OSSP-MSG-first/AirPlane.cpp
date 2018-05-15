@@ -2,16 +2,13 @@
 
 AirPlane::AirPlane()
 {
-  plane = load_image("assets/p2.gif");// 비행기 이미지
-  //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거
-  SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
   pos_x = SCREEN_WIDTH / 2;//처음 시작 위치 지정
   pos_y = SCREEN_HEIGHT / 2;//처음 시작 위치 지정
   life = 1;
 }
 AirPlane::~AirPlane()
 {
-  SDL_FreeSurface(plane);
+
 }
 
 void AirPlane::shooting(_bullets &player_bullets)
@@ -19,11 +16,11 @@ void AirPlane::shooting(_bullets &player_bullets)
   player_bullets.add_blt( 0, -10,pos_x,pos_y - 15);
 }
 
-void AirPlane::plane_apply_surface(SDL_Surface* destination, SDL_Rect* clip )
+void AirPlane::plane_apply_surface(SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip )
 {
   offset.x = pos_x;
   offset.y = pos_y;
-  SDL_BlitSurface( plane, clip, destination, &offset );
+  SDL_BlitSurface( source, clip, destination, &offset );
 }
 void AirPlane::control_plane(int x, int y)
 {
@@ -61,21 +58,21 @@ bool AirPlane::Got_shot(vector<bullets> enemy_bullets)
 
 
 
-Enemy_standard::Enemy_standard()
+Enemy_standard::Enemy_standard(int mode)
 {
-  enemy = load_image("assets/3.gif");// 비행기 이미지
-  //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거
-  SDL_SetColorKey(enemy, SDL_SRCCOLORKEY,SDL_MapRGB(enemy->format,255,255,255));
+  this->mode = mode;// 이동경로 mode
   srand(time(NULL));
-  int x = rand()%200 + 100;
-  pos_x = x;//처음 시작 위치 지정
+  if( mode == 0)
+    pos_x = 160;// 처음 시작 위치 지정
+  else if(mode == 1)
+    pos_x = 480;
   pos_y = -ENEMY_HEIGHT;//처음 시작 위치 지정
   life = 1;
+  count = 0;
 }
 
 Enemy_standard::~Enemy_standard()
 {
-  SDL_FreeSurface(enemy);//enemy변수 없애는거
 }
 
 bool Enemy_standard::Got_shot(_bullets &A)
@@ -107,21 +104,37 @@ void Enemy_standard::shooting(_bullets &A)
   A.add_blt( 0, 5,pos_x + 2,pos_y + 15);
 }
 
-void Enemy_standard::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip )
+void Enemy_standard::enemy_apply_surface(SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip )
 {
   SDL_Rect offset;
   offset.x = pos_x;
   offset.y = pos_y;
-  SDL_BlitSurface( enemy, clip, destination, &offset );
+  SDL_BlitSurface(source, clip, destination, &offset );
 }
 
-void Enemy_standard::control_plane(int x, int y)
-{
-  pos_x += x;
-  pos_y += y;
-}
-
-SDL_Surface *Enemy_standard::Get_plane()
-{
-  return this->enemy;
+void Enemy_standard::control_plane(_bullets &enemy)
+{//y= 3일 때 속도가 적당.
+  if( count % 30 == 0)
+    this->shooting(enemy);
+  if(this->mode == 0)
+  {
+    if( count < 50 )
+      pos_y += 3;
+    if(count > 50)
+      {
+        pos_x += 3;
+        pos_y += 3;
+      }
+  }
+  else if(this->mode == 1)
+  {
+    if( count < 50 )
+      pos_y += 3;
+    if(count > 50)
+      {
+        pos_x -= 3;
+        pos_y += 3;
+      }
+  }
+  ++count;
 }
