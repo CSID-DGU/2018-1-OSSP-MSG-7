@@ -104,12 +104,13 @@ void Enemy_standard::shooting(_bullets &A)
   A.add_blt( 0, 5,pos_x + 2,pos_y + 15);
 }
 
-void Enemy_standard::enemy_apply_surface(SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip )
+void Enemy_standard::enemy_apply_surface(SDL_Surface* source[], SDL_Surface* destination, SDL_Rect* clip )
 {
+  int i = count % 4;
   SDL_Rect offset;
   offset.x = pos_x;
   offset.y = pos_y;
-  SDL_BlitSurface(source, clip, destination, &offset );
+  SDL_BlitSurface(source[i], clip, destination, &offset );
 }
 
 void Enemy_standard::control_plane(_bullets &enemy)

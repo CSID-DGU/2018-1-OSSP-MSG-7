@@ -4,7 +4,7 @@ SDL_Surface *screen;//화면
 SDL_Surface *background;//배경화면
 SDL_Surface *bullet;//총알 이미지
 SDL_Surface *plane;// 사용자 비행기 이미지
-SDL_Surface *enemy;// 적 비행기 이미지
+SDL_Surface *enemy[4];//회전하는 비행기 이미지
 SDL_Surface *boom[11];// 폭발 이미지
 
 SDL_Event event;
@@ -159,8 +159,16 @@ bool load_files()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
   background = load_image("assets/background.png");//배경화면
   bullet = load_image("assets/bullet.gif");// 총알 이미지
-  enemy = load_image("assets/3.gif");// 적 비행기 이미지
   plane = load_image("assets/p2.gif");// 사용자 비행기 이미지
+  for(int i = 0 ; i < 4; i++)
+  {
+    string str = "assets/E_";
+    string str1 = to_string(i + 1);
+    string str2 = ".gif";
+    string str3 = str + str1 + str2;
+    enemy[i] = load_image(str3);
+    SDL_SetColorKey(enemy[i], SDL_SRCCOLORKEY,SDL_MapRGB(enemy[i]->format,255,255,255));
+  }
   for(int i = 0 ; i < 11; i++)//폭발 이미지
   {
     string str = "assets/explosion/";
@@ -171,7 +179,6 @@ bool load_files()
     SDL_SetColorKey(boom[i], SDL_SRCCOLORKEY,SDL_MapRGB(boom[i]->format,255,255,255));
   }
   SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
-  SDL_SetColorKey(enemy, SDL_SRCCOLORKEY,SDL_MapRGB(enemy->format,255,255,255));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,255,255,255));
   return true;
 }
@@ -179,10 +186,11 @@ bool load_files()
 bool SDL_free()
 {//올바르게 free하면 true 반환하게 수정
   SDL_FreeSurface(plane);
-  SDL_FreeSurface(enemy);
   SDL_FreeSurface(bullet);
   SDL_FreeSurface(background);
   SDL_FreeSurface(screen);
+  for(int i =0 ; i < 4; i++)
+    SDL_FreeSurface(enemy[i]);
   for(int i = 0; i < 11; i++)
     SDL_FreeSurface(boom[i]);
 
