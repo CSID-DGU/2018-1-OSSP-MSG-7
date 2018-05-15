@@ -53,7 +53,6 @@ public:
 class AirPlane
 {
 private:
-  SDL_Surface *plane;
   SDL_Rect offset;
   int pos_x,pos_y;// 비행기 x,y 좌표;
   int life;
@@ -63,7 +62,7 @@ public:
   ~AirPlane();
   bool Got_shot(vector<bullets> enemy_bullets);
   void shooting(_bullets &A);
-  void plane_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
+  void plane_apply_surface(SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(int x, int y);
   SDL_Rect Get_plane();//plane 변수 getter
 };
@@ -73,7 +72,7 @@ class Enemy_standard_2
 private:
   SDL_Surface *enemy;
 
-  int pos_x,pos_y;// 비행기 x,y 좌표;
+  int pos_x, pos_y;
   int life;
   int mode;
   int count = 0;
@@ -87,7 +86,23 @@ public:
   bool Got_shot(_bullets &A);
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
-  void control_plane(int x, int y, _bullets &A);
+  void control_plane(_bullets &A);
   SDL_Surface *Get_plane();
+};
 
+
+class Enemy_standard
+{
+private:
+    int life;
+    int count;//루프문 반복할 변수
+    int mode;// 좌,우 나타날 장소를 정하는 변수
+  public:
+    int pos_x,pos_y;// 비행기 x,y 좌표;
+    Enemy_standard(int mode);
+    ~Enemy_standard();
+    bool Got_shot(_bullets &A);
+    void shooting(_bullets &A);
+    void enemy_apply_surface(SDL_Surface* source[], SDL_Surface* destination, SDL_Rect* clip);
+    void control_plane(_bullets &enemey);
 };

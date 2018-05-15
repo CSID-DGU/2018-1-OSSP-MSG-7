@@ -21,9 +21,8 @@ socket programming을 위하여 추가되 해더
 #include <cstdlib>
 #include <unistd.h>
 #include <netdb.h>
-
+#include <stdlib.h>
 using namespace std;
-
 
 bool intersects(SDL_Rect a, SDL_Rect b);
 
