@@ -21,12 +21,11 @@ socket programming을 위하여 추가되 해더
 #include <cstdlib>
 #include <unistd.h>
 #include <netdb.h>
-
+#include <stdlib.h>
 using namespace std;
-
 
 bool intersects(SDL_Rect a, SDL_Rect b);
 
-
+void apply_surface( int x, int y, SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip);
 
 SDL_Surface *load_image( std::string filename );
