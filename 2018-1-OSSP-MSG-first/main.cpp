@@ -15,10 +15,10 @@ Uint8 *keystates;
 _bullets enemy_bullets;//적 총알 배열
 _bullets player_bullets;//사용자 총알 배열
 
+
 bool init();//변수들 초기화 함수
 bool load_files();//이미지, 폰트 초기화 함수
 bool SDL_free();// sdl 변수들 free 함수
-void boom_apply_surface(SDL_Rect offset,SDL_Surface* destination, SDL_Rect* clip );
 
 int main(){
   init();//초기화 함수
@@ -30,12 +30,14 @@ int main(){
   int count = 0;
   int shootcnt = 0;
 
-  vector<Enemy_standard>::iterator it;
   vector<Enemy_standard_2>::iterator it2;
+  vector<Enemy_standard>::iterator it;
+  vector<BOOM>::iterator B_it;
+
+  vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
   vector<Enemy_standard_2> E2;// 2nd standard enemy
   AirPlane A;//사용자 비행기
-
 
   while(true){
     if(count % 5 == 0) shootcnt = 0;
@@ -67,12 +69,12 @@ int main(){
       for(it = E.begin(); it != E.end(); it++)//적 비행기들 피격 판정
       {
         Enemy_standard tmp(0);
-        if((*it).Got_shot(player_bullets))
+        if((*it).Got_shot(player_bullets))//비행기가 격추 당하면
         {
+          BOOM B_tmp((*it).Get_plane());
+          B.push_back(B_tmp);
           (*it).~Enemy_standard();
-
         }
-
         else
         {
           tmp = *it;
@@ -91,6 +93,8 @@ int main(){
           Enemy_standard_2 tmp(0);
           if((*it2).Got_shot(player_bullets))
           {
+            BOOM B_tmp((*it2).Get_plane());
+            B.push_back(B_tmp);
             (*it2).~Enemy_standard_2();
         }
           else
@@ -134,23 +138,23 @@ int main(){
       }
 
       if(keystates[SDLK_UP])
-        A.control_plane(0,-3);
+        A.control_plane(0,-4);
 
       if(keystates[SDLK_DOWN])
-        A.control_plane(0, 3);
+        A.control_plane(0, 4);
 
       if(keystates[SDLK_LEFT])
-        A.control_plane(-3, 0);
+        A.control_plane(-4, 0);
 
       if(keystates[SDLK_RIGHT])
-        A.control_plane(3, 0);
+        A.control_plane(4, 0);
 
     //이미지 그리는 부분
     apply_surface(0, 0, background,screen,NULL);//백그라운드 그리는거
     enemy_bullets.bullet_apply_surface(bullet, screen,NULL);//적 총알들
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL);//사용자 비행기
-    if( E.size() > 0)
+    if( E.size() > 0)//적 비행기
     {
       for( it = E.begin(); it != E.end(); it++)
       {
@@ -164,25 +168,50 @@ int main(){
         (*it2).enemy_apply_surface(screen, NULL);
       }
     }
+
+    if( B.size() > 0)//폭발
+    {
+      vector<BOOM> B_tmp;
+
+      for(B_it = B.begin(); B_it != B.end(); B_it++)
+      {
+        if((*B_it).b.count <  11)
+        {
+          (*B_it).boom_apply_surface(boom,screen,NULL);
+          B_tmp.push_back(*B_it);
+        }
+        else
+        {
+          (*B_it).~BOOM();
+        }
+      }
+      B = B_tmp;
+    }
     //fps 계산
-    delay = 1000/30 - (SDL_GetTicks() - start_time);
+    delay = 1000/40 - (SDL_GetTicks() - start_time);
     if(delay > 0)
       SDL_Delay(delay);
 
       SDL_Flip(screen);
       count ++;
   }
-
   SDL_free();
-
   return 0;
 }
+
+
+
+
+
+
+
 
 bool init()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
   SDL_Init(SDL_INIT_EVERYTHING);
   screen = SDL_SetVideoMode(SCREEN_WIDTH, SCREEN_HEIGHT, SCREEN_BPP, SDL_SWSURFACE | SDL_DOUBLEBUF );
   SDL_WM_SetCaption("MSG", NULL);
+  return true;
 }
 //return true;
 
@@ -228,12 +257,4 @@ bool SDL_free()
   SDL_Quit();//init한 SDL 변수들 닫아주는겅 일걸,위의 freesurface랑 차이 모름
 
   return true;
-}
-
-void boom_apply_surface(SDL_Rect offset,SDL_Surface* destination, SDL_Rect* clip )
-{//적 비행기가 격추됬을 때의 좌표에 폭발 스프라이트 이미지 출력
-    static int i = 0;
-  	SDL_BlitSurface( boom[i], clip, destination, &offset );
-    if(i++ == 10)
-      i = 0;
 }

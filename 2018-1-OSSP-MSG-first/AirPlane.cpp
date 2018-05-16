@@ -138,9 +138,12 @@ void Enemy_standard_2::control_plane(_bullets &A)
   count++;
 }
 
-SDL_Surface *Enemy_standard_2::Get_plane()
+SDL_Rect Enemy_standard_2::Get_plane()
 {
-  return this->enemy;
+  offset.x = pos_x;
+  offset.y = pos_y;
+
+  return offset;
 }
 
 Enemy_standard::Enemy_standard(int mode)
@@ -225,4 +228,11 @@ void Enemy_standard::control_plane(_bullets &enemy)
       }
   }
   ++count;
+}
+
+SDL_Rect Enemy_standard::Get_plane()
+{
+  offset.x = pos_x;
+  offset.y = pos_y;
+  return offset;
 }
