@@ -7,6 +7,8 @@ SDL_Surface *plane;// 사용자 비행기 이미지
 SDL_Surface *enemy[4];//회전하는 비행기 이미지
 SDL_Surface *boom[11];// 폭발 이미지
 
+SDL_Surface *enemy2;
+
 SDL_Event event;
 Uint8 *keystates;
 
@@ -21,26 +23,32 @@ bool SDL_free();// sdl 변수들 free 함수
 int main(){
   init();//초기화 함수
   load_files();//이미지,폰트,bgm 로드하는 함수
+  srand(time(NULL));
 
   int start_time = 0;
   int delay = 0;
-  int make_count = 0;
+  int count = 0;
+  int shootcnt = 0;
 
+  vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
   vector<BOOM>::iterator B_it;
 
   vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
+  vector<Enemy_standard_2> E2;// 2nd standard enemy
   AirPlane A;//사용자 비행기
 
-
   while(true){
-
-    if(make_count++ % 50 == 0)//100count마다 1기씩 생성
+    if(count % 5 == 0) shootcnt = 0;
+    if(count % 50 == 0)//100count마다 1기씩 생성
     {
       int i = rand()%2;
+      int j = rand()%2;
       Enemy_standard tmp(i);
+      Enemy_standard_2 tmp2(j);
       E.push_back(tmp);
+      E2.push_back(tmp2);
     }
 
     start_time = SDL_GetTicks();//나중에 프레임 계산할 변수
@@ -75,6 +83,28 @@ int main(){
       }
 
       E = v_tmp;
+
+    }
+    if(E2.size()>0)
+    {
+        vector<Enemy_standard_2> v_tmp;
+        for(it2 = E2.begin(); it2 != E2.end(); it2++)//적 비행기들 피격 판정
+        {
+          Enemy_standard_2 tmp(0);
+          if((*it2).Got_shot(player_bullets))
+          {
+            BOOM B_tmp((*it2).Get_plane());
+            B.push_back(B_tmp);
+            (*it2).~Enemy_standard_2();
+        }
+          else
+          {
+            tmp = *it2;
+            v_tmp.push_back(tmp);
+          }
+        }
+
+        E2=v_tmp;
     }
 
     //키보드 이벤트 처리하는 부분
@@ -91,24 +121,33 @@ int main(){
         {
           (*it).control_plane(enemy_bullets);
         }
+        for(it2 = E2.begin(); it2 != E2.end(); it2++)
+        {
+          (*it2).control_plane(enemy_bullets);
+        }
       }
+
+
 
       if(keystates[SDLK_a])
       {
-        A.shooting(player_bullets);
+        if(shootcnt == 0) {
+            A.shooting(player_bullets);
+            shootcnt = 1;
+        }
       }
 
       if(keystates[SDLK_UP])
-        A.control_plane(0,-3);
+        A.control_plane(0,-4);
 
       if(keystates[SDLK_DOWN])
-        A.control_plane(0, 3);
+        A.control_plane(0, 4);
 
       if(keystates[SDLK_LEFT])
-        A.control_plane(-3, 0);
+        A.control_plane(-4, 0);
 
       if(keystates[SDLK_RIGHT])
-        A.control_plane(3, 0);
+        A.control_plane(4, 0);
 
     //이미지 그리는 부분
     apply_surface(0, 0, background,screen,NULL);//백그라운드 그리는거
@@ -120,6 +159,13 @@ int main(){
       for( it = E.begin(); it != E.end(); it++)
       {
         (*it).enemy_apply_surface(enemy, screen, NULL);
+      }
+    }
+    if( E2.size() > 0)
+    {
+      for( it2 = E2.begin(); it2 != E2.end(); it2++)
+      {
+        (*it2).enemy_apply_surface(screen, NULL);
       }
     }
 
@@ -142,23 +188,16 @@ int main(){
       B = B_tmp;
     }
     //fps 계산
-    delay = 1000/30 - (SDL_GetTicks() - start_time);
+    delay = 1000/40 - (SDL_GetTicks() - start_time);
     if(delay > 0)
       SDL_Delay(delay);
 
-    //화면 갱신
       SDL_Flip(screen);
+      count ++;
   }
   SDL_free();
   return 0;
 }
-
-
-
-
-
-
-
 
 
 
@@ -174,6 +213,7 @@ bool init()
   SDL_WM_SetCaption("MSG", NULL);
   return true;
 }
+//return true;
 
 bool load_files()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
