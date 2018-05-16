@@ -99,6 +99,8 @@ int main(){
             v_tmp.push_back(tmp);
           }
         }
+
+        E2=v_tmp;
     }
 
     //키보드 이벤트 처리하는 부분

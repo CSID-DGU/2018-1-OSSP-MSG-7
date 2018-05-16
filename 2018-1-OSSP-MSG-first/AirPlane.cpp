@@ -108,7 +108,6 @@ void Enemy_standard_2::shooting(_bullets &A)
 
 void Enemy_standard_2::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip )
 {
-  int i = count % 4;
   SDL_Rect offset;
   offset.x = pos_x;
   offset.y = pos_y;
@@ -146,12 +145,14 @@ SDL_Surface *Enemy_standard_2::Get_plane()
 
 Enemy_standard::Enemy_standard(int mode)
 {
+  int x = rand()%200+80;
+  int y = rand()%200+400;
   this->mode = mode;// 이동경로 mode
   srand(time(NULL));
   if( mode == 0)
-    pos_x = 160;// 처음 시작 위치 지정
+    pos_x = x;// 처음 시작 위치 지정
   else if(mode == 1)
-    pos_x = 480;
+    pos_x = y;
   pos_y = -ENEMY_HEIGHT;//처음 시작 위치 지정
   life = 1;
   count = 0;
