@@ -139,3 +139,10 @@ void Enemy_standard::control_plane(_bullets &enemy)
   }
   ++count;
 }
+
+SDL_Rect Enemy_standard::Get_plane()
+{
+  offset.x = pos_x;
+  offset.y = pos_y;
+  return offset;
+}
