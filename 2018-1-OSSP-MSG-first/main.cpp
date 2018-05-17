@@ -32,11 +32,14 @@ int main(){
 
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
+  vector<Mini_Boss>::iterator it3;
   vector<BOOM>::iterator B_it;
 
   vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
   vector<Enemy_standard_2> E2;// 2nd standard enemy
+
+  Mini_Boss mini;
   AirPlane A;//사용자 비행기
 
   while(true){
@@ -96,7 +99,7 @@ int main(){
             BOOM B_tmp((*it2).Get_plane());
             B.push_back(B_tmp);
             (*it2).~Enemy_standard_2();
-        }
+          }
           else
           {
             tmp = *it2;
@@ -105,6 +108,13 @@ int main(){
         }
 
         E2=v_tmp;
+    }
+
+    if(mini.Got_shot(player_bullets))
+    {
+        BOOM B_tmp(mini.Get_plane());
+        B.push_back(B_tmp);
+        mini.~Mini_Boss();
     }
 
     //키보드 이벤트 처리하는 부분
@@ -121,13 +131,14 @@ int main(){
         {
           (*it).control_plane(enemy_bullets);
         }
-        for(it2 = E2.begin(); it2 != E2.end(); it2++)
-        {
-          (*it2).control_plane(enemy_bullets);
-        }
       }
-
-
+      if(E2.size() >0){
+          for(it2 = E2.begin(); it2 != E2.end(); it2++)
+          {
+            (*it2).control_plane(enemy_bullets);
+          }
+      }
+      mini.control_plane(enemy_bullets);
 
       if(keystates[SDLK_a])
       {
@@ -169,6 +180,8 @@ int main(){
       }
     }
 
+    mini.enemy_apply_surface(screen, NULL);
+
     if( B.size() > 0)//폭발
     {
       vector<BOOM> B_tmp;
@@ -198,13 +211,6 @@ int main(){
   SDL_free();
   return 0;
 }
-
-
-
-
-
-
-
 
 bool init()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
