@@ -265,6 +265,8 @@ bool Mini_Boss::Got_shot(_bullets &A){
 };
 void Mini_Boss::shooting(_bullets &A){
     A.add_blt( 0, 5,pos_x + 35,pos_y + 50);
+    A.add_blt( 3, 5,pos_x + 35,pos_y + 50);
+    A.add_blt( -3, 5,pos_x + 35,pos_y + 50);
 };
 void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
     SDL_Rect offset;

@@ -43,7 +43,15 @@ int main(){
 
   while(true){
     if(count % 5 == 0) shootcnt = 0;
-
+    if(count % 50 == 0)//100count마다 1기씩 생성
+    {
+      int i = rand()%2;
+      int j = rand()%2;
+      Enemy_standard tmp(i);
+      Enemy_standard_2 tmp2(j);
+      E.push_back(tmp);
+      E2.push_back(tmp2);
+    }
     start_time = SDL_GetTicks();//나중에 프레임 계산할 변수
 
     if(player_bullets.blt.size() > 0 )//총알들 위치 이동
@@ -100,7 +108,7 @@ int main(){
         E2=v_tmp;
     }
 
-    if(tmp3.amount ==1 && tmp3.Got_shot(player_bullets)) tmp3.loss_life();
+    if(tmp3.amount ==1 && tmp3.Got_shot(player_bullets)) tmp3.loss_life();   // have to add the condition when the mini boss appear
 
     if(SDL_PollEvent(&event)){
       if(event.type == SDL_QUIT)//버튼 누르면 꺼저야 되는데 안 꺼짐 수정 사항
@@ -123,7 +131,7 @@ int main(){
           }
       }
 
-      if(tmp3.amount == 1)tmp3.control_plane(enemy_bullets);
+      if(tmp3.amount == 1)tmp3.control_plane(enemy_bullets); // have to add the condition when the mini boss appear
 
       if(keystates[SDLK_a])
       {
@@ -165,7 +173,7 @@ int main(){
       }
     }
 
-    if(tmp3.amount ==1) tmp3.enemy_apply_surface(screen, NULL);
+    if(tmp3.amount ==1) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
     if( B.size() > 0)//폭발
     {
