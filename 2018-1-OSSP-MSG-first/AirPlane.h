@@ -140,10 +140,8 @@ private:
   SDL_Rect offset;
   int pos_x, pos_y;
   int life;
-  int mode;
   int count = 0;
-  bool first_exe = true;   // to initialize count in control for only one time
-  int pos;  // enemy's movement location
+  int direction = 0;
 
 public:
   Mini_Boss();
@@ -152,5 +150,8 @@ public:
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(_bullets &A);
+  void loss_life();
   SDL_Rect Get_plane();
+
+  int amount = 1;
 };

@@ -231,14 +231,15 @@ Mini_Boss::Mini_Boss(){
     mini_boss = load_image("assets/3_1.gif");// 비행기 이미지
     //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거
     SDL_SetColorKey(mini_boss, SDL_SRCCOLORKEY,SDL_MapRGB(mini_boss->format,255,255,255));
-    pos_x = 100;// 처음 시작 위치 지정
+    pos_x = 320;// 처음 시작 위치 지정
     pos_y = -MINI_BOSS_HEIGHT;//처음 시작 위치 지정
-    life = 3;//has to be changed later (at least 70)
+    life = 30;//has to be changed later (at least 70)
     count = 0;
 }
 
 Mini_Boss::~Mini_Boss(){
-
+    this->amount--;
+    delete this->mini_boss;
 };
 
 bool Mini_Boss::Got_shot(_bullets &A){
@@ -263,7 +264,7 @@ bool Mini_Boss::Got_shot(_bullets &A){
     return flag;
 };
 void Mini_Boss::shooting(_bullets &A){
-    A.add_blt( 0, 5,pos_x + 2,pos_y + 15);
+    A.add_blt( 0, 5,pos_x + 35,pos_y + 50);
 };
 void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
     SDL_Rect offset;
@@ -272,23 +273,19 @@ void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
     SDL_BlitSurface(mini_boss, clip, destination, &offset );
 };
 void Mini_Boss::control_plane(_bullets &A){
-    if(first_exe==true){
-      pos = rand()%75+75;
-      first_exe=false;
-    }
     if(count % 30 == 0 ) this->shooting(A);
-    if(count < pos){
-        if(mode == 0) pos_x += 3;
-        else pos_x -= 3;
+    if(count < 50){
+        pos_y += 3;
     }
-    else {
-        if(mode == 0){
-            pos_x -= 3;
-            pos_y += 3;
+    else
+    {
+        if(direction == 0){
+            if(this->pos_x>550) direction =1;
+            this->pos_x += 3;
         }
-        else {
-            pos_x += 3;
-            pos_y += 3;
+        else{
+            if(this->pos_x<90) direction = 0;
+            this->pos_x -= 3;
         }
     }
     count++;
@@ -300,4 +297,9 @@ SDL_Rect Mini_Boss::Get_plane()
   offset.y = pos_y;
 
   return offset;
+}
+void Mini_Boss::loss_life()
+{
+    this->life--;
+    if( this->life == 0) this->~Mini_Boss();
 }

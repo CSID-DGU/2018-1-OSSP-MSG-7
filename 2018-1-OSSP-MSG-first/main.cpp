@@ -32,27 +32,17 @@ int main(){
 
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
-  vector<Mini_Boss>::iterator it3;
   vector<BOOM>::iterator B_it;
 
   vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
   vector<Enemy_standard_2> E2;// 2nd standard enemy
 
-  Mini_Boss mini;
   AirPlane A;//사용자 비행기
+  Mini_Boss tmp3;
 
   while(true){
     if(count % 5 == 0) shootcnt = 0;
-    if(count % 50 == 0)//100count마다 1기씩 생성
-    {
-      int i = rand()%2;
-      int j = rand()%2;
-      Enemy_standard tmp(i);
-      Enemy_standard_2 tmp2(j);
-      E.push_back(tmp);
-      E2.push_back(tmp2);
-    }
 
     start_time = SDL_GetTicks();//나중에 프레임 계산할 변수
 
@@ -110,14 +100,8 @@ int main(){
         E2=v_tmp;
     }
 
-    if(mini.Got_shot(player_bullets))
-    {
-        BOOM B_tmp(mini.Get_plane());
-        B.push_back(B_tmp);
-        mini.~Mini_Boss();
-    }
+    if(tmp3.amount ==1 && tmp3.Got_shot(player_bullets)) tmp3.loss_life();
 
-    //키보드 이벤트 처리하는 부분
     if(SDL_PollEvent(&event)){
       if(event.type == SDL_QUIT)//버튼 누르면 꺼저야 되는데 안 꺼짐 수정 사항
 			   break;
@@ -138,7 +122,8 @@ int main(){
             (*it2).control_plane(enemy_bullets);
           }
       }
-      mini.control_plane(enemy_bullets);
+
+      if(tmp3.amount == 1)tmp3.control_plane(enemy_bullets);
 
       if(keystates[SDLK_a])
       {
@@ -180,7 +165,7 @@ int main(){
       }
     }
 
-    mini.enemy_apply_surface(screen, NULL);
+    if(tmp3.amount ==1) tmp3.enemy_apply_surface(screen, NULL);
 
     if( B.size() > 0)//폭발
     {
