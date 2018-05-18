@@ -129,7 +129,6 @@ Enemy_standard_2::~Enemy_standard_2()
 
 bool Enemy_standard_2::Got_shot(_bullets &A)
 {
-
   vector<bullets>::iterator iter;
   vector<bullets> tmp;
 
@@ -201,14 +200,12 @@ Enemy_standard::Enemy_standard(int mode)
   int x = rand()%200+80;
   int y = rand()%200+400;
   this->mode = mode;// 이동경로 mode
-  srand(time(NULL));
   if( mode == 0)
     pos_x = x;// 처음 시작 위치 지정
   else if(mode == 1)
     pos_x = y;
   pos_y = -ENEMY_HEIGHT;//처음 시작 위치 지정
   life = 1;
-  count = 0;
 }
 
 Enemy_standard::~Enemy_standard()
@@ -217,7 +214,6 @@ Enemy_standard::~Enemy_standard()
 
 bool Enemy_standard::Got_shot(_bullets &A)
 {
-
   vector<bullets>::iterator iter;
   vector<bullets> tmp;
 
@@ -255,26 +251,20 @@ void Enemy_standard::enemy_apply_surface(SDL_Surface* source[], SDL_Surface* des
 
 void Enemy_standard::control_plane(_bullets &enemy)
 {//y= 3일 때 속도가 적당.
-  if( count % 30 == 0)
-    this->shooting(enemy);
-  if(this->mode == 0)
-  {
-    if( count < 50 )
-      pos_y += 3;
-    if(count > 50)
-      {
-        pos_x += 3;
-        pos_y += 3;
-      }
+  if(first_exe == true){
+    pos = rand()%75+75;
+    first_exe=false;
   }
-  else if(this->mode == 1)
-  {
-    if( count < 50 )
-      pos_y += 3;
-    if(count > 50)
-      {
-        pos_x -= 3;
-        pos_y += 3;
+  if(count % 30 == 0) this->shooting(enemy);
+  if(count<pos) pos_y += 3;
+  else{
+      if(this->mode == 0){
+          pos_x+=3;
+          pos_y+=3;
+      }
+      else{
+          pos_x-=3;
+          pos_y+=3;
       }
   }
   ++count;
@@ -285,4 +275,83 @@ SDL_Rect Enemy_standard::Get_plane()
   offset.x = pos_x;
   offset.y = pos_y;
   return offset;
+}
+
+Mini_Boss::Mini_Boss(){
+    mini_boss = load_image("assets/3_1.gif");// 비행기 이미지
+    //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거
+    SDL_SetColorKey(mini_boss, SDL_SRCCOLORKEY,SDL_MapRGB(mini_boss->format,255,255,255));
+    pos_x = 320;// 처음 시작 위치 지정
+    pos_y = -MINI_BOSS_HEIGHT;//처음 시작 위치 지정
+    life = 30;//has to be changed later (at least 70)
+    count = 0;
+}
+
+Mini_Boss::~Mini_Boss(){
+    this->amount--;
+    delete this->mini_boss;
+};
+
+bool Mini_Boss::Got_shot(_bullets &A){
+    vector<bullets>::iterator iter;
+    vector<bullets> tmp;
+
+    bool flag = false;
+
+    for(iter = A.blt.begin(); iter != A.blt.end(); iter++)
+    {
+      if((pos_x + 100 < (*iter).bullet_pos.x + 9 || pos_y + 85 < (*iter).bullet_pos.y + 5) ||
+      ((*iter).bullet_pos.x + 9 < pos_x + 9 || (*iter).bullet_pos.y + 5 < pos_y + 10))//안 맞았을 때
+        tmp.push_back(*iter);
+      else//맞았을때
+      {
+        flag = true;
+      }
+    }
+
+    A.blt = tmp;
+
+    return flag;
+};
+void Mini_Boss::shooting(_bullets &A){
+    A.add_blt( 0, 5,pos_x + 35,pos_y + 50);
+    A.add_blt( 3, 5,pos_x + 35,pos_y + 50);
+    A.add_blt( -3, 5,pos_x + 35,pos_y + 50);
+};
+void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
+    SDL_Rect offset;
+    offset.y = pos_y;
+    offset.x = pos_x;
+    SDL_BlitSurface(mini_boss, clip, destination, &offset );
+};
+void Mini_Boss::control_plane(_bullets &A){
+    if(count % 30 == 0 ) this->shooting(A);
+    if(count < 50){
+        pos_y += 3;
+    }
+    else
+    {
+        if(direction == 0){
+            if(this->pos_x>550) direction =1;
+            this->pos_x += 3;
+        }
+        else{
+            if(this->pos_x<90) direction = 0;
+            this->pos_x -= 3;
+        }
+    }
+    count++;
+};
+
+SDL_Rect Mini_Boss::Get_plane()
+{
+  offset.x = pos_x;
+  offset.y = pos_y;
+
+  return offset;
+}
+void Mini_Boss::loss_life()
+{
+    this->life--;
+    if( this->life == 0) this->~Mini_Boss();
 }

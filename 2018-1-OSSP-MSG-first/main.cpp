@@ -68,7 +68,9 @@ int main(){
   vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
   vector<Enemy_standard_2> E2;// 2nd standard enemy
+
   AirPlane A;//사용자 비행기
+  Mini_Boss tmp3;
 
 
   while(true){
@@ -82,7 +84,6 @@ int main(){
       E.push_back(tmp);
       E2.push_back(tmp2);
     }
-
     start_time = SDL_GetTicks();//나중에 프레임 계산할 변수
 
     if(player_bullets.blt.size() > 0 )//총알들 위치 이동
@@ -131,7 +132,7 @@ int main(){
             BOOM B_tmp((*it2).Get_plane());
             B.push_back(B_tmp);
             (*it2).~Enemy_standard_2();
-        }
+          }
           else
           {
             tmp = *it2;
@@ -142,7 +143,8 @@ int main(){
         E2=v_tmp;
     }
 
-    //키보드 이벤트 처리하는 부분
+    if(tmp3.amount ==1 && tmp3.Got_shot(player_bullets)) tmp3.loss_life();   // have to add the condition when the mini boss appear
+
     if(SDL_PollEvent(&event)){
       if(event.type == SDL_QUIT)//버튼 누르면 꺼저야 되는데 안 꺼짐 수정 사항
 			   break;
@@ -156,13 +158,15 @@ int main(){
         {
           (*it).control_plane(enemy_bullets);
         }
-        for(it2 = E2.begin(); it2 != E2.end(); it2++)
-        {
-          (*it2).control_plane(enemy_bullets);
-        }
+      }
+      if(E2.size() >0){
+          for(it2 = E2.begin(); it2 != E2.end(); it2++)
+          {
+            (*it2).control_plane(enemy_bullets);
+          }
       }
 
-
+      if(tmp3.amount == 1)tmp3.control_plane(enemy_bullets); // have to add the condition when the mini boss appear
 
       if(keystates[SDLK_a])
       {
@@ -212,6 +216,8 @@ int main(){
         (*it2).enemy_apply_surface(screen, NULL);
       }
     }
+
+    if(tmp3.amount ==1) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
     if( B.size() > 0)//폭발
     {
