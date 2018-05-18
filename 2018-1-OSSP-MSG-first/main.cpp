@@ -3,6 +3,8 @@
 SDL_Surface *screen;//화면
 SDL_Surface *background;//배경화면
 SDL_Surface *background2;
+SDL_Surface *background3;
+SDL_Surface *press_message;
 SDL_Surface *life;
 SDL_Surface *bullet;//총알 이미지
 SDL_Surface *message;
@@ -35,131 +37,9 @@ _bullets player_bullets;
 bool init();//변수들 초기화 함수
 bool load_files();//이미지, 폰트 초기화 함수
 bool SDL_free();// sdl 변수들 free 함수
-
-void menu()   // 처음 시작 메뉴
-{
-  textColor = {204, 255, 204};  // 안내 폰트 색깔
-  textColor2 = {255, 255, 255}; // 제목 폰트 색깔
-	bool quit = false;
-	while (quit == false)
-	{
-		if (SDL_PollEvent(&event))
-		{
-      message = TTF_RenderText_Solid(font, "Press space to start, esc key to quit", textColor); // space키는 시작 esc키는 종료
-      message2 = TTF_RenderText_Solid(font2, "Starwars", textColor2);  // 제목
-      background = load_image("assets/menu3.jpg");  // 배경
-			apply_surface(0, 0, background, screen, NULL);
-      apply_surface((640 - message->w) / 2, 280, message, screen, NULL);
-      apply_surface((640 - message2->w) / 2, 100, message2, screen, NULL);
-			SDL_Flip(screen);
-
-
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-        {
-          quit = true;
-          background = load_image("assets/background.png");
-          break;
-        }
-        case SDLK_ESCAPE:  // esc 키 누르면 종료
-        {
-          EXIT = 1;
-          quit = true;
-          break;
-        }
-				}
-			}
-			else if (event.type == SDL_QUIT)
-			{
-				quit = true;
-			}
-		}
-	}
-}
-
-void game_over()  // 사용자 죽었을 시 나타나는 게임오버 창
-{
-	bool quit = false;
-  background = load_image("assets/background.png");
-  message2 = TTF_RenderText_Solid(font2, "Game over", textColor2);
-  apply_surface(0, 0, background, screen, NULL);
-  message = TTF_RenderText_Solid(font, "Press space to restart, esc key to quit", textColor);
-  apply_surface((640 - message->w) / 2, 280, message, screen, NULL);
-  apply_surface((640 - message2->w) / 2, 100, message2, screen, NULL);
-  SDL_Flip(screen);
-
-	while (quit == false)
-	{
-		if (SDL_PollEvent(&event))
-		{
-
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE://esc 키가 눌리면 종료
-        {
-          quit = true;
-          break;
-        }
-        case SDLK_SPACE:
-        {
-          Continue = 1;
-          quit = true;
-          break;
-        }
-				default:
-					break;
-				}
-			}
-			else if (event.type == SDL_QUIT)
-			{
-				quit = true;
-			}
-		}
-	}
-}
-
-void stage_clear()  // 나중에 bosscounter == 0 되면 stage clear 되도록 창 띄우기
-{
-	bool quit = false;
-
-  message = TTF_RenderText_Solid(font, "Stage Clear!", textColor);
-  background = load_image("assets/background.png");
-  apply_surface(0, 0, background, screen, NULL);
-  apply_surface((640 - message->w) / 2, 480/2 - message->h, message2, screen, NULL);
-  SDL_Flip(screen);
-
-	while (quit == false)
-	{
-		if (SDL_PollEvent(&event))
-		{
-
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE://esc 키가 눌리면 종료
-        {
-          quit = true;
-          break;
-        }
-				default:
-					break;
-				}
-			}
-			else if (event.type == SDL_QUIT)
-			{
-				quit = true;
-			}
-		}
-	}
-}
-
-
+void menu(); // 처음 시작 메뉴
+void game_over();  // 사용자 죽었을 시 나타나는 게임오버 창
+void stage_clear();  // 나중에 bosscounter == 0 되면 stage clear 되도록 창 띄우기
 
 int main(){
   loop:
@@ -383,6 +263,128 @@ int main(){
   return 0;
 }
 
+
+void menu()   // 처음 시작 메뉴
+{
+  textColor = {204, 255, 204}; // 제목 폰트 색깔
+  textColor2 = {255, 255, 255}; // 제목 폰트 색깔
+
+  bool quit = false;
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+      message = TTF_RenderText_Solid(font, "Press space to start, esc key to quit", textColor); // space키는 시작 esc키는 종료
+      message2 = TTF_RenderText_Solid(font2, "Starwars", textColor2);  // 제목
+      background3 = load_image("assets/menu3.jpg");  // 배경
+			apply_surface(0, 0, background3, screen, NULL);
+      apply_surface((640 - message->w) / 2, 280, message, screen, NULL);
+      apply_surface((640 - message2->w) / 2, 100, message2, screen, NULL);
+			SDL_Flip(screen);
+
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          quit = true;
+          break;
+        }
+        case SDLK_ESCAPE:  // esc 키 누르면 종료
+        {
+          EXIT = 1;
+          quit = true;
+          break;
+        }
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
+
+void game_over()  // 사용자 죽었을 시 나타나는 게임오버 창
+{
+	bool quit = false;
+  message2 = TTF_RenderText_Solid(font2, "Game over", textColor2);
+  apply_surface(0, 0, background, screen, NULL);
+  message = TTF_RenderText_Solid(font, "Press space to restart, esc key to quit", textColor);
+  apply_surface((640 - message->w) / 2, 280, message, screen, NULL);
+  apply_surface((640 - message2->w) / 2, 100, message2, screen, NULL);
+  SDL_Flip(screen);
+
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE://esc 키가 눌리면 종료
+        {
+          quit = true;
+          break;
+        }
+        case SDLK_SPACE:
+        {
+          Continue = 1;
+          quit = true;
+          break;
+        }
+				default:
+					break;
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
+
+void stage_clear()  // 나중에 bosscounter == 0 되면 stage clear 되도록 창 띄우기
+{
+	bool quit = false;
+
+  message = TTF_RenderText_Solid(font, "Stage Clear!", textColor);
+  background = load_image("assets/background.png");
+  apply_surface(0, 0, background, screen, NULL);
+  apply_surface((640 - message->w) / 2, 480/2 - message->h, message2, screen, NULL);
+  SDL_Flip(screen);
+
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE://esc 키가 눌리면 종료
+        {
+          quit = true;
+          break;
+        }
+				default:
+					break;
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
 
 bool init()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
