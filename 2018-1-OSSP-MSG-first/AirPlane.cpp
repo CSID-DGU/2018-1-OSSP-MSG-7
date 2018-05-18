@@ -4,11 +4,59 @@ AirPlane::AirPlane()
 {
   pos_x = SCREEN_WIDTH / 2;//처음 시작 위치 지정
   pos_y = SCREEN_HEIGHT / 2;//처음 시작 위치 지정
-  life = 1;
+  life = 3;
+  invisible_mode = 0;
 }
 AirPlane::~AirPlane()
 {
 
+}
+
+void AirPlane::invisible(SDL_Surface *plane)
+{
+  static int count = 0;                               //투명화 지속 시간
+  static int i =0;                                    //투명도
+
+  if(count++ != 60)
+  {
+    if( count <= 10)
+    {
+      i += 25;
+      SDL_SetAlpha(plane,SDL_SRCALPHA,i);
+    }
+    else if( 10 < count && count <= 20)
+    {
+      i -= 25;
+      SDL_SetAlpha(plane,SDL_SRCALPHA,i);
+    }
+    else if( 20 < count && count <= 30)
+    {
+      i += 25;
+      SDL_SetAlpha(plane,SDL_SRCALPHA,i);
+    }
+    else if( 30 < count && count <= 40)
+    {
+      i -= 25;
+      SDL_SetAlpha(plane,SDL_SRCALPHA,i);
+    }
+    else if( 40 < count && count <= 50)
+    {
+      i += 25;
+      SDL_SetAlpha(plane,SDL_SRCALPHA,i);
+    }
+    else
+    {
+      i -= 25;
+      SDL_SetAlpha(plane,SDL_SRCALPHA,i);
+    }
+  }
+
+  else                                               //불투명화,count 초기화
+  {
+    count = 0;
+    this->invisible_mode = 0;
+    SDL_SetAlpha(plane,SDL_SRCALPHA,255);
+  }
 }
 
 void AirPlane::shooting(_bullets &player_bullets)
@@ -37,22 +85,25 @@ SDL_Rect AirPlane::Get_plane()
   return offset;
 }
 
-bool AirPlane::Got_shot(vector<bullets> enemy_bullets)
+bool AirPlane::Got_shot(_bullets &A)
 {
   vector<bullets>::iterator iter;
+  vector<bullets> tmp;
+
   bool flag = false;
 
-  for(iter = enemy_bullets.begin(); iter != enemy_bullets.end(); iter++)
+  for(iter = A.blt.begin(); iter != A.blt.end(); iter++)
   {
     if((pos_x + 18 < (*iter).bullet_pos.x + 9 || pos_y + 20 < (*iter).bullet_pos.y + 5) ||
-    ((*iter).bullet_pos.x + 18 < pos_x + 9 || (*iter).bullet_pos.y + 10 < pos_y + 10));//안 맞았을 때
-
+    ((*iter).bullet_pos.x + 18 < pos_x + 9 || (*iter).bullet_pos.y + 10 < pos_y + 10))//안 맞았을 때
+      tmp.push_back(*iter);
     else//맞았을때
     {
       flag = true;
-      break;
     }
   }
+  A.blt = tmp;
+
   return flag;
 }
 
@@ -191,7 +242,7 @@ bool Enemy_standard::Got_shot(_bullets &A)
 
 void Enemy_standard::shooting(_bullets &A)
 {
-  A.add_blt( 0, 5,pos_x + 2,pos_y + 15);
+  A.add_blt( 0, 5,this->pos_x + 2,this->pos_y + 15);
 }
 
 void Enemy_standard::enemy_apply_surface(SDL_Surface* source[], SDL_Surface* destination, SDL_Rect* clip )
