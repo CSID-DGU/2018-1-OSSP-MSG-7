@@ -2,6 +2,8 @@
 
 SDL_Surface *screen;//화면
 SDL_Surface *background;//배경화면
+SDL_Surface *background2;
+SDL_Surface *life;
 SDL_Surface *bullet;//총알 이미지
 SDL_Surface *message;
 SDL_Surface *message2;
@@ -177,6 +179,7 @@ int main(){
   int delay = 0;
   int count = 0;
   int shootcnt = 0;
+  int background_count = 0;               //background 움직임 count
 
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
@@ -208,14 +211,10 @@ int main(){
     if(enemy_bullets.blt.size() > 0)//적 총알들 위치 이동
       enemy_bullets.control_bullet();
 
-    if(A.Got_shot(enemy_bullets.blt))//임시 코딩. 사용자 맞으면 게임 끝
+    if(A.Got_shot(enemy_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
     {
-      game_over();
-      if (Continue == 1)
-      {
-        goto loop;
-      }
-      break;
+      A.life--;
+      A.invisible_mode = 1;
     }
 
     if(E.size() > 0)
@@ -305,8 +304,17 @@ int main(){
       if(keystates[SDLK_RIGHT])
         A.control_plane(4, 0);
 
+
+    if(A.invisible_mode == 1)//투명화 상태, 투명도 조절
+      A.invisible(plane);
+
+      if(background_count++ != 480);
+      else
+        background_count = 0;
+
     //이미지 그리는 부분
-    apply_surface(0, 0, background,screen,NULL);//백그라운드 그리는거
+    apply_surface(0, -480 + background_count, background2,screen,NULL);//백그라운드 그리는거
+    apply_surface(0, 0 + background_count, background,screen,NULL);//백그라운드 그리는거
     enemy_bullets.bullet_apply_surface(bullet, screen,NULL);//적 총알들
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL);//사용자 비행기
@@ -343,6 +351,26 @@ int main(){
       }
       B = B_tmp;
     }
+    if(A.life == 0)//생명력 0
+    {
+      game_over();
+      if (Continue == 1)
+      {
+        goto loop;
+      }
+      break;
+    }
+
+    else if(A.life == 1)//생명력 1
+      apply_surface(500, 10, life, screen,NULL);
+    else if(A.life == 2)
+    {
+      apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL);
+    }
+    else if(A.life == 3)
+    {
+      apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL); apply_surface(540, 10, life, screen,NULL);
+    }
     //fps 계산
     delay = 1000/40 - (SDL_GetTicks() - start_time);
     if(delay > 0)
@@ -368,7 +396,9 @@ bool init()
 
 bool load_files()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
+  life = load_image("assets/life.gif");                   //life
   background = load_image("assets/background.png");//배경화면
+  background2 = load_image("assets/background2.png");//배경화면
   bullet = load_image("assets/bullet.gif");// 총알 이미지
   plane = load_image("assets/p2.gif");// 사용자 비행기 이미지
   font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
@@ -391,6 +421,7 @@ bool load_files()
     boom[i] =load_image(str3);
     SDL_SetColorKey(boom[i], SDL_SRCCOLORKEY,SDL_MapRGB(boom[i]->format,255,255,255));
   }
+  SDL_SetColorKey(life, SDL_SRCCOLORKEY,SDL_MapRGB(life->format,255,255,255));
   SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,255,255,255));
   return true;
