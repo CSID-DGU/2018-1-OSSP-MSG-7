@@ -77,17 +77,20 @@ class AirPlane
 {
 private:
   SDL_Rect offset;
-  int pos_x,pos_y;// 비행기 x,y 좌표;
-  int life;
+  int pos_x,pos_y;// 비행기 x,y 좌표
 
 public:
   AirPlane();
   ~AirPlane();
-  bool Got_shot(vector<bullets> enemy_bullets);
+  bool Got_shot(_bullets &A);
   void shooting(_bullets &A);
   void plane_apply_surface(SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(int x, int y);
+  void invisible(SDL_Surface *plane);
   SDL_Rect Get_plane();//plane 변수 getter
+
+  int invisible_mode;
+  int life;
 };
 
 class Enemy_standard_2
