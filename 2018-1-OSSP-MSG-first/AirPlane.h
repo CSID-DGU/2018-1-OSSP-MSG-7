@@ -61,7 +61,7 @@ public:
     for(vector<bullets>::iterator iter = blt.begin(); iter != blt.end(); iter++)
     {
       bullets tmp((*iter).move_x,(*iter).move_y,(*iter).bullet_pos.x + (*iter).move_x,(*iter).bullet_pos.y + (*iter).move_y);
-      if( 0 < tmp.bullet_pos.x + 9 && tmp.bullet_pos.x< SCREEN_WIDTH && -5 <= tmp.bullet_pos.y  && tmp.bullet_pos.y < SCREEN_HEIGHT)
+      if( -1 < tmp.bullet_pos.x && tmp.bullet_pos.x< SCREEN_WIDTH && 0 <= tmp.bullet_pos.y  && tmp.bullet_pos.y < SCREEN_HEIGHT)
         temp.push_back(tmp);
     }
 
@@ -150,6 +150,29 @@ private:
 public:
   Mini_Boss();
   ~Mini_Boss();
+  bool Got_shot(_bullets &A);
+  void shooting(_bullets &A);
+  void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
+  void control_plane(_bullets &A);
+  void loss_life();
+  SDL_Rect Get_plane();
+
+  int amount = 1;
+};
+
+class Boss
+{
+private:
+  SDL_Surface *mini_boss;
+  SDL_Rect offset;
+  int pos_x, pos_y;
+  int life;
+  int count = 0;
+  int direction = 0;
+
+public:
+  Boss();
+  ~Boss();
   bool Got_shot(_bullets &A);
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
