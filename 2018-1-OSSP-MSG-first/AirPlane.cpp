@@ -370,7 +370,7 @@ Boss::Boss(){
     pos_x = 280;// 처음 시작 위치 지정
     SDL_SetColorKey(mini_boss, SDL_SRCCOLORKEY,SDL_MapRGB(mini_boss->format,255,255,255));
     pos_y = -MINI_BOSS_HEIGHT;//처음 시작 위치 지정
-    life = 30;//has to be changed later (at least 70)
+    life = 60;//has to be changed later (at least 70)
     count = 0;
 }
 
