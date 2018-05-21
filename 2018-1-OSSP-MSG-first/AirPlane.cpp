@@ -317,6 +317,14 @@ void Mini_Boss::shooting(_bullets &A){
     A.add_blt( 0, 5,pos_x + 35,pos_y + 50);
     A.add_blt( 3, 5,pos_x + 35,pos_y + 50);
     A.add_blt( -3, 5,pos_x + 35,pos_y + 50);
+
+    ////x
+    /*A.add_blt( 5, 5,pos_x + 35,pos_y + 50);
+    A.add_blt( -5, 5,pos_x + 35,pos_y + 50);
+    A.add_blt( 5, 4,pos_x + 35,pos_y + 50);
+    A.add_blt( -5, 3,pos_x + 35,pos_y + 50);
+    A.add_blt( 5, 2,pos_x + 35,pos_y + 50);
+    A.add_blt( -5, 2,pos_x + 35,pos_y + 50);*/
 };
 void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
     SDL_Rect offset;
@@ -354,4 +362,114 @@ void Mini_Boss::loss_life()
 {
     this->life--;
     if( this->life == 0) this->~Mini_Boss();
+}
+
+Boss::Boss(){
+    mini_boss = load_image("assets/3_1.gif");// 비행기 이미지
+    //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거
+    pos_x = 280;// 처음 시작 위치 지정
+    SDL_SetColorKey(mini_boss, SDL_SRCCOLORKEY,SDL_MapRGB(mini_boss->format,255,255,255));
+    pos_y = -MINI_BOSS_HEIGHT;//처음 시작 위치 지정
+    life = 60;//has to be changed later (at least 70)
+    count = 0;
+}
+
+Boss::~Boss(){
+    this->amount--;
+    delete this->mini_boss;
+};
+
+bool Boss::Got_shot(_bullets &A){
+    vector<bullets>::iterator iter;
+    vector<bullets> tmp;
+
+    bool flag = false;
+
+    for(iter = A.blt.begin(); iter != A.blt.end(); iter++)
+    {
+      if((pos_x + 100 < (*iter).bullet_pos.x + 9 || pos_y + 85 < (*iter).bullet_pos.y + 5) ||
+      ((*iter).bullet_pos.x + 9 < pos_x + 9 || (*iter).bullet_pos.y + 5 < pos_y + 10))//안 맞았을 때
+        tmp.push_back(*iter);
+      else//맞았을때
+      {
+        flag = true;
+      }
+    }
+
+    A.blt = tmp;
+
+    return flag;
+};
+void Boss::shooting(_bullets &A){
+
+    //rhombus
+    A.add_blt( 0, 5,pos_x + 35,pos_y + 50);
+    A.add_blt( 1, 4,pos_x + 35,pos_y + 50);
+    A.add_blt( -1, 4,pos_x + 35,pos_y + 50);
+    A.add_blt( -2, 3,pos_x + 35,pos_y + 50);
+    A.add_blt( 2, 3,pos_x + 35,pos_y + 50);
+    A.add_blt( 3, 2,pos_x + 35,pos_y + 50);
+    A.add_blt( -3, 2,pos_x + 35,pos_y + 50);
+    A.add_blt( 4, 1,pos_x + 35,pos_y + 50);
+    A.add_blt( -4, 1,pos_x + 35,pos_y + 50);
+    A.add_blt( 5, 0,pos_x + 35,pos_y + 50);
+    A.add_blt( -5, 0,pos_x + 35,pos_y + 50);
+    A.add_blt( -4, -1,pos_x + 35,pos_y + 50);
+    A.add_blt( 4, -1,pos_x + 35,pos_y + 50);
+    A.add_blt( -3, -2,pos_x + 35,pos_y + 50);
+    A.add_blt( 3, -2,pos_x + 35,pos_y + 50);
+    A.add_blt( -2, -3,pos_x + 35,pos_y + 50);
+    A.add_blt( 2, -3,pos_x + 35,pos_y + 50);
+    A.add_blt( -1, -4,pos_x + 35,pos_y + 50);
+    A.add_blt( 1, -4,pos_x + 35,pos_y + 50);
+    A.add_blt( 0, -5,pos_x + 35,pos_y + 50);
+
+    //cross
+    A.add_blt( 0, 3,pos_x + 35,pos_y + 50);
+    A.add_blt( 0, 4,pos_x + 35,pos_y + 50);
+    A.add_blt( 0, 2,pos_x + 35,pos_y + 50);
+    A.add_blt( 3, 0,pos_x + 35,pos_y + 50);
+    A.add_blt( 4, 0,pos_x + 35,pos_y + 50);
+    A.add_blt( -3, 0,pos_x + 35,pos_y + 50);
+    A.add_blt( -4, 0,pos_x + 35,pos_y + 50);
+
+    //A.add_blt( 10, 0,pos_x + 35,pos_y + 50);
+    //A.add_blt( -10, 0,pos_x + 35,pos_y + 50);
+};
+void Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
+    SDL_Rect offset;
+    offset.y = pos_y;
+    offset.x = pos_x;
+    SDL_BlitSurface(mini_boss, clip, destination, &offset );
+};
+void Boss::control_plane(_bullets &A){
+    if(count % 30 == 0 ) this->shooting(A);
+    if(count < 50){
+        pos_y += 3;
+    }
+    else
+    {
+        if(direction == 0){
+            if(this->pos_x>550) direction =1;
+            this->pos_x += 2;
+        }
+        else{
+            if(this->pos_x<90) direction = 0;
+            this->pos_x -= 2;
+        }
+    }
+    count++;
+};
+
+SDL_Rect Boss::Get_plane()
+{
+  offset.x = pos_x;
+  offset.y = pos_y;
+
+  return offset;
+}
+void Boss::loss_life()
+{
+    this->life--;
+    if( this->life == 0) this->~Boss();
 }
