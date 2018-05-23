@@ -82,7 +82,7 @@ private:
 public:
   AirPlane();
   ~AirPlane();
-  bool Got_shot(_bullets &A);
+  bool Got_shot(_bullets &A,_bullets &B,_bullets &C);
   void shooting(_bullets &A);
   void plane_apply_surface(SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(int x, int y);
@@ -146,6 +146,7 @@ private:
   int life;
   int count = 0;
   int direction = 0;
+  int cont_shoot = 0;
 
 public:
   Mini_Boss();
@@ -154,7 +155,7 @@ public:
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(_bullets &A);
-  void loss_life();
+  void loss_life(int& score);
   SDL_Rect Get_plane();
 
   int amount = 1;
@@ -169,6 +170,7 @@ private:
   int life;
   int count = 0;
   int direction = 0;
+    int cont_shoot = 0;
 
 public:
   Boss();
@@ -177,7 +179,7 @@ public:
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(_bullets &A);
-  void loss_life();
+  void loss_life(int& score);
   SDL_Rect Get_plane();
 
   int amount = 1;
