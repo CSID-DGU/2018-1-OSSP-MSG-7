@@ -166,7 +166,7 @@ int main(){
       BOOM tmp(tmp3.Get_plane());
       tmp.three = boom_mode;
       Boss_B.push_back(tmp);
-      tmp3.loss_life();
+      tmp3.loss_life(score);
     }
 
     if(tmp4.amount ==1 && tmp4.Got_shot(player_bullets, boom_mode) && score >= 20000) // have to add the condition when the mini boss appear
@@ -174,7 +174,7 @@ int main(){
       BOOM tmp(tmp4.Get_plane());
       tmp.three = boom_mode;
       Boss_B4.push_back(tmp);
-      tmp4.loss_life();
+      tmp4.loss_life(score);
     }
 
     if(SDL_PollEvent(&event)){
