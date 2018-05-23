@@ -4,7 +4,7 @@ SDL_Surface *screen;//화면
 SDL_Surface *background;//배경화면
 SDL_Surface *background2;
 SDL_Surface *background3;
-SDL_Surface *press_message;
+SDL_Surface *explosion; //보스 몹 맞을 때 폭팔
 SDL_Surface *life;
 SDL_Surface *bullet;//총알 이미지
 SDL_Surface *message;
@@ -30,7 +30,7 @@ int EXIT = -1;
 int Continue = 0;
 
 
-
+void sprite_surface(SDL_Surface* source, SDL_Rect tmp, SDL_Surface* destination, int w, int h, int step,int mode);
 bool init();//변수들 초기화 함수
 bool load_files();//이미지, 폰트 초기화 함수
 bool SDL_free();// sdl 변수들 free 함수
@@ -59,11 +59,14 @@ int main(){
   int count = 0;
   int shootcnt = 0;
   int background_count = 0;               //background 움직임 count
+  int boom_mode = 0;
 
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
   vector<BOOM>::iterator B_it;
 
+  vector<BOOM> Boss_B;//보스 폭발
+  vector<BOOM> Boss_B4;//보스 폭발
   vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
   vector<Enemy_standard_2> E2;// 2nd standard enemy
@@ -143,9 +146,21 @@ int main(){
         E2=v_tmp;
     }
 
-    if(tmp3.amount ==1 && tmp3.Got_shot(player_bullets)) tmp3.loss_life();   // have to add the condition when the mini boss appear
+    if(tmp3.amount ==1 && tmp3.Got_shot(player_bullets, boom_mode)) // have to add the condition when the mini boss appear
+    {
+      BOOM tmp(tmp3.Get_plane());
+      tmp.three = boom_mode;
+      Boss_B.push_back(tmp);
+      tmp3.loss_life();
+    }
 
-    if(tmp4.amount ==1 && tmp4.Got_shot(player_bullets)) tmp4.loss_life();   // have to add the condition when the mini boss appear
+    if(tmp4.amount ==1 && tmp4.Got_shot(player_bullets, boom_mode)) // have to add the condition when the mini boss appear
+    {
+      BOOM tmp(tmp4.Get_plane());
+      tmp.three = boom_mode;
+      Boss_B4.push_back(tmp);
+      tmp4.loss_life();
+    }
 
     if(SDL_PollEvent(&event)){
       if(event.type == SDL_QUIT)//버튼 누르면 꺼저야 되는데 안 꺼짐 수정 사항
@@ -243,6 +258,48 @@ int main(){
       }
       B = B_tmp;
     }
+
+    if(Boss_B.size() > 0)                                    //보스 맞을 때 폭발 구현
+    {
+      vector<BOOM> B_tmp;
+
+      for(B_it = Boss_B.begin(); B_it != Boss_B.end(); B_it++)
+      {
+        if((*B_it).b.count <  8)
+        {
+          sprite_surface(screen,tmp3.Get_plane(), explosion, 8, 1, (*B_it).b.count, (*B_it).three);
+          (*B_it).b.count++;
+          B_tmp.push_back(*B_it);
+        }
+
+        else
+        {
+          (*B_it).~BOOM();
+        }
+      }
+      Boss_B = B_tmp;
+    }
+
+    if(Boss_B4.size() > 0)                                    //보스 맞을 때 폭발 구현
+    {
+      vector<BOOM> B_tmp;
+
+      for(B_it = Boss_B4.begin(); B_it != Boss_B4.end(); B_it++)
+      {
+        if((*B_it).b.count <  8)
+        {
+          sprite_surface(screen, tmp4.Get_plane(), explosion, 8, 1, (*B_it).b.count,(*B_it).three);
+          (*B_it).b.count++;
+          B_tmp.push_back(*B_it);
+        }
+        else
+        {
+          (*B_it).~BOOM();
+        }
+      }
+      Boss_B4 = B_tmp;
+    }
+
     if(A.life == 0)//생명력 0
     {
       game_over();
@@ -263,6 +320,7 @@ int main(){
     {
       apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL); apply_surface(540, 10, life, screen,NULL);
     }
+
     //fps 계산
     delay = 1000/40 - (SDL_GetTicks() - start_time);
     if(delay > 0)
@@ -410,6 +468,7 @@ bool init()
 
 bool load_files()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
+  explosion = load_image("assets/explosion.png");
   life = load_image("assets/life.gif");                   //life
   background = load_image("assets/background.png");//배경화면
   background2 = load_image("assets/background2.png");//배경화면
@@ -435,6 +494,7 @@ bool load_files()
     boom[i] =load_image(str3);
     SDL_SetColorKey(boom[i], SDL_SRCCOLORKEY,SDL_MapRGB(boom[i]->format,255,255,255));
   }
+  SDL_SetColorKey(explosion, SDL_SRCCOLORKEY,SDL_MapRGB(explosion->format,0,0,0));
   SDL_SetColorKey(life, SDL_SRCCOLORKEY,SDL_MapRGB(life->format,255,255,255));
   SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,255,255,255));
@@ -455,4 +515,43 @@ bool SDL_free()
   SDL_Quit();//init한 SDL 변수들 닫아주는겅 일걸,위의 freesurface랑 차이 모름
 
   return true;
+}
+
+void sprite_surface( SDL_Surface *screen, SDL_Rect tmp, SDL_Surface* surface, int w, int h, int step , int mode)
+{
+	SDL_Rect rectDst, rectSrc;
+  if(mode == 0)
+  {
+    rectDst = tmp;
+    rectDst.x -= 10;
+  }
+
+  else if(mode == 1)
+  {
+    rectDst = tmp;
+    rectDst.y += 25;
+  }
+
+  else if(mode == 2)
+  {
+    rectDst = tmp;
+    rectDst.x += 15;
+    rectDst.y += 50;
+  }
+  else if(mode == 3)
+  {
+    rectDst = tmp;
+    rectDst.x += 30;
+    rectDst.y += 25;
+  }
+  else if(mode == 4)
+  {
+    rectDst = tmp;
+    rectDst.x += 45;
+  }
+  rectSrc.x = (step % w) * surface->w/w;      //분할된 이미지 선택
+  rectSrc.y = (step / w) * surface->h/h;
+  rectSrc.w = surface->w/w;                   //분할된 이미지 선택
+  rectSrc.h = surface->h/h;
+  SDL_BlitSurface(surface, &rectSrc, screen, &rectDst);
 }
