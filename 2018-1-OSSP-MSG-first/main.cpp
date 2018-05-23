@@ -10,6 +10,7 @@ SDL_Surface *press_message;
 SDL_Surface *life;
 SDL_Surface *bullet;//총알 이미지
 SDL_Surface *bullet_basic;
+SDL_Surface *bullet_boss;
 SDL_Surface *message;
 SDL_Surface *message2;
 SDL_Surface *title_message;
@@ -47,10 +48,11 @@ int main(){
   loop:
  _bullets enemy_bullets;
  _bullets player_bullets;
+ _bullets boss_bullets;
+ _bullets mini_bullets;
   init();//초기화 함수
   load_files();//이미지,폰트,bgm 로드하는 함수
   menu();
-  textColor = {204, 255, 204};
 
   if(EXIT == 1)
   {
@@ -60,7 +62,7 @@ int main(){
   Continue = 0;
   srand(time(NULL));
 
-  int score = 0;
+  int score = 20000;
   int start_time = 0;
   int delay = 0;
   int count = 0;
@@ -99,8 +101,10 @@ int main(){
 
     if(enemy_bullets.blt.size() > 0)//적 총알들 위치 이동
       enemy_bullets.control_bullet();
+    if(boss_bullets.blt.size()>0)
+      boss_bullets.control_bullet();
 
-    if(A.Got_shot(enemy_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
+    if(A.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
     {
       A.life--;
       A.invisible_mode = 1;
@@ -178,9 +182,9 @@ int main(){
           }
       }
 
-    //  if(tmp3.amount == 1 && score >= 5000)tmp3.control_plane(enemy_bullets); // have to add the condition when the mini boss appear
+    //  if(tmp3.amount == 1 && score >= 5000)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
 
-      if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(enemy_bullets); // have to add the condition when the mini boss appear
+      if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
 
       if(keystates[SDLK_a])
       {
@@ -213,7 +217,8 @@ int main(){
     //이미지 그리는 부분
     apply_surface(0, -480 + background_count, background2,screen,NULL);//백그라운드 그리는거
     apply_surface(0, 0 + background_count, background,screen,NULL);//백그라운드 그리는거
-    enemy_bullets.bullet_apply_surface(bullet_basic, screen,NULL);//적 총알들
+    enemy_bullets.bullet_apply_surface(bullet_basic, screen,NULL);//적 총알들ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff
+    boss_bullets.bullet_apply_surface(bullet_boss, screen, NULL);
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL);//사용자 비행기
     if( E.size() > 0)//적 비행기
@@ -433,6 +438,7 @@ bool load_files()
   background2 = load_image("assets/background2.png");//배경화면
   bullet = load_image("assets/BULLET.png");// 총알 이미지
   bullet_basic = load_image("assets/bullet.gif");
+  bullet_boss = load_image("assets/bossbullet.png");
   plane = load_image("assets/p2.gif");// 사용자 비행기 이미지
   font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
   font2 = TTF_OpenFont("assets/Starjout.ttf", 84);//제목 폰트
@@ -457,6 +463,7 @@ bool load_files()
   }
   SDL_SetColorKey(life, SDL_SRCCOLORKEY,SDL_MapRGB(life->format,255,255,255));
   SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
+  SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_boss->format,0,0,0));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,0,0,0));
   SDL_SetColorKey(bullet_basic, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_basic->format,255,255,255));
   return true;
