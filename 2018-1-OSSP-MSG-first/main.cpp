@@ -161,7 +161,7 @@ int main(){
         E2=v_tmp;
     }
 
-    if(tmp3.amount == 1 && tmp3.Got_shot(player_bullets, boom_mode)) // have to add the condition when the mini boss appear
+    if(tmp3.amount == 1 && tmp3.Got_shot(player_bullets, boom_mode) && score >= 5000) // have to add the condition when the mini boss appear
     {
       BOOM tmp(tmp3.Get_plane());
       tmp.three = boom_mode;
@@ -198,7 +198,7 @@ int main(){
           }
       }
 
-    //  if(tmp3.amount == 1 && score >= 5000)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
+      if(tmp3.amount == 1 && score >= 5000)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
 
       if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
 
@@ -252,7 +252,7 @@ int main(){
       }
     }
 
-    //if(tmp3.amount ==1 && score >= 5000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
+    if(tmp3.amount ==1 && score >= 5000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
     if(tmp4.amount == 1 && score>= 20000) tmp4.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
