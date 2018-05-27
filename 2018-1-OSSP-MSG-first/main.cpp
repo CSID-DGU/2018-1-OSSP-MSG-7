@@ -61,6 +61,11 @@ int main()
 
         number = 0;
       }
+    if(A.Got_item(I.itm))
+    {
+      A.increaseLife();
+      SDL_FreeSurface(item);
+    }
     if(SDL_PollEvent(&event)){
       if(event.type == SDL_QUIT)
 			   break;

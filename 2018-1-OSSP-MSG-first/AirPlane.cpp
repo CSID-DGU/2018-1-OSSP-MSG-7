@@ -59,7 +59,29 @@ bool AirPlane::Got_shot(vector<bullets> enemy_bullets)
   return flag;
 }
 
+bool AirPlane::Got_item(vector<items> I)
+{
+  vector<items>::iterator iter;
+  bool flag = false;
 
+  for(iter = I.begin(); iter != I.end(); iter++)
+  {
+    if((pos_x + 18 < (*iter).item_pos.x + 9 || pos_y + 20 < (*iter).item_pos.y + 5) ||
+    ((*iter).item_pos.x + 18 < pos_x + 9 || (*iter).item_pos.y + 10 < pos_y + 10));//안 맞았을 때
+    else                                                                           //맞았을때
+    {
+      flag = true;
+      break;
+    }
+  }
+
+  return flag;
+}
+
+void AirPlane::increaseLife()
+{
+  life++;
+}
 
 Enemy_standard::Enemy_standard()
 {
@@ -80,7 +102,6 @@ Enemy_standard::~Enemy_standard()
 
 bool Enemy_standard::Got_shot(_bullets &A)
 {
-
   vector<bullets>::iterator iter;
   vector<bullets> tmp;
 
@@ -119,6 +140,33 @@ void Enemy_standard::control_plane(int x, int y)
 {
   pos_x += x;
   pos_y += y;
+}
+
+void Item::add_itm(int x, int y, int ply_x, int ply_y)
+{
+  items tmp(x,y,ply_x,ply_y);
+  itm.push_back(tmp);
+}
+
+void Item::item_apply_surface(SDL_Surface *item, SDL_Surface* destination, SDL_Rect* clip)  // item들 그리기
+{
+  for(vector<items>::iterator iter = itm.begin(); iter!= itm.end(); iter++)
+  {
+    SDL_BlitSurface( item, clip, destination, &(*iter).item_pos);
+  }
+}
+
+void Item::control_item()
+{
+  vector<items> temp;
+  for(vector<items>::iterator iter = itm.begin(); iter != itm.end(); iter++)
+  {
+    items tmp((*iter).move_x,(*iter).move_y,(*iter).item_pos.x + (*iter).move_x,(*iter).item_pos.y + (*iter).move_y);
+    if( 0 < tmp.item_pos.x + 9 && tmp.item_pos.x< SCREEN_WIDTH && -5 <= tmp.item_pos.y  && tmp.item_pos.y < SCREEN_HEIGHT)
+      temp.push_back(tmp);
+  }
+
+  itm = temp;
 }
 
 SDL_Surface *Enemy_standard::Get_plane()
