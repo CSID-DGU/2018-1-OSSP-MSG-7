@@ -3,12 +3,14 @@
 SDL_Surface *screen;
 SDL_Surface *background;
 SDL_Surface *bullet;
+SDL_Surface *item;
 
 SDL_Event event;
 Uint8 *keystates;
 
 _bullets enemy_bullets;
 _bullets player_bullets;
+Item I;
 
 bool init()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
@@ -22,12 +24,13 @@ bool load_files()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
   background = load_image("assets/background.png");
   bullet = load_image("assets/bullet.gif");
+  item = load_image("assets/tem1.png");
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,255,255,255));
   return true;
 }
 
-
-int main(){
+int main()
+{
   init();//초기화 함수
   load_files();//이미지,폰트,bgm 로드하는 함수
 
@@ -52,7 +55,10 @@ int main(){
 
     if(number == 1 && E.Got_shot(player_bullets))//임시 코딩.적 맞으면 끝
       {
+        I.add_itm(E.pos_x, E.pos_y, E.pos_x, E.pos_y - 15);
         E.~Enemy_standard();
+        //I.control_item();       // why an umjihinya
+
         number = 0;
       }
     if(SDL_PollEvent(&event)){
@@ -87,6 +93,8 @@ int main(){
     apply_surface(0, 0, background,screen,NULL);//백그라운드 그리는거
     enemy_bullets.bullet_apply_surface(bullet, screen,NULL);//적 총알들 그리는 것
     player_bullets.bullet_apply_surface(bullet, screen, NULL);
+    I.item_apply_surface(item, screen, NULL);
+
     if( number == 1 )
       {
         E.enemy_apply_surface(screen,NULL);

@@ -10,3 +10,6 @@ const int ENEMY_HEIGHT = 32;
 
 const int BULLET_WIDTH = 27;//총알 사이즈
 const int BULLET_HEIGHT = 16;
+
+const int ITEM_WIDTH = 32;  // ITEM SIZE
+const int ITEM_HEIGHT = 32;
