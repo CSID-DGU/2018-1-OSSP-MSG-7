@@ -4,7 +4,7 @@ AirPlane::AirPlane()
 {
   pos_x = SCREEN_WIDTH / 2;//처음 시작 위치 지정
   pos_y = SCREEN_HEIGHT / 2;//처음 시작 위치 지정
-  life = 3;
+  life = 1000;
   invisible_mode = 0;
 }
 AirPlane::~AirPlane()
@@ -321,7 +321,7 @@ Mini_Boss::~Mini_Boss(){
     delete this->mini_boss;
 };
 
-bool Mini_Boss::Got_shot(_bullets &A){
+bool Mini_Boss::Got_shot(_bullets &A, int &x){
     vector<bullets>::iterator iter;
     vector<bullets> tmp;
 
@@ -334,6 +334,16 @@ bool Mini_Boss::Got_shot(_bullets &A){
         tmp.push_back(*iter);
       else//맞았을때
       {
+        if((*iter).bullet_pos.x <= pos_x + MINI_BOSS_WIDTH / 5)
+          x = 0;
+        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 2)
+          x = 1;
+        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 3)
+          x = 2;
+        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 4)
+          x = 3;
+        else
+          x = 4;
         flag = true;
       }
     }
@@ -346,14 +356,6 @@ void Mini_Boss::shooting(_bullets &A){
     A.add_blt( 0, 5,pos_x + 35,pos_y + 50);
     A.add_blt( 3, 5,pos_x + 35,pos_y + 50);
     A.add_blt( -3, 5,pos_x + 35,pos_y + 50);
-
-    ////x
-    /*A.add_blt( 5, 5,pos_x + 35,pos_y + 50);
-    A.add_blt( -5, 5,pos_x + 35,pos_y + 50);
-    A.add_blt( 5, 4,pos_x + 35,pos_y + 50);
-    A.add_blt( -5, 3,pos_x + 35,pos_y + 50);
-    A.add_blt( 5, 2,pos_x + 35,pos_y + 50);
-    A.add_blt( -5, 2,pos_x + 35,pos_y + 50);*/
 };
 void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
     SDL_Rect offset;
@@ -413,7 +415,7 @@ Boss::~Boss(){
     delete this->mini_boss;
 };
 
-bool Boss::Got_shot(_bullets &A){
+bool Boss::Got_shot(_bullets &A, int &x){
     vector<bullets>::iterator iter;
     vector<bullets> tmp;
 
@@ -426,6 +428,16 @@ bool Boss::Got_shot(_bullets &A){
         tmp.push_back(*iter);
       else//맞았을때
       {
+        if((*iter).bullet_pos.x <= pos_x + MINI_BOSS_WIDTH / 5)
+          x = 0;
+        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 2)
+          x = 1;
+        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 3)
+          x = 2;
+        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 4)
+          x = 3;
+        else
+          x = 4;
         flag = true;
       }
     }

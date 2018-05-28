@@ -10,12 +10,16 @@ private:
     int count = 0;
   }bomb;
 public:
+  bomb b;
+  int three;    //boss 맞았을 때 위치 정할 변수
   BOOM(SDL_Rect offset)
   {
      b.SDL_b = offset;
   };
-
-  bomb b;
+  void set_bomb(SDL_Rect boss)
+  {
+    b.SDL_b = boss;
+  }
   void boom_apply_surface(SDL_Surface* boom[], SDL_Surface* destination, SDL_Rect* clip )
   {//적 비행기가 격추됬을 때의 좌표에 폭발 스프라이트 이미지 출력
     	SDL_BlitSurface( boom[b.count++], clip, destination, &(b.SDL_b));
@@ -151,7 +155,7 @@ private:
 public:
   Mini_Boss();
   ~Mini_Boss();
-  bool Got_shot(_bullets &A);
+  bool Got_shot(_bullets &A, int &x);
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(_bullets &A);
@@ -175,7 +179,7 @@ private:
 public:
   Boss();
   ~Boss();
-  bool Got_shot(_bullets &A);
+  bool Got_shot(_bullets &A,  int &x);
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(_bullets &A);
