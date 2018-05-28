@@ -1,8 +1,16 @@
 #include "AirPlane.h"
+#include <string>
+#include <sstream>
 
 SDL_Surface *screen;//화면
 SDL_Surface *background;//배경화면
+SDL_Surface *background2;
+SDL_Surface *background3;
+SDL_Surface *explosion; //보스 몹 맞을 때 폭팔
+SDL_Surface *life;
 SDL_Surface *bullet;//총알 이미지
+SDL_Surface *bullet_basic;
+SDL_Surface *bullet_boss;
 SDL_Surface *message;
 SDL_Surface *message2;
 SDL_Surface *title_message;
@@ -20,6 +28,7 @@ SDL_Surface *enemy2;
 SDL_Event event;
 TTF_Font *font;
 TTF_Font *font2;
+TTF_Font *font3;
 SDL_Color textColor = {0, 0, 0};
 SDL_Color textColor2 = {0, 0, 0};
 
@@ -31,11 +40,8 @@ int EXIT = -1;
 int Continue = 0;
 int craft;
 
-_bullets enemy_bullets;
-_bullets player_bullets;
 
-
-
+void sprite_surface(SDL_Surface* source, SDL_Rect tmp, SDL_Surface* destination, int w, int h, int step,int mode);
 bool init();//변수들 초기화 함수
 bool load_files();//이미지, 폰트 초기화 함수
 bool SDL_free();// sdl 변수들 free 함수
@@ -46,6 +52,10 @@ void stage_clear();
 
 int main(){
   loop:
+ _bullets enemy_bullets;
+ _bullets player_bullets;
+ _bullets boss_bullets;
+ _bullets mini_bullets;
   init();//초기화 함수
   load_files();//이미지,폰트,bgm 로드하는 함수
   menu();
@@ -58,19 +68,27 @@ int main(){
   Continue = 0;
   srand(time(NULL));
 
+  int score = 20000;
   int start_time = 0;
   int delay = 0;
   int count = 0;
   int shootcnt = 0;
+  int background_count = 0;               //background 움직임 count
+  int boom_mode = 0;
 
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
   vector<BOOM>::iterator B_it;
 
+  vector<BOOM> Boss_B;//보스 폭발
+  vector<BOOM> Boss_B4;//보스 폭발
   vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
   vector<Enemy_standard_2> E2;// 2nd standard enemy
+
   AirPlane A;//사용자 비행기
+  Mini_Boss tmp3;
+  Boss tmp4;
 
 
   while(true){
@@ -83,7 +101,7 @@ int main(){
       Enemy_standard_2 tmp2(j);
       E.push_back(tmp);
       E2.push_back(tmp2);
-    }
+  }
 
     start_time = SDL_GetTicks();//나중에 프레임 계산할 변수
 
@@ -93,14 +111,13 @@ int main(){
     if(enemy_bullets.blt.size() > 0)//적 총알들 위치 이동
       enemy_bullets.control_bullet();
 
-    if(A.Got_shot(enemy_bullets.blt))//임시 코딩. 사용자 맞으면 게임 끝
+    if(boss_bullets.blt.size()>0)
+      boss_bullets.control_bullet();
+
+    if(A.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
     {
-      game_over();
-      if (Continue == 1)
-      {
-        goto loop;
-      }
-      break;
+      A.life--;
+      A.invisible_mode = 1;
     }
 
     if(E.size() > 0)
@@ -115,6 +132,7 @@ int main(){
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
           (*it).~Enemy_standard();
+          score += 100;
         }
         else
         {
@@ -137,7 +155,8 @@ int main(){
             BOOM B_tmp((*it2).Get_plane());
             B.push_back(B_tmp);
             (*it2).~Enemy_standard_2();
-        }
+            score += 100;
+          }
           else
           {
             tmp = *it2;
@@ -148,7 +167,21 @@ int main(){
         E2=v_tmp;
     }
 
-    //키보드 이벤트 처리하는 부분
+    if(tmp3.amount ==1 && tmp3.Got_shot(player_bullets, boom_mode) && score >= 5000) {
+        BOOM tmp(tmp3.Get_plane());
+        tmp.three = boom_mode;
+        Boss_B.push_back(tmp);
+        tmp3.loss_life(score);
+    }   // have to add the condition when the mini boss appear
+
+    if(tmp4.amount ==1 && tmp4.Got_shot(player_bullets, boom_mode) && score >= 20000) // have to add the condition when the mini boss appear
+    {
+      BOOM tmp(tmp4.Get_plane());
+      tmp.three = boom_mode;
+      Boss_B4.push_back(tmp);
+      tmp4.loss_life(score);
+    }
+
     if(SDL_PollEvent(&event)){
       if(event.type == SDL_QUIT)//버튼 누르면 꺼저야 되는데 안 꺼짐 수정 사항
 			   break;
@@ -162,13 +195,17 @@ int main(){
         {
           (*it).control_plane(enemy_bullets);
         }
-        for(it2 = E2.begin(); it2 != E2.end(); it2++)
-        {
-          (*it2).control_plane(enemy_bullets);
-        }
+      }
+      if(E2.size() >0){
+          for(it2 = E2.begin(); it2 != E2.end(); it2++)
+          {
+            (*it2).control_plane(enemy_bullets);
+          }
       }
 
+      //if(tmp3.amount == 1 && score >= 5000)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
 
+      if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
 
       if(keystates[SDLK_a])
       {
@@ -190,25 +227,23 @@ int main(){
       if(keystates[SDLK_RIGHT])
         A.control_plane(4, 0);
 
-    //이미지 그리는 부분
-    apply_surface(0, 0, background,screen,NULL);//백그라운드 그리는거
-    enemy_bullets.bullet_apply_surface(bullet, screen,NULL);//적 총알들
-    player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
-    if (craft == 1)
-      A.plane_apply_surface(plane, screen,NULL);//사용자 비행기
-    else if (craft == 2)
-      A.plane_apply_surface(plane2, screen,NULL);//사용자 비행기
-    else if (craft == 3)
-      A.plane_apply_surface(plane3, screen,NULL);//사용자 비행기
-    else if (craft == 4)
-      A.plane_apply_surface(plane4, screen,NULL);//사용자 비행기
-    else if (craft == 5)
-      A.plane_apply_surface(plane5, screen,NULL);//사용자 비행기
 
-    else
-    {
-      A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
-    }
+    if(A.invisible_mode == 1)//투명화 상태, 투명도 조절
+      A.invisible(plane);
+
+      if(background_count++ != 480);
+      else
+        background_count = 0;
+
+    //이미지 그리는 부분
+    apply_surface(0, -480 + background_count, background2,screen,NULL);//백그라운드 그리는거
+    apply_surface(0, 0 + background_count, background,screen,NULL);//백그라운드 그리는거
+    enemy_bullets.bullet_apply_surface(bullet_basic, screen,NULL);//적 총알들
+    boss_bullets.bullet_apply_surface(bullet_boss, screen, NULL);
+    player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
+    A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
+
+
     if( E.size() > 0)//적 비행기
     {
       for( it = E.begin(); it != E.end(); it++)
@@ -223,6 +258,10 @@ int main(){
         (*it2).enemy_apply_surface(screen, NULL);
       }
     }
+
+    //if(tmp3.amount ==1 && score >= 5000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
+
+    if(tmp4.amount == 1 && score>= 20000) tmp4.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
     if( B.size() > 0)//폭발
     {
@@ -242,6 +281,75 @@ int main(){
       }
       B = B_tmp;
     }
+
+    if(Boss_B.size() > 0)                                    //보스 맞을 때 폭발 구현
+    {
+      vector<BOOM> B_tmp;
+
+      for(B_it = Boss_B.begin(); B_it != Boss_B.end(); B_it++)
+      {
+        if((*B_it).b.count <  8)
+        {
+          sprite_surface(screen,tmp3.Get_plane(), explosion, 8, 1, (*B_it).b.count, (*B_it).three);
+          (*B_it).b.count++;
+          B_tmp.push_back(*B_it);
+        }
+
+        else
+        {
+          (*B_it).~BOOM();
+        }
+      }
+      Boss_B = B_tmp;
+    }
+
+    if(Boss_B4.size() > 0)                                    //보스 맞을 때 폭발 구현
+    {
+      vector<BOOM> B_tmp;
+
+      for(B_it = Boss_B4.begin(); B_it != Boss_B4.end(); B_it++)
+      {
+        if((*B_it).b.count <  8)
+        {
+          sprite_surface(screen, tmp4.Get_plane(), explosion, 8, 1, (*B_it).b.count,(*B_it).three);
+          (*B_it).b.count++;
+          B_tmp.push_back(*B_it);
+        }
+        else
+        {
+          (*B_it).~BOOM();
+        }
+      }
+      Boss_B4 = B_tmp;
+    }
+
+    if(A.life == 0)//생명력 0
+    {
+      game_over();
+      if (Continue == 1)
+      {
+        goto loop;
+      }
+      break;
+    }
+
+    else if(A.life == 1)//생명력 1
+      apply_surface(500, 10, life, screen,NULL);
+    else if(A.life == 2)
+    {
+      apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL);
+    }
+    else if(A.life == 3)
+    {
+      apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL); apply_surface(540, 10, life, screen,NULL);
+    }
+
+
+    ostringstream sc;
+    sc<< score;
+    message = TTF_RenderText_Solid(font3, sc.str().c_str(), textColor);
+    apply_surface(0, 0, message, screen, NULL);
+
     //fps 계산
     delay = 1000/40 - (SDL_GetTicks() - start_time);
     if(delay > 0)
@@ -253,6 +361,8 @@ int main(){
   SDL_free();
   return 0;
 }
+
+
 
 
 bool init()
@@ -267,8 +377,13 @@ bool init()
 
 bool load_files()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
+  explosion = load_image("assets/explosion.png");
+  life = load_image("assets/life.gif");                   //life
   background = load_image("assets/background.png");//배경화면
-  bullet = load_image("assets/bullet.gif");// 총알 이미지
+  background2 = load_image("assets/background2.png");//배경화면
+  bullet = load_image("assets/BULLET.png");// 총알 이미지
+  bullet_basic = load_image("assets/bullet.gif");
+  bullet_boss = load_image("assets/bossbullet.png");
   plane = load_image("assets/p2.gif");// 사용자 비행기 이미지
   plane2 = load_image("assets/aircraft1.png");
   plane3 = load_image("assets/aircraft3.png");
@@ -277,6 +392,7 @@ bool load_files()
   frame = load_image("assets/blueframe.png");
   font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
   font2 = TTF_OpenFont("assets/Starjout.ttf", 84);//제목 폰트
+  font3 = TTF_OpenFont("assets/Starjout.ttf",24);
   for(int i = 0 ; i < 4; i++)
   {
     string str = "assets/E_";
@@ -295,9 +411,13 @@ bool load_files()
     boom[i] =load_image(str3);
     SDL_SetColorKey(boom[i], SDL_SRCCOLORKEY,SDL_MapRGB(boom[i]->format,255,255,255));
   }
+  SDL_SetColorKey(explosion, SDL_SRCCOLORKEY,SDL_MapRGB(explosion->format,0,0,0));
+  SDL_SetColorKey(life, SDL_SRCCOLORKEY,SDL_MapRGB(life->format,255,255,255));
   SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
+  SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_boss->format,0,0,0));
   SDL_SetColorKey(frame, SDL_SRCCOLORKEY,SDL_MapRGB(frame->format,0,0,0));
-  SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,255,255,255));
+  SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,0,0,0));
+  SDL_SetColorKey(bullet_basic, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_basic->format,255,255,255));
   return true;
 }
 
@@ -391,15 +511,20 @@ void menu2()   // 비행기 고르는 메뉴
         {
           quit = true;
           if(selectx == 25)
-            craft = 1;
+            plane = load_image("assets/p2.gif");
+
           else if(selectx == 150)
-            craft = 2;
+            plane = load_image("assets/aircraft1.png");
+
           else if(selectx == 275)
-            craft = 3;
+            plane = load_image("assets/aircraft3.png");
+
           else if(selectx == 400)
-            craft = 4;
+            plane = load_image("assets/aircraft5.png");
+
           else if(selectx == 525)
-            craft = 5;
+            plane = load_image("assets/aircraft6.png");
+
           break;
         }
         case SDLK_LEFT:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
@@ -516,4 +641,42 @@ void stage_clear()  // 나중에 bosscounter == 0 되면 stage clear 되도록 �
 			}
 		}
 	}
+}
+void sprite_surface( SDL_Surface *screen, SDL_Rect tmp, SDL_Surface* surface, int w, int h, int step , int mode)
+{
+	SDL_Rect rectDst, rectSrc;
+  if(mode == 0)
+  {
+    rectDst = tmp;
+    rectDst.x -= 10;
+  }
+
+  else if(mode == 1)
+  {
+    rectDst = tmp;
+    rectDst.y += 25;
+  }
+
+  else if(mode == 2)
+  {
+    rectDst = tmp;
+    rectDst.x += 15;
+    rectDst.y += 50;
+  }
+  else if(mode == 3)
+  {
+    rectDst = tmp;
+    rectDst.x += 30;
+    rectDst.y += 25;
+  }
+  else if(mode == 4)
+  {
+    rectDst = tmp;
+    rectDst.x += 45;
+  }
+  rectSrc.x = (step % w) * surface->w/w;      //분할된 이미지 선택
+  rectSrc.y = (step / w) * surface->h/h;
+  rectSrc.w = surface->w/w;                   //분할된 이미지 선택
+  rectSrc.h = surface->h/h;
+  SDL_BlitSurface(surface, &rectSrc, screen, &rectDst);
 }

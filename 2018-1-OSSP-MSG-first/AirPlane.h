@@ -10,12 +10,16 @@ private:
     int count = 0;
   }bomb;
 public:
+  bomb b;
+  int three;    //boss 맞았을 때 위치 정할 변수
   BOOM(SDL_Rect offset)
   {
      b.SDL_b = offset;
   };
-
-  bomb b;
+  void set_bomb(SDL_Rect boss)
+  {
+    b.SDL_b = boss;
+  }
   void boom_apply_surface(SDL_Surface* boom[], SDL_Surface* destination, SDL_Rect* clip )
   {//적 비행기가 격추됬을 때의 좌표에 폭발 스프라이트 이미지 출력
     	SDL_BlitSurface( boom[b.count++], clip, destination, &(b.SDL_b));
@@ -61,7 +65,7 @@ public:
     for(vector<bullets>::iterator iter = blt.begin(); iter != blt.end(); iter++)
     {
       bullets tmp((*iter).move_x,(*iter).move_y,(*iter).bullet_pos.x + (*iter).move_x,(*iter).bullet_pos.y + (*iter).move_y);
-      if( 0 < tmp.bullet_pos.x + 9 && tmp.bullet_pos.x< SCREEN_WIDTH && -5 <= tmp.bullet_pos.y  && tmp.bullet_pos.y < SCREEN_HEIGHT)
+      if( -1 < tmp.bullet_pos.x && tmp.bullet_pos.x< SCREEN_WIDTH && 0 <= tmp.bullet_pos.y  && tmp.bullet_pos.y < SCREEN_HEIGHT)
         temp.push_back(tmp);
     }
 
@@ -77,17 +81,20 @@ class AirPlane
 {
 private:
   SDL_Rect offset;
-  int pos_x,pos_y;// 비행기 x,y 좌표;
-  int life;
+  int pos_x,pos_y;// 비행기 x,y 좌표
 
 public:
   AirPlane();
   ~AirPlane();
-  bool Got_shot(vector<bullets> enemy_bullets);
+  bool Got_shot(_bullets &A,_bullets &B,_bullets &C);
   void shooting(_bullets &A);
   void plane_apply_surface(SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(int x, int y);
+  void invisible(SDL_Surface *plane);
   SDL_Rect Get_plane();//plane 변수 getter
+
+  int invisible_mode;
+  int life;
 };
 
 class Enemy_standard_2
@@ -119,8 +126,10 @@ class Enemy_standard
 private:
     SDL_Rect offset;
     int life;
-    int count;//루프문 반복할 변수
+    int count=0;//루프문 반복할 변수
     int mode;// 좌,우 나타날 장소를 정하는 변수
+    bool first_exe = true;
+    int pos;
   public:
     int pos_x,pos_y;// 비행기 x,y 좌표;
     Enemy_standard(int mode);
@@ -130,4 +139,52 @@ private:
     void enemy_apply_surface(SDL_Surface* source[], SDL_Surface* destination, SDL_Rect* clip);
     void control_plane(_bullets &enemey);
     SDL_Rect Get_plane();
+};
+
+class Mini_Boss
+{
+private:
+  SDL_Surface *mini_boss;
+  SDL_Rect offset;
+  int pos_x, pos_y;
+  int life;
+  int count = 0;
+  int direction = 0;
+  int cont_shoot = 0;
+
+public:
+  Mini_Boss();
+  ~Mini_Boss();
+  bool Got_shot(_bullets &A, int &x);
+  void shooting(_bullets &A);
+  void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
+  void control_plane(_bullets &A);
+  void loss_life(int& score);
+  SDL_Rect Get_plane();
+
+  int amount = 1;
+};
+
+class Boss
+{
+private:
+  SDL_Surface *mini_boss;
+  SDL_Rect offset;
+  int pos_x, pos_y;
+  int life;
+  int count = 0;
+  int direction = 0;
+    int cont_shoot = 0;
+
+public:
+  Boss();
+  ~Boss();
+  bool Got_shot(_bullets &A,  int &x);
+  void shooting(_bullets &A);
+  void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
+  void control_plane(_bullets &A);
+  void loss_life(int& score);
+  SDL_Rect Get_plane();
+
+  int amount = 1;
 };
