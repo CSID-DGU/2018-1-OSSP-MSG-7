@@ -7,8 +7,13 @@ SDL_Surface *message;
 SDL_Surface *message2;
 SDL_Surface *title_message;
 SDL_Surface *plane;// 사용자 비행기 이미지
+SDL_Surface *plane2;
+SDL_Surface *plane3;
+SDL_Surface *plane4;
+SDL_Surface *plane5;
 SDL_Surface *enemy[4];//회전하는 비행기 이미지
 SDL_Surface *boom[11];// 폭발 이미지
+SDL_Surface *frame;
 
 SDL_Surface *enemy2;
 
@@ -24,6 +29,7 @@ Uint8 *keystates;
 const int INITIAL_MODE = 10;
 int EXIT = -1;
 int Continue = 0;
+int craft;
 
 _bullets enemy_bullets;
 _bullets player_bullets;
@@ -33,142 +39,21 @@ _bullets player_bullets;
 bool init();//변수들 초기화 함수
 bool load_files();//이미지, 폰트 초기화 함수
 bool SDL_free();// sdl 변수들 free 함수
-
-void menu()   // 처음 시작 메뉴
-{
-  textColor = {204, 255, 204};  // 안내 폰트 색깔
-  textColor2 = {255, 255, 255}; // 제목 폰트 색깔
-	bool quit = false;
-	while (quit == false)
-	{
-		if (SDL_PollEvent(&event))
-		{
-      message = TTF_RenderText_Solid(font, "Press space to start, esc key to quit", textColor); // space키는 시작 esc키는 종료
-      message2 = TTF_RenderText_Solid(font2, "Starwars", textColor2);  // 제목
-      background = load_image("assets/menu3.jpg");  // 배경
-			apply_surface(0, 0, background, screen, NULL);
-      apply_surface((640 - message->w) / 2, 280, message, screen, NULL);
-      apply_surface((640 - message2->w) / 2, 100, message2, screen, NULL);
-			SDL_Flip(screen);
-
-
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-        {
-          quit = true;
-          background = load_image("assets/background.png");
-          break;
-        }
-        case SDLK_ESCAPE:  // esc 키 누르면 종료
-        {
-          EXIT = 1;
-          quit = true;
-          break;
-        }
-				}
-			}
-			else if (event.type == SDL_QUIT)
-			{
-				quit = true;
-			}
-		}
-	}
-}
-
-void game_over()  // 사용자 죽었을 시 나타나는 게임오버 창
-{
-	bool quit = false;
-  background = load_image("assets/background.png");
-  message2 = TTF_RenderText_Solid(font2, "Game over", textColor2);
-  apply_surface(0, 0, background, screen, NULL);
-  message = TTF_RenderText_Solid(font, "Press space to restart, esc key to quit", textColor);
-  apply_surface((640 - message->w) / 2, 280, message, screen, NULL);
-  apply_surface((640 - message2->w) / 2, 100, message2, screen, NULL);
-  SDL_Flip(screen);
-
-	while (quit == false)
-	{
-		if (SDL_PollEvent(&event))
-		{
-
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE://esc 키가 눌리면 종료
-        {
-          quit = true;
-          break;
-        }
-        case SDLK_SPACE:
-        {
-          Continue = 1;
-          quit = true;
-          break;
-        }
-				default:
-					break;
-				}
-			}
-			else if (event.type == SDL_QUIT)
-			{
-				quit = true;
-			}
-		}
-	}
-}
-
-void stage_clear()  // 나중에 bosscounter == 0 되면 stage clear 되도록 창 띄우기
-{
-	bool quit = false;
-
-  message = TTF_RenderText_Solid(font, "Stage Clear!", textColor);
-  background = load_image("assets/background.png");
-  apply_surface(0, 0, background, screen, NULL);
-  apply_surface((640 - message->w) / 2, 480/2 - message->h, message2, screen, NULL);
-  SDL_Flip(screen);
-
-	while (quit == false)
-	{
-		if (SDL_PollEvent(&event))
-		{
-
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-				case SDLK_ESCAPE://esc 키가 눌리면 종료
-        {
-          quit = true;
-          break;
-        }
-				default:
-					break;
-				}
-			}
-			else if (event.type == SDL_QUIT)
-			{
-				quit = true;
-			}
-		}
-	}
-}
-
-
+void menu();
+void menu2();
+void game_over();
+void stage_clear();
 
 int main(){
   loop:
   init();//초기화 함수
   load_files();//이미지,폰트,bgm 로드하는 함수
   menu();
-
   if(EXIT == 1)
   {
     return 0;
   }
+  menu2();
 
   Continue = 0;
   srand(time(NULL));
@@ -309,7 +194,21 @@ int main(){
     apply_surface(0, 0, background,screen,NULL);//백그라운드 그리는거
     enemy_bullets.bullet_apply_surface(bullet, screen,NULL);//적 총알들
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
-    A.plane_apply_surface(plane, screen,NULL);//사용자 비행기
+    if (craft == 1)
+      A.plane_apply_surface(plane, screen,NULL);//사용자 비행기
+    else if (craft == 2)
+      A.plane_apply_surface(plane2, screen,NULL);//사용자 비행기
+    else if (craft == 3)
+      A.plane_apply_surface(plane3, screen,NULL);//사용자 비행기
+    else if (craft == 4)
+      A.plane_apply_surface(plane4, screen,NULL);//사용자 비행기
+    else if (craft == 5)
+      A.plane_apply_surface(plane5, screen,NULL);//사용자 비행기
+
+    else
+    {
+      A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
+    }
     if( E.size() > 0)//적 비행기
     {
       for( it = E.begin(); it != E.end(); it++)
@@ -371,6 +270,11 @@ bool load_files()
   background = load_image("assets/background.png");//배경화면
   bullet = load_image("assets/bullet.gif");// 총알 이미지
   plane = load_image("assets/p2.gif");// 사용자 비행기 이미지
+  plane2 = load_image("assets/aircraft1.png");
+  plane3 = load_image("assets/aircraft3.png");
+  plane4 = load_image("assets/aircraft5.png");
+  plane5 = load_image("assets/aircraft6.png");
+  frame = load_image("assets/blueframe.png");
   font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
   font2 = TTF_OpenFont("assets/Starjout.ttf", 84);//제목 폰트
   for(int i = 0 ; i < 4; i++)
@@ -392,6 +296,7 @@ bool load_files()
     SDL_SetColorKey(boom[i], SDL_SRCCOLORKEY,SDL_MapRGB(boom[i]->format,255,255,255));
   }
   SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
+  SDL_SetColorKey(frame, SDL_SRCCOLORKEY,SDL_MapRGB(frame->format,0,0,0));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,255,255,255));
   return true;
 }
@@ -410,4 +315,205 @@ bool SDL_free()
   SDL_Quit();//init한 SDL 변수들 닫아주는겅 일걸,위의 freesurface랑 차이 모름
 
   return true;
+}
+
+void menu()   // 처음 시작 메뉴
+{
+  textColor = {204, 255, 204};  // 안내 폰트 색깔
+  textColor2 = {255, 255, 255}; // 제목 폰트 색깔
+	bool quit = false;
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+      message = TTF_RenderText_Solid(font, "Press space to start, esc key to quit", textColor); // space키는 시작 esc키는 종료
+      message2 = TTF_RenderText_Solid(font2, "Starwars", textColor2);  // 제목
+      background = load_image("assets/menu3.jpg");  // 배경
+			apply_surface(0, 0, background, screen, NULL);
+      apply_surface((640 - message->w) / 2, 280, message, screen, NULL);
+      apply_surface((640 - message2->w) / 2, 100, message2, screen, NULL);
+			SDL_Flip(screen);
+
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          quit = true;
+          background = load_image("assets/background.png");
+          break;
+        }
+        case SDLK_ESCAPE:  // esc 키 누르면 종료
+        {
+          EXIT = 1;
+          quit = true;
+          break;
+        }
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
+
+void menu2()   // 비행기 고르는 메뉴
+{
+  int selectx = 25;
+	bool quit = false;
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+      font = TTF_OpenFont("assets/Terminus.ttf", 36);//작은 안내문 폰트
+      message = TTF_RenderText_Solid(font, "Choose your Aircraft", textColor); // space키는 시작 esc키는 종료
+      background = load_image("assets/background.png");  // 배경
+			apply_surface(0, 0, background, screen, NULL);
+      apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
+      apply_surface(selectx, 250, frame, screen, NULL);
+      apply_surface(57, 285, plane, screen, NULL);
+      apply_surface(182, 285, plane2, screen, NULL);
+      apply_surface(307, 285, plane3, screen, NULL);
+      apply_surface(432, 285, plane4, screen, NULL);
+      apply_surface(557, 285, plane5, screen, NULL);
+			SDL_Flip(screen);
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+
+				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          quit = true;
+          if(selectx == 25)
+            craft = 1;
+          else if(selectx == 150)
+            craft = 2;
+          else if(selectx == 275)
+            craft = 3;
+          else if(selectx == 400)
+            craft = 4;
+          else if(selectx == 525)
+            craft = 5;
+          break;
+        }
+        case SDLK_LEFT:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if (selectx == 25)
+          {}
+          else
+          {
+            selectx -= 125;
+          }
+          break;
+        }
+        case SDLK_RIGHT:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if(selectx == 525)
+          {}
+          else
+          {
+            selectx += 125;
+          }
+          break;
+        }
+        case SDLK_ESCAPE:  // esc 키 누르면 종료
+        {
+          EXIT = 1;
+          quit = true;
+          break;
+        }
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
+
+void game_over()  // 사용자 죽었을 시 나타나는 게임오버 창
+{
+  font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
+	bool quit = false;
+  background = load_image("assets/background.png");
+  message2 = TTF_RenderText_Solid(font2, "Game over", textColor2);
+  apply_surface(0, 0, background, screen, NULL);
+  message = TTF_RenderText_Solid(font, "Press space to restart, esc key to quit", textColor);
+  apply_surface((640 - message->w) / 2, 280, message, screen, NULL);
+  apply_surface((640 - message2->w) / 2, 100, message2, screen, NULL);
+  SDL_Flip(screen);
+
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE://esc 키가 눌리면 종료
+        {
+          quit = true;
+          break;
+        }
+        case SDLK_SPACE:
+        {
+          Continue = 1;
+          quit = true;
+          break;
+        }
+				default:
+					break;
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
+
+void stage_clear()  // 나중에 bosscounter == 0 되면 stage clear 되도록 창 띄우기
+{
+	bool quit = false;
+
+  message = TTF_RenderText_Solid(font, "Stage Clear!", textColor);
+  background = load_image("assets/background.png");
+  apply_surface(0, 0, background, screen, NULL);
+  apply_surface((640 - message->w) / 2, 480/2 - message->h, message2, screen, NULL);
+  SDL_Flip(screen);
+
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+				case SDLK_ESCAPE://esc 키가 눌리면 종료
+        {
+          quit = true;
+          break;
+        }
+				default:
+					break;
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
 }
