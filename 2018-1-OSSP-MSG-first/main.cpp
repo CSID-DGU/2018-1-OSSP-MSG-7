@@ -40,7 +40,7 @@ const int INITIAL_MODE = 10;
 int EXIT = -1;
 int Continue = 0;
 int craft;
-
+int SA;
 
 void sprite_surface(SDL_Surface* source, SDL_Rect tmp, SDL_Surface* destination, int w, int h, int step,int mode);
 bool init();//변수들 초기화 함수
@@ -50,6 +50,7 @@ void menu();
 void menu2();
 void game_over();
 void stage_clear();
+void special_ability(int SA);
 
 int main(){
   loop:
@@ -218,6 +219,13 @@ int main(){
             A.shooting(player_bullets);
             shootcnt = 1;
         }
+      }
+      if(keystates[SDLK_s])
+      {
+          if(A.SA_count >0){
+             special_ability(SA); // how to make SA FUNCTION fdfdafdjsogasdhgioasdhigoasnigodangioadngiodasnigosnadiogadnsgipasngipdasnigpnasdigpnasdipgnasdpignasdpignasdpignsdpagniasdpgniasdpgnsdpaignsipadgnisdpagnipsadgnip
+             A.SA_count --; //// Put image for SA
+          }
       }
 
       if(keystates[SDLK_UP])
@@ -518,21 +526,27 @@ void menu2()   // 비행기 고르는 메뉴
 				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
         {
           quit = true;
-          if(selectx == 25)
+          if(selectx == 25){
             plane = load_image("assets/p2.gif");
+            SA = 0;
+          }
 
-          else if(selectx == 150)
+          else if(selectx == 150){
             plane = load_image("assets/aircraft1.png");
-
-          else if(selectx == 275)
-            plane = load_image("assets/aircraft3.png");
-
-          else if(selectx == 400)
+            SA = 1;
+          }
+          else if(selectx == 275){
+            plane = load_image("assets/aircraft3.png"); ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+            SA = 2;
+          }
+          else if(selectx == 400){
             plane = load_image("assets/aircraft5.png");
-
-          else if(selectx == 525)
+            SA = 3;
+          }
+          else if(selectx == 525){
             plane = load_image("assets/aircraft6.png");
-
+            SA = 4;
+          }
           break;
         }
         case SDLK_LEFT:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
@@ -687,4 +701,25 @@ void sprite_surface( SDL_Surface *screen, SDL_Rect tmp, SDL_Surface* surface, in
   rectSrc.w = surface->w/w;                   //분할된 이미지 선택
   rectSrc.h = surface->h/h;
   SDL_BlitSurface(surface, &rectSrc, screen, &rectDst);
+}
+
+void special_ability(int SA)
+{
+    switch (SA){
+        case 0:
+
+        break;
+        case 1:
+
+        break;
+        case 2:
+
+        break;
+        case 3:
+
+        break;
+        case 4:
+
+        break;
+    }
 }

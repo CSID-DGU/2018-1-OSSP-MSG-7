@@ -95,6 +95,7 @@ public:
 
   int invisible_mode;
   int life;
+  int SA_count = 3;
 };
 
 class Enemy_standard_2
