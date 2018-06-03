@@ -10,6 +10,7 @@ SDL_Surface *explosion; //보스 몹 맞을 때 폭팔
 SDL_Surface *life;
 SDL_Surface *bullet;//총알 이미지
 SDL_Surface *bullet_basic;
+SDL_Surface *bullet_mini;
 SDL_Surface *bullet_boss;
 SDL_Surface *message;
 SDL_Surface *message2;
@@ -68,7 +69,7 @@ int main(){
   Continue = 0;
   srand(time(NULL));
 
-  int score = 20000;
+  int score = 5000;
   int start_time = 0;
   int delay = 0;
   int count = 0;
@@ -113,6 +114,10 @@ int main(){
 
     if(boss_bullets.blt.size()>0)
       boss_bullets.control_bullet();
+
+    if(mini_bullets.blt.size() > 0)
+      mini_bullets.control_bullet();
+
 
     if(A.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
     {
@@ -203,7 +208,7 @@ int main(){
           }
       }
 
-      //if(tmp3.amount == 1 && score >= 5000)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
+      if(tmp3.amount == 1 && score >= 5000)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
 
       if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
 
@@ -240,6 +245,7 @@ int main(){
     apply_surface(0, 0 + background_count, background,screen,NULL);//백그라운드 그리는거
     enemy_bullets.bullet_apply_surface(bullet_basic, screen,NULL);//적 총알들
     boss_bullets.bullet_apply_surface(bullet_boss, screen, NULL);
+    mini_bullets.bullet_apply_surface(bullet_mini, screen, NULL);
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
 
@@ -259,7 +265,7 @@ int main(){
       }
     }
 
-    //if(tmp3.amount ==1 && score >= 5000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
+    if(tmp3.amount ==1 && score >= 5000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
     if(tmp4.amount == 1 && score>= 20000) tmp4.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
@@ -384,6 +390,7 @@ bool load_files()
   bullet = load_image("assets/BULLET.png");// 총알 이미지
   bullet_basic = load_image("assets/bullet.gif");
   bullet_boss = load_image("assets/bossbullet.png");
+  bullet_mini = load_image("assets/bossbullet.png");
   plane = load_image("assets/p2.gif");// 사용자 비행기 이미지
   plane2 = load_image("assets/aircraft1.png");
   plane3 = load_image("assets/aircraft3.png");
@@ -415,6 +422,7 @@ bool load_files()
   SDL_SetColorKey(life, SDL_SRCCOLORKEY,SDL_MapRGB(life->format,255,255,255));
   SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_boss->format,0,0,0));
+  SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_mini->format,0,0,0));
   SDL_SetColorKey(frame, SDL_SRCCOLORKEY,SDL_MapRGB(frame->format,0,0,0));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,0,0,0));
   SDL_SetColorKey(bullet_basic, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_basic->format,255,255,255));

@@ -174,7 +174,7 @@ private:
   int life;
   int count = 0;
   int direction = 0;
-    int cont_shoot = 0;
+  int cont_shoot = 0;
 
 public:
   Boss();
