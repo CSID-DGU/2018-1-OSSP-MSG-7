@@ -57,7 +57,7 @@ int main()
       {
         I.add_itm(E.pos_x, E.pos_y, E.pos_x, E.pos_y - 15);
         E.~Enemy_standard();
-        //I.control_item();       // why an umjihinya
+        I.control_item();       // why an umjihinya
 
         number = 0;
       }
