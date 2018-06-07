@@ -3,14 +3,14 @@
 SDL_Surface *screen;
 SDL_Surface *background;
 SDL_Surface *bullet;
-SDL_Surface *item;
+
 
 SDL_Event event;
 Uint8 *keystates;
 
 _bullets enemy_bullets;
 _bullets player_bullets;
-Item I;
+
 
 bool init()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
@@ -24,7 +24,7 @@ bool load_files()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
   background = load_image("assets/background.png");
   bullet = load_image("assets/bullet.gif");
-  item = load_image("assets/tem1.png");
+
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,255,255,255));
   return true;
 }
@@ -40,6 +40,7 @@ int main()
 
   Enemy_standard E;
   AirPlane A;
+  Item I;
 
   while(true){
     start_time = SDL_GetTicks();//나중에 프레임 계산할 변수
@@ -50,21 +51,24 @@ int main()
     if(enemy_bullets.blt.size() > 0)//임시 코딩. 적들 총알 위치 아래로 이동
       enemy_bullets.control_bullet();
 
+    if(I.itm.size() > 0)//임시 코딩. 적들 총알 위치 아래로 이동
+      I.control_item();
+
     if(A.Got_shot(enemy_bullets.blt))//임시 코딩. 사용자 맞으면 게임 끝
       break;
 
     if(number == 1 && E.Got_shot(player_bullets))//임시 코딩.적 맞으면 끝
       {
-        I.add_itm(E.pos_x, E.pos_y, E.pos_x, E.pos_y - 15);
+        I.add_itm(E.pos_x, E.pos_y, E.pos_x, E.pos_y + 20);
         E.~Enemy_standard();
-        I.control_item();       // why an umjihinya
 
         number = 0;
       }
+
     if(A.Got_item(I.itm))
     {
       A.increaseLife();
-      SDL_FreeSurface(item);
+      I.~Item();
     }
     if(SDL_PollEvent(&event)){
       if(event.type == SDL_QUIT)
@@ -98,7 +102,7 @@ int main()
     apply_surface(0, 0, background,screen,NULL);//백그라운드 그리는거
     enemy_bullets.bullet_apply_surface(bullet, screen,NULL);//적 총알들 그리는 것
     player_bullets.bullet_apply_surface(bullet, screen, NULL);
-    I.item_apply_surface(item, screen, NULL);
+    I.item_apply_surface(I.item, screen, NULL);
 
     if( number == 1 )
       {
@@ -115,6 +119,7 @@ int main()
   SDL_FreeSurface(bullet);
   SDL_FreeSurface(background);
   SDL_FreeSurface(screen);
+  //SDL_FreeSurface(item);
 
   SDL_Quit();//init한 SDL 변수들 닫아주는겅 일걸,위의 freesurface랑 차이 모름
 
