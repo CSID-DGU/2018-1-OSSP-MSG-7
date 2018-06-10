@@ -58,6 +58,7 @@ int main(){
  _bullets player_bullets;
  _bullets boss_bullets;
  _bullets mini_bullets;
+ //_special special_one;
   init();//초기화 함수
   load_files();//이미지,폰트,bgm 로드하는 함수
   menu();
@@ -81,12 +82,14 @@ int main(){
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
   vector<BOOM>::iterator B_it;
+  vector<special>::iterator it_sa;
 
   vector<BOOM> Boss_B;//보스 폭발
   vector<BOOM> Boss_B4;//보스 폭발
   vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
   vector<Enemy_standard_2> E2;// 2nd standard enemy
+  vector<special> sa_1;
 
   AirPlane A;//사용자 비행기
   Mini_Boss tmp3;
@@ -213,6 +216,13 @@ int main(){
 
       if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
 
+      if(sa_1.size() >0)
+      {
+          for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++){
+              (*it_sa).control_bullet();
+          }
+      }
+
       if(keystates[SDLK_a])
       {
         if(shootcnt == 0) {
@@ -220,11 +230,48 @@ int main(){
             shootcnt = 1;
         }
       }
-      if(keystates[SDLK_s])
+      if(keystates[SDLK_s])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
       {
           if(A.SA_count >0){
-             special_ability(SA); // how to make SA FUNCTION fdfdafdjsogasdhgioasdhigoasnigodangioadngiodasnigosnadiogadnsgipasngipdasnigpnasdigpnasdipgnasdpignasdpignasdpignsdpagniasdpgniasdpgnsdpaignsipadgnisdpagnipsadgnip
              A.SA_count --; //// Put image for SA
+             switch (SA){
+             case 0:
+                 {
+                     special tmp(0);
+                     special tmp2(100);
+                     special tmp3(200);
+                     special tmp4(300);
+                     special tmp5(400);
+                     special tmp6(500);
+                     special tmp7(600);
+                     special tmp8(700);
+                     sa_1.push_back(tmp);
+                     sa_1.push_back(tmp2);
+                     sa_1.push_back(tmp3);
+                     sa_1.push_back(tmp4);
+                     sa_1.push_back(tmp5);
+                     sa_1.push_back(tmp6);
+                     sa_1.push_back(tmp7);
+                     sa_1.push_back(tmp8);
+                 break;
+                }
+                 case 1:
+                {
+                    break;
+                }
+                 case 2:
+                {
+                     break;
+                }
+                 case 3:
+                {
+                    break;
+                }
+                 case 4:
+                {
+                    break;
+                }
+             }
           }
       }
 
@@ -271,6 +318,13 @@ int main(){
       {
         (*it2).enemy_apply_surface(screen, NULL);
       }
+    }
+
+    if(sa_1.size() >0)
+    {
+        for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++){
+            (*it_sa).apply_surface(screen, NULL);
+        }
     }
 
     if(tmp3.amount ==1 && score >= 5000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
@@ -705,21 +759,5 @@ void sprite_surface( SDL_Surface *screen, SDL_Rect tmp, SDL_Surface* surface, in
 
 void special_ability(int SA)
 {
-    switch (SA){
-        case 0:
 
-        break;
-        case 1:
-
-        break;
-        case 2:
-
-        break;
-        case 3:
-
-        break;
-        case 4:
-
-        break;
-    }
 }

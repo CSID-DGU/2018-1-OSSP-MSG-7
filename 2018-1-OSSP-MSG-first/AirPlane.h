@@ -41,7 +41,6 @@ public:
   SDL_Rect bullet_pos;//총알들의 위치
 }bullets;
 
-
 class _bullets
 {
 public:
@@ -75,7 +74,33 @@ public:
   vector<bullets> blt;
 };
 
+class special
+{
+public:
+    special(int x){
+        pos_x=x;
+        sa1 = load_image("assets/sa1.png");
+        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
+    };
 
+  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
+  {
+      SDL_Rect offset;
+      offset.x = pos_x;
+      offset.y = pos_y;
+      SDL_BlitSurface(sa1, clip, destination, &offset);
+  };
+
+  void control_bullet()
+  {
+    pos_y -= 3;
+  };
+
+private:
+    int pos_x;
+    int pos_y=480;
+    SDL_Surface *sa1;
+};
 
 class AirPlane
 {
