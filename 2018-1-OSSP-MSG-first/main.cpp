@@ -1,3 +1,4 @@
+
 #include "AirPlane.h"
 #include <string>
 #include <sstream>
@@ -40,7 +41,7 @@ const int INITIAL_MODE = 10;
 int EXIT = -1;
 int Continue = 0;
 int craft;
-
+int SA;
 
 void sprite_surface(SDL_Surface* source, SDL_Rect tmp, SDL_Surface* destination, int w, int h, int step,int mode);
 bool init();//변수들 초기화 함수
@@ -50,6 +51,7 @@ void menu();
 void menu2();
 void game_over();
 void stage_clear();
+void special_ability(int SA);
 
 int main(){
   loop:
@@ -57,6 +59,7 @@ int main(){
  _bullets player_bullets;
  _bullets boss_bullets;
  _bullets mini_bullets;
+ //_special special_one;
   init();//초기화 함수
   load_files();//이미지,폰트,bgm 로드하는 함수
   menu();
@@ -80,12 +83,14 @@ int main(){
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
   vector<BOOM>::iterator B_it;
+  vector<special>::iterator it_sa;
 
   vector<BOOM> Boss_B;//보스 폭발
   vector<BOOM> Boss_B4;//보스 폭발
   vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
   vector<Enemy_standard_2> E2;// 2nd standard enemy
+  vector<special> sa_1;
 
   AirPlane A;//사용자 비행기
   Mini_Boss tmp3;
@@ -212,12 +217,63 @@ int main(){
 
       if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
 
+      if(sa_1.size() >0)
+      {
+          for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++){
+              (*it_sa).control_bullet();
+          }
+      }
+
       if(keystates[SDLK_a])
       {
         if(shootcnt == 0) {
             A.shooting(player_bullets);
             shootcnt = 1;
         }
+      }
+      if(keystates[SDLK_s])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
+      {
+          if(A.SA_count >0){
+             A.SA_count --; //// Put image for SA
+             switch (SA){
+             case 0:
+                 {
+                     special tmp(0);
+                     special tmp2(100);
+                     special tmp3(200);
+                     special tmp4(300);
+                     special tmp5(400);
+                     special tmp6(500);
+                     special tmp7(600);
+                     special tmp8(700);
+                     sa_1.push_back(tmp);
+                     sa_1.push_back(tmp2);
+                     sa_1.push_back(tmp3);
+                     sa_1.push_back(tmp4);
+                     sa_1.push_back(tmp5);
+                     sa_1.push_back(tmp6);
+                     sa_1.push_back(tmp7);
+                     sa_1.push_back(tmp8);
+                 break;
+                }
+                 case 1:
+                {
+                    break;
+                }
+                 case 2:
+                {
+                     break;
+                }
+                 case 3:
+                {
+                    break;
+                }
+                 case 4:
+                {
+                    break;
+                }
+             }
+          }
       }
 
       if(keystates[SDLK_UP])
@@ -263,6 +319,13 @@ int main(){
       {
         (*it2).enemy_apply_surface(screen, NULL);
       }
+    }
+
+    if(sa_1.size() >0)
+    {
+        for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++){
+            (*it_sa).apply_surface(screen, NULL);
+        }
     }
 
     if(tmp3.amount ==1 && score >= 5000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
@@ -518,21 +581,27 @@ void menu2()   // 비행기 고르는 메뉴
 				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
         {
           quit = true;
-          if(selectx == 25)
+          if(selectx == 25){
             plane = load_image("assets/p2.gif");
+            SA = 0;
+          }
 
-          else if(selectx == 150)
+          else if(selectx == 150){
             plane = load_image("assets/aircraft1.png");
-
-          else if(selectx == 275)
-            plane = load_image("assets/aircraft3.png");
-
-          else if(selectx == 400)
+            SA = 1;
+          }
+          else if(selectx == 275){
+            plane = load_image("assets/aircraft3.png"); ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+            SA = 2;
+          }
+          else if(selectx == 400){
             plane = load_image("assets/aircraft5.png");
-
-          else if(selectx == 525)
+            SA = 3;
+          }
+          else if(selectx == 525){
             plane = load_image("assets/aircraft6.png");
-
+            SA = 4;
+          }
           break;
         }
         case SDLK_LEFT:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
@@ -687,4 +756,9 @@ void sprite_surface( SDL_Surface *screen, SDL_Rect tmp, SDL_Surface* surface, in
   rectSrc.w = surface->w/w;                   //분할된 이미지 선택
   rectSrc.h = surface->h/h;
   SDL_BlitSurface(surface, &rectSrc, screen, &rectDst);
+}
+
+void special_ability(int SA)
+{
+
 }

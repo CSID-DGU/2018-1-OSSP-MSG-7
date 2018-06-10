@@ -356,8 +356,8 @@ void Mini_Boss::shooting(_bullets &A){
     A.add_blt( 0, 5,pos_x + 125,pos_y + 82);
     A.add_blt( 3, 5,pos_x + 125,pos_y + 82);
     A.add_blt( -3, 5,pos_x + 125,pos_y + 82);
-    A.add_blt( -6, 5,pos_x + 125,pos_y + 82);
-    A.add_blt( 6, 5,pos_x + 125,pos_y + 82);
+    A.add_blt( -6, 4,pos_x + 125,pos_y + 82);
+    A.add_blt( 6, 4,pos_x + 125,pos_y + 82);
 };
 
 void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
