@@ -13,6 +13,7 @@ SDL_Surface *bullet_basic;
 SDL_Surface *bullet_boss;
 SDL_Surface *message;
 SDL_Surface *message2;
+SDL_Surface *message3;
 SDL_Surface *title_message;
 SDL_Surface *plane;// 사용자 비행기 이미지
 SDL_Surface *plane2;
@@ -22,6 +23,7 @@ SDL_Surface *plane5;
 SDL_Surface *enemy[4];//회전하는 비행기 이미지
 SDL_Surface *boom[11];// 폭발 이미지
 SDL_Surface *frame;
+SDL_Surface *frame2;
 
 SDL_Surface *enemy2;
 
@@ -39,6 +41,7 @@ const int INITIAL_MODE = 10;
 int EXIT = -1;
 int Continue = 0;
 int craft;
+int mode;
 
 
 void sprite_surface(SDL_Surface* source, SDL_Rect tmp, SDL_Surface* destination, int w, int h, int step,int mode);
@@ -47,6 +50,7 @@ bool load_files();//이미지, 폰트 초기화 함수
 bool SDL_free();// sdl 변수들 free 함수
 void menu();
 void menu2();
+void menu3();
 void game_over();
 void stage_clear();
 
@@ -63,6 +67,7 @@ int main(){
   {
     return 0;
   }
+  menu3();
   menu2();
 
   Continue = 0;
@@ -242,6 +247,7 @@ int main(){
     boss_bullets.bullet_apply_surface(bullet_boss, screen, NULL);
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
+    SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
 
 
     if( E.size() > 0)//적 비행기
@@ -390,6 +396,7 @@ bool load_files()
   plane4 = load_image("assets/aircraft5.png");
   plane5 = load_image("assets/aircraft6.png");
   frame = load_image("assets/blueframe.png");
+  frame2 = load_image("assets/redframe.png");
   font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
   font2 = TTF_OpenFont("assets/Starjout.ttf", 84);//제목 폰트
   font3 = TTF_OpenFont("assets/Starjout.ttf",24);
@@ -416,6 +423,7 @@ bool load_files()
   SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_boss->format,0,0,0));
   SDL_SetColorKey(frame, SDL_SRCCOLORKEY,SDL_MapRGB(frame->format,0,0,0));
+  SDL_SetColorKey(frame2, SDL_SRCCOLORKEY,SDL_MapRGB(frame2->format,0,0,0));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,0,0,0));
   SDL_SetColorKey(bullet_basic, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_basic->format,255,255,255));
   return true;
@@ -484,6 +492,7 @@ void menu()   // 처음 시작 메뉴
 void menu2()   // 비행기 고르는 메뉴
 {
   int selectx = 25;
+  int selectx2 = 525;
 	bool quit = false;
 	while (quit == false)
 	{
@@ -491,10 +500,15 @@ void menu2()   // 비행기 고르는 메뉴
 		{
       font = TTF_OpenFont("assets/Terminus.ttf", 36);//작은 안내문 폰트
       message = TTF_RenderText_Solid(font, "Choose your Aircraft", textColor); // space키는 시작 esc키는 종료
+      message2 = TTF_RenderText_Solid(font3, "1P", textColor);
+      message3 = TTF_RenderText_Solid(font3, "2P", textColor);
       background = load_image("assets/background.png");  // 배경
 			apply_surface(0, 0, background, screen, NULL);
       apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
       apply_surface(selectx, 250, frame, screen, NULL);
+      apply_surface(selectx2, 250, frame2, screen, NULL);
+      apply_surface(selectx+30, 210, message2, screen, NULL);
+      apply_surface(selectx2+30, 345, message3, screen, NULL);
       apply_surface(57, 285, plane, screen, NULL);
       apply_surface(182, 285, plane2, screen, NULL);
       apply_surface(307, 285, plane3, screen, NULL);
@@ -511,7 +525,7 @@ void menu2()   // 비행기 고르는 메뉴
         {
           quit = true;
           if(selectx == 25)
-            plane = load_image("assets/p2.gif");
+            plane = load_image("assets/p2.png");
 
           else if(selectx == 150)
             plane = load_image("assets/aircraft1.png");
@@ -547,6 +561,100 @@ void menu2()   // 비행기 고르는 메뉴
           }
           break;
         }
+        case SDLK_a:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if (selectx2 == 25)
+          {}
+          else
+          {
+            selectx2 -= 125;
+          }
+          break;
+        }
+        case SDLK_d:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if(selectx2 == 525)
+          {}
+          else
+          {
+            selectx2 += 125;
+          }
+          break;
+        }
+
+
+        case SDLK_ESCAPE:  // esc 키 누르면 종료
+        {
+          EXIT = 1;
+          quit = true;
+          break;
+        }
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
+
+void menu3()   // 비행기 고르는 메뉴
+{
+  int selecty;
+	bool quit = false;
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+      font = TTF_OpenFont("assets/Terminus.ttf", 36);//작은 안내문 폰트
+      message = TTF_RenderText_Solid(font, "Choose the game mode", textColor); // space키는 시작 esc키는 종료
+      message2 = TTF_RenderText_Solid(font3, "Single play", textColor);
+      message3 = TTF_RenderText_Solid(font3, "Multi play", textColor);
+      background = load_image("assets/background.png");  // 배경
+			apply_surface(0, 0, background, screen, NULL);
+      apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
+      apply_surface((640 - message2->w) / 2, 210, message2, screen, NULL);
+      apply_surface((640 - message3->w) / 2, 300, message3, screen, NULL);
+
+			SDL_Flip(screen);
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+
+				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          quit = true;
+          if(selecty == 210)
+            mode = 1;
+          else if(selecty == 300)
+            mode = 2;
+
+          break;
+        }
+        case SDLK_UP:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if (selecty == 210)
+          {}
+          else
+          {
+            selecty -= 90;
+          }
+          break;
+        }
+        case SDLK_DOWN:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if(selecty == 300)
+          {}
+          else
+          {
+            selecty += 90;
+          }
+          break;
+        }
+
         case SDLK_ESCAPE:  // esc 키 누르면 종료
         {
           EXIT = 1;
