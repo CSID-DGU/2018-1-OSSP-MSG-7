@@ -1,3 +1,4 @@
+
 #include "AirPlane.h"
 #include <string>
 #include <sstream>
@@ -21,6 +22,7 @@ SDL_Surface *plane2;
 SDL_Surface *plane3;
 SDL_Surface *plane4;
 SDL_Surface *plane5;
+SDL_Surface *plane_2p;
 SDL_Surface *enemy[4];//회전하는 비행기 이미지
 SDL_Surface *boom[11];// 폭발 이미지
 SDL_Surface *frame;
@@ -97,6 +99,7 @@ int main(){
   vector<special> sa_1;
 
   AirPlane A;//사용자 비행기
+  AirPlane A2;
   Mini_Boss tmp3;
   Boss tmp4;
 
@@ -138,6 +141,12 @@ int main(){
 
 
     if(A.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
+    {
+      A.life--;
+      A.invisible_mode = 1;
+    }
+
+    if(mode == 2 && A2.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
     {
       A.life--;
       A.invisible_mode = 1;
@@ -191,14 +200,14 @@ int main(){
         E2=v_tmp;
     }
 
-    if(tmp3.amount ==1 && tmp3.Got_shot(player_bullets, boom_mode) && score >= 5000) {
+    if(tmp3.amount == 1 && tmp3.Got_shot(player_bullets, boom_mode) && score >= 5000) {
         BOOM tmp(tmp3.Get_plane());
         tmp.three = boom_mode;
         Boss_B.push_back(tmp);
         tmp3.loss_life(score);
     }   // have to add the condition when the mini boss appear
 
-    if(tmp4.amount ==1 && tmp4.Got_shot(player_bullets, boom_mode) && score >= 20000) // have to add the condition when the mini boss appear
+    if(tmp4.amount == 1 && tmp4.Got_shot(player_bullets, boom_mode) && score >= 20000) // have to add the condition when the mini boss appear
     {
       BOOM tmp(tmp4.Get_plane());
       tmp.three = boom_mode;
@@ -220,99 +229,169 @@ int main(){
 
     keystates = SDL_GetKeyState(NULL);
 
-      if(E.size() > 0)//적 비행기 이동 및 발사
+    if(keystates[SDLK_ESCAPE])
+      break;
+    if(E.size() > 0)//적 비행기 이동 및 발사
+    {
+      for(it = E.begin(); it != E.end(); it++)
       {
-        for(it = E.begin(); it != E.end(); it++)
-        {
-          (*it).control_plane(enemy_bullets);
+        (*it).control_plane(enemy_bullets);
+      }
+    }
+    if(E2.size() >0){
+      for(it2 = E2.begin(); it2 != E2.end(); it2++)
+      {
+        (*it2).control_plane(enemy_bullets);
+      }
+    }
+
+    if(tmp3.amount == 1 && score >= 5000)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
+
+    if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
+
+    if(sa_1.size() >0)
+    {
+        for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++){
+            (*it_sa).control_bullet();
         }
+    }
+
+    if(keystates[SDLK_o])
+    {
+      if(shootcnt == 0) {
+          A.shooting(player_bullets);
+          shootcnt = 1;
       }
-      if(E2.size() >0){
-          for(it2 = E2.begin(); it2 != E2.end(); it2++)
-          {
-            (*it2).control_plane(enemy_bullets);
-          }
-      }
-
-      if(tmp3.amount == 1 && score >= 5000)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
-
-      if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
-
-      if(sa_1.size() >0)
-      {
-          for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++){
-              (*it_sa).control_bullet();
-          }
-      }
-
-      if(keystates[SDLK_a])
-      {
-        if(shootcnt == 0) {
-            A.shooting(player_bullets);
-            shootcnt = 1;
+    }
+    if(keystates[SDLK_p])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
+    {
+        if(A.SA_count >0 && flag_sa == 10){
+           A.SA_count --; //// Put image for SA
+           flag_sa =0;
+           switch (SA){
+           case 0:
+               {
+                   special tmp(0);
+                   special tmp2(100);
+                   special tmp3(200);
+                   special tmp4(300);
+                   special tmp5(400);
+                   special tmp6(500);
+                   special tmp7(600);
+                   special tmp8(700);
+                   sa_1.push_back(tmp);
+                   sa_1.push_back(tmp2);
+                   sa_1.push_back(tmp3);
+                   sa_1.push_back(tmp4);
+                   sa_1.push_back(tmp5);
+                   sa_1.push_back(tmp6);
+                   sa_1.push_back(tmp7);
+                   sa_1.push_back(tmp8);
+               break;
+              }
+               case 1:
+              {
+                  break;
+              }
+               case 2:
+              {
+                   break;
+              }
+               case 3:
+              {
+                  break;
+              }
+               case 4:
+              {
+                  break;
+              }
+           }
         }
-      }
-      if(keystates[SDLK_s])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
-      {
-          if(A.SA_count >0 && flag_sa == 10){
-             A.SA_count --; //// Put image for SA
-             flag_sa =0;
-             switch (SA){
-             case 0:
-                 {
-                     special tmp(0);
-                     special tmp2(100);
-                     special tmp3(200);
-                     special tmp4(300);
-                     special tmp5(400);
-                     special tmp6(500);
-                     special tmp7(600);
-                     special tmp8(700);
-                     sa_1.push_back(tmp);
-                     sa_1.push_back(tmp2);
-                     sa_1.push_back(tmp3);
-                     sa_1.push_back(tmp4);
-                     sa_1.push_back(tmp5);
-                     sa_1.push_back(tmp6);
-                     sa_1.push_back(tmp7);
-                     sa_1.push_back(tmp8);
-                 break;
-                }
-                 case 1:
-                {
-                    break;
-                }
-                 case 2:
-                {
-                     break;
-                }
-                 case 3:
-                {
-                    break;
-                }
-                 case 4:
-                {
-                    break;
-                }
-             }
-          }
-      }
-
-      if(keystates[SDLK_UP])
+    }
+    if(keystates[SDLK_KP8])
         A.control_plane(0,-4);
 
-      if(keystates[SDLK_DOWN])
+      if(keystates[SDLK_KP5])
         A.control_plane(0, 4);
 
-      if(keystates[SDLK_LEFT])
+      if(keystates[SDLK_KP4])
         A.control_plane(-4, 0);
 
-      if(keystates[SDLK_RIGHT])
+      if(keystates[SDLK_KP6])
         A.control_plane(4, 0);
+      if(mode == 2 )
+      {
+        if(keystates[SDLK_f])
+          {
+            if(shootcnt == 0) {
+                A2.shooting(player_bullets);
+                shootcnt = 1;
+            }
+          }
+          if(keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
+          {
+              if(A2.SA_count >0 && flag_sa == 10){
+                 A2.SA_count --; //// Put image for SA
+                 flag_sa = 0;
+                 switch (SA){
+                 case 0:
+                     {
+                         special tmp(0);
+                         special tmp2(100);
+                         special tmp3(200);
+                         special tmp4(300);
+                         special tmp5(400);
+                         special tmp6(500);
+                         special tmp7(600);
+                         special tmp8(700);
+                         sa_1.push_back(tmp);
+                         sa_1.push_back(tmp2);
+                         sa_1.push_back(tmp3);
+                         sa_1.push_back(tmp4);
+                         sa_1.push_back(tmp5);
+                         sa_1.push_back(tmp6);
+                         sa_1.push_back(tmp7);
+                         sa_1.push_back(tmp8);
+                     break;
+                    }
+                     case 1:
+                    {
+                        break;
+                    }
+                     case 2:
+                    {
+                         break;
+                    }
+                     case 3:
+                    {
+                        break;
+                    }
+                     case 4:
+                    {
+                        break;
+                    }
+                 }
+              }
+          }
 
+          if(keystates[SDLK_w])
+            A2.control_plane(0,-4);
+
+          if(keystates[SDLK_s])
+            A2.control_plane(0, 4);
+
+          if(keystates[SDLK_a])
+            A2.control_plane(-4, 0);
+
+          if(keystates[SDLK_d])
+            A2.control_plane(4, 0);
+      }
 
     if(A.invisible_mode == 1)//투명화 상태, 투명도 조절
       A.invisible(plane);
+
+    if(mode ==2 &&A2.invisible_mode == 1)//투명화 상태, 투명도 조절
+      A2.invisible(plane);
 
       if(background_count++ != 480);
       else
@@ -326,8 +405,10 @@ int main(){
     mini_bullets.bullet_apply_surface(bullet_mini, screen, NULL);
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
-
-
+    if(mode == 2)
+    {
+      A2.plane_apply_surface(plane_2p, screen,NULL); //사용자 비행기
+    }
     if( E.size() > 0)//적 비행기
     {
       for( it = E.begin(); it != E.end(); it++)
@@ -435,6 +516,30 @@ int main(){
       apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL); apply_surface(540, 10, life, screen,NULL);
     }
 
+    if(mode == 2)
+    {
+      if(A2.life == 0)//생명력 0
+      {
+        game_over();
+        if (Continue == 1)
+        {
+          goto loop;
+        }
+        break;
+      }
+
+      else if(A2.life == 1)//생명력 1
+        apply_surface(500, 20, life, screen,NULL);
+      else if(A2.life == 2)
+      {
+        apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL);
+      }
+      else if(A2.life == 3)
+      {
+        apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL); apply_surface(540, 20, life, screen,NULL);
+      }
+    }
+
 
     ostringstream sc;
     sc<< score;
@@ -478,6 +583,7 @@ bool load_files()
   plane3 = load_image("assets/aircraft3.png");
   plane4 = load_image("assets/aircraft5.png");
   plane5 = load_image("assets/aircraft6.png");
+  plane_2p = load_image("assets/aircraft3.png");
   frame = load_image("assets/blueframe.png");
   frame2 = load_image("assets/redframe.png");
   arrow = load_image("assets/arrow.png");
@@ -504,7 +610,6 @@ bool load_files()
   }
   SDL_SetColorKey(explosion, SDL_SRCCOLORKEY,SDL_MapRGB(explosion->format,0,0,0));
   SDL_SetColorKey(life, SDL_SRCCOLORKEY,SDL_MapRGB(life->format,255,255,255));
-  SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_boss->format,0,0,0));
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_mini->format,0,0,0));
   SDL_SetColorKey(frame, SDL_SRCCOLORKEY,SDL_MapRGB(frame->format,0,0,0));
@@ -579,7 +684,8 @@ void menu2()   // 비행기 고르는 메뉴
   int selectx = 25;
   int selectx2 = 525;
 	bool quit = false;
-	while (quit == false)
+  bool quit2 = false;
+	while (quit == false && quit2 == false)
 	{
 		if (SDL_PollEvent(&event))
 		{
@@ -589,10 +695,21 @@ void menu2()   // 비행기 고르는 메뉴
 			apply_surface(0, 0, background, screen, NULL);
       apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
       apply_surface(selectx, 250, frame, screen, NULL);
+      apply_surface(selectx+30, 210, message2, screen, NULL);
+      if(mode==2)
+      {
+        apply_surface(selectx2, 250, frame2, screen, NULL);
+        apply_surface(selectx2+30, 345, message3, screen, NULL);
+      }
+      SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
       apply_surface(57, 285, plane, screen, NULL);
+      SDL_SetColorKey(plane2, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
       apply_surface(182, 285, plane2, screen, NULL);
+      SDL_SetColorKey(plane3, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
       apply_surface(307, 285, plane3, screen, NULL);
+      SDL_SetColorKey(plane4, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
       apply_surface(432, 285, plane4, screen, NULL);
+      SDL_SetColorKey(plane5, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
       apply_surface(557, 285, plane5, screen, NULL);
 			SDL_Flip(screen);
 
@@ -601,33 +718,74 @@ void menu2()   // 비행기 고르는 메뉴
 				switch (event.key.keysym.sym)
 				{
 
-				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+				case SDLK_o:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
         {
           quit = true;
           if(selectx == 25){
-            plane = load_image("assets/p2.gif");
+            plane = load_image("assets/p2.png");
+            SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
             SA = 0;
           }
 
           else if(selectx == 150){
             plane = load_image("assets/aircraft1.png");
+            SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 1;
           }
           else if(selectx == 275){
             plane = load_image("assets/aircraft3.png");
+            SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 2;
           }
           else if(selectx == 400){
             plane = load_image("assets/aircraft5.png");
+            SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 3;
           }
           else if(selectx == 525){
             plane = load_image("assets/aircraft6.png");
+            SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 4;
           }
           break;
         }
-        case SDLK_LEFT:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+
+        case SDLK_f:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          quit2 = true;
+          if(selectx == 25){
+            plane_2p = load_image("assets/p2.png");
+            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane_2p->format,255,255,255));
+            SA = 0;
+          }
+
+          else if(selectx == 150){
+            plane_2p = load_image("assets/aircraft1.png");
+            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+            SA = 1;
+          }
+          else if(selectx == 275){
+            plane_2p = load_image("assets/aircraft3.png");
+            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+            SA = 2;
+          }
+          else if(selectx == 400){
+            plane_2p = load_image("assets/aircraft5.png");
+            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+            SA = 3;
+          }
+          else if(selectx == 525){
+            plane_2p = load_image("assets/aircraft6.png");
+            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+            SA = 4;
+          }
+
+
+          break;
+        }
+
+
+        case SDLK_KP4:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
         {
           if (selectx == 25)
           {}
@@ -637,7 +795,7 @@ void menu2()   // 비행기 고르는 메뉴
           }
           break;
         }
-        case SDLK_RIGHT:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        case SDLK_KP6:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
         {
           if(selectx == 525)
           {}
@@ -837,38 +995,41 @@ void stage_clear()  // 나중에 bosscounter == 0 되면 stage clear 되도록 �
 		}
 	}
 }
-void sprite_surface( SDL_Surface *screen, SDL_Rect tmp, SDL_Surface* surface, int w, int h, int step , int mode)
+
+void sprite_surface( SDL_Surface *screen, SDL_Rect tmp, SDL_Surface* surface, int w, int h, int step , int mode1)
 {
 	SDL_Rect rectDst, rectSrc;
-  if(mode == 0)
+  if(mode1 == 0)
   {
     rectDst = tmp;
     rectDst.x -= 10;
   }
 
-  else if(mode == 1)
+  else if(mode1 == 1)
   {
     rectDst = tmp;
-    rectDst.y += 25;
+    rectDst.x += 60;
+    rectDst.y += 18;
   }
 
-  else if(mode == 2)
+  else if(mode1 == 2)
   {
     rectDst = tmp;
-    rectDst.x += 15;
-    rectDst.y += 50;
+    rectDst.x += 110;
+    rectDst.y += 32;
   }
-  else if(mode == 3)
+  else if(mode1 == 3)
   {
     rectDst = tmp;
-    rectDst.x += 30;
-    rectDst.y += 25;
+    rectDst.x += 160;
+    rectDst.y += 18;
   }
-  else if(mode == 4)
+  else if(mode1 == 4)
   {
     rectDst = tmp;
-    rectDst.x += 45;
+    rectDst.x += 210;
   }
+
   rectSrc.x = (step % w) * surface->w/w;      //분할된 이미지 선택
   rectSrc.y = (step / w) * surface->h/h;
   rectSrc.w = surface->w/w;                   //분할된 이미지 선택

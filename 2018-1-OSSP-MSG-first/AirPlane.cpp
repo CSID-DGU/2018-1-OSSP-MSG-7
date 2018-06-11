@@ -440,16 +440,17 @@ bool Boss::Got_shot(_bullets &A, int &x){
         tmp.push_back(*iter);
       else//맞았을때
       {
-        if((*iter).bullet_pos.x <= pos_x + MINI_BOSS_WIDTH / 5)
+        if((*iter).bullet_pos.x <= pos_x + BOSS_WIDTH / 5)
           x = 0;
-        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 2)
+        else if((*iter).bullet_pos.x <= pos_x + (BOSS_WIDTH / 5) * 2)
           x = 1;
-        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 3)
+        else if((*iter).bullet_pos.x <= pos_x + (BOSS_WIDTH / 5) * 3)
           x = 2;
-        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 4)
+        else if((*iter).bullet_pos.x <= pos_x + (BOSS_WIDTH / 5) * 4)
           x = 3;
         else
           x = 4;
+
         flag = true;
       }
     }
