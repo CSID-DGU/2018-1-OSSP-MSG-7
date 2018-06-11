@@ -25,6 +25,7 @@ SDL_Surface *enemy[4];//회전하는 비행기 이미지
 SDL_Surface *boom[11];// 폭발 이미지
 SDL_Surface *frame;
 SDL_Surface *frame2;
+SDL_Surface *arrow;
 
 SDL_Surface *enemy2;
 
@@ -309,6 +310,7 @@ int main(){
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
     SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+    SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
 
 
     if( E.size() > 0)//적 비행기
@@ -466,6 +468,7 @@ bool load_files()
   plane5 = load_image("assets/aircraft6.png");
   frame = load_image("assets/blueframe.png");
   frame2 = load_image("assets/redframe.png");
+  arrow = load_image("assets/arrow.png");
   font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
   font2 = TTF_OpenFont("assets/Starjout.ttf", 84);//제목 폰트
   font3 = TTF_OpenFont("assets/Starjout.ttf",24);
@@ -496,6 +499,7 @@ bool load_files()
   SDL_SetColorKey(frame2, SDL_SRCCOLORKEY,SDL_MapRGB(frame2->format,0,0,0));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,0,0,0));
   SDL_SetColorKey(bullet_basic, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_basic->format,255,255,255));
+  SDL_SetColorKey(arrow, SDL_SRCCOLORKEY,SDL_MapRGB(arrow->format,0,0,0));
   return true;
 }
 
@@ -604,7 +608,7 @@ void menu2()   // 비행기 고르는 메뉴
             SA = 1;
           }
           else if(selectx == 275){
-            plane = load_image("assets/aircraft3.png"); ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+            plane = load_image("assets/aircraft3.png");
             SA = 2;
           }
           else if(selectx == 400){
@@ -677,7 +681,7 @@ void menu2()   // 비행기 고르는 메뉴
 
 void menu3()   // 비행기 고르는 메뉴
 {
-  int selecty;
+  int selecty=210;
 	bool quit = false;
 	while (quit == false)
 	{
@@ -692,6 +696,7 @@ void menu3()   // 비행기 고르는 메뉴
       apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
       apply_surface((640 - message2->w) / 2, 210, message2, screen, NULL);
       apply_surface((640 - message3->w) / 2, 300, message3, screen, NULL);
+      apply_surface(170, selecty-20, arrow, screen, NULL);
 
 			SDL_Flip(screen);
 
