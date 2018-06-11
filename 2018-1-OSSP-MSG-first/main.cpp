@@ -1,4 +1,3 @@
-
 #include "AirPlane.h"
 #include <string>
 #include <sstream>
@@ -54,6 +53,7 @@ bool load_files();//이미지, 폰트 초기화 함수
 bool SDL_free();// sdl 변수들 free 함수
 void menu();
 void menu2();
+void menu3();
 void game_over();
 void stage_clear();
 void special_ability(int SA);
@@ -72,6 +72,7 @@ int main(){
   {
     return 0;
   }
+  menu3();
   menu2();
 
   Continue = 0;
@@ -85,6 +86,7 @@ int main(){
   int background_count = 0;               //background 움직임 count
   int boom_mode = 0;
   int flag_sa = 0;
+  int flag_sa2 = 0;
 
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
@@ -105,15 +107,14 @@ int main(){
 
 
   while(true){
-    if(flag_sa < 10)flag_sa ++;
-
+    if(flag_sa < 10) flag_sa++;
+    if(flag_sa2 <10) flag_sa2++;
     vector<special> t;
     it_sa = sa_1.begin();
-    for(it_sa; it_sa != sa_1.end(); it_sa ++){
-        if((*it_sa).pos() >- 130) {t.push_back(*it_sa);}
+    for(it_sa; it_sa != sa_1.end();it_sa++){
+        if((*it_sa).pos() > -130) t.push_back(*it_sa);
     }
-    sa_1 = t;
-
+    sa_1= t;
     if(count % 5 == 0) shootcnt = 0;
     if(count % 50 == 0)//100count마다 1기씩 생성
     {
@@ -148,19 +149,18 @@ int main(){
 
     if(mode == 2 && A2.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
     {
-      A.life--;
-      A.invisible_mode = 1;
+      A2.life--;
+      A2.invisible_mode = 1;
     }
 
     if(E.size() > 0)
     {
       vector<Enemy_standard> v_tmp;
-      it_sa = sa_1.begin();
 
       for(it = E.begin(); it != E.end(); it++)//적 비행기들 피격 판정
       {
         Enemy_standard tmp(0);
-        if((*it).Got_shot(player_bullets)) //|| (*it).eliminate((*it_sa).pos_y))//비행기가 격추 당하면   I WAS DOING HEAER GDGJIDOFJDIOAFDFNIOASDFNIDFDAFIONASDFIODNSIOFSNADFIOSDANFIODASNFIDOASFNDISOFNSDAIOFNASDIOFNASDIOF
+        if((*it).Got_shot(player_bullets))//비행기가 격추 당하면
         {
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
@@ -175,15 +175,15 @@ int main(){
       }
 
       E = v_tmp;
+
     }
     if(E2.size()>0)
     {
         vector<Enemy_standard_2> v_tmp;
-        it_sa = sa_1.begin();
         for(it2 = E2.begin(); it2 != E2.end(); it2++)//적 비행기들 피격 판정
         {
           Enemy_standard_2 tmp(0);
-          if((*it2).Got_shot(player_bullets)) //|| (*it2).eliminate((*it_sa).pos_y))
+          if((*it2).Got_shot(player_bullets))
           {
             BOOM B_tmp((*it2).Get_plane());
             B.push_back(B_tmp);
@@ -267,7 +267,7 @@ int main(){
     {
         if(A.SA_count >0 && flag_sa == 10){
            A.SA_count --; //// Put image for SA
-           flag_sa =0;
+           flag_sa = 0;
            switch (SA){
            case 0:
                {
@@ -330,9 +330,9 @@ int main(){
           }
           if(keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
           {
-              if(A2.SA_count >0 && flag_sa == 10){
+              if(A2.SA_count >0 && flag_sa2 == 10){
                  A2.SA_count --; //// Put image for SA
-                 flag_sa = 0;
+                 flag_sa2= 0;
                  switch (SA){
                  case 0:
                      {
@@ -558,6 +558,9 @@ int main(){
   return 0;
 }
 
+
+
+
 bool init()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔
   SDL_Init(SDL_INIT_EVERYTHING);
@@ -613,6 +616,7 @@ bool load_files()
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_boss->format,0,0,0));
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_mini->format,0,0,0));
   SDL_SetColorKey(frame, SDL_SRCCOLORKEY,SDL_MapRGB(frame->format,0,0,0));
+  SDL_SetColorKey(frame2, SDL_SRCCOLORKEY,SDL_MapRGB(frame2->format,0,0,0));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,0,0,0));
   SDL_SetColorKey(bullet_basic, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_basic->format,255,255,255));
   SDL_SetColorKey(arrow, SDL_SRCCOLORKEY,SDL_MapRGB(arrow->format,0,0,0));
@@ -691,6 +695,8 @@ void menu2()   // 비행기 고르는 메뉴
 		{
       font = TTF_OpenFont("assets/Terminus.ttf", 36);//작은 안내문 폰트
       message = TTF_RenderText_Solid(font, "Choose your Aircraft", textColor); // space키는 시작 esc키는 종료
+      message2 = TTF_RenderText_Solid(font3, "1P", textColor);
+      message3 = TTF_RenderText_Solid(font3, "2P", textColor);
       background = load_image("assets/background.png");  // 배경
 			apply_surface(0, 0, background, screen, NULL);
       apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
