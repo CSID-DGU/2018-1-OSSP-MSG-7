@@ -1,6 +1,5 @@
 #include "helpers.h"
 
-
 class BOOM
 {
 private:
@@ -41,6 +40,35 @@ public:
   SDL_Rect bullet_pos;//총알들의 위치
 }bullets;
 
+class special
+{
+public:
+    special(int x){
+        pos_x = x;
+        sa1 = load_image("assets/sa1.png");
+        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
+    };
+    ~special(){};
+
+  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
+  {
+      SDL_Rect offset;
+      offset.x = pos_x;
+      offset.y = pos_y;
+      SDL_BlitSurface(sa1, clip, destination, &offset);
+  };
+
+  void control_bullet()
+  {
+    pos_y -= 4;
+    if(pos_y < -130) {this->~special();}
+  };
+    int pos_y=480;
+private:
+    int pos_x;
+    SDL_Surface *sa1;
+};
+
 class _bullets
 {
 public:
@@ -71,35 +99,17 @@ public:
     blt = temp;
   }
 
+  void eliminate (special spc){
+      vector<bullets> temp;
+      for(vector<bullets>::iterator iter = blt.begin(); iter != blt.end(); iter++)
+      {
+          bullets tmp((*iter).move_x,(*iter).move_y,(*iter).bullet_pos.x + (*iter).move_x,(*iter).bullet_pos.y + (*iter).move_y);
+          if(spc.pos_y>tmp.bullet_pos.y+30||spc.pos_y+180 < tmp.bullet_pos.y)temp.push_back(tmp);
+      }
+      blt = temp;
+  }
+
   vector<bullets> blt;
-};
-
-class special
-{
-public:
-    special(int x){
-        pos_x=x;
-        sa1 = load_image("assets/sa1.png");
-        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
-    };
-
-  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
-  {
-      SDL_Rect offset;
-      offset.x = pos_x;
-      offset.y = pos_y;
-      SDL_BlitSurface(sa1, clip, destination, &offset);
-  };
-
-  void control_bullet()
-  {
-    pos_y -= 3;
-  };
-
-private:
-    int pos_x;
-    int pos_y=480;
-    SDL_Surface *sa1;
 };
 
 class AirPlane
@@ -140,6 +150,7 @@ public:
   Enemy_standard_2(int mode);
   ~Enemy_standard_2();
   bool Got_shot(_bullets &A);
+  bool eliminate ( int y);
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(_bullets &A);
@@ -161,6 +172,7 @@ private:
     Enemy_standard(int mode);
     ~Enemy_standard();
     bool Got_shot(_bullets &A);
+    bool eliminate ( int y);
     void shooting(_bullets &A);
     void enemy_apply_surface(SDL_Surface* source[], SDL_Surface* destination, SDL_Rect* clip);
     void control_plane(_bullets &enemey);
