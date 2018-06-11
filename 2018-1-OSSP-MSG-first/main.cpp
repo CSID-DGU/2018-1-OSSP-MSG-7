@@ -736,7 +736,7 @@ void menu2()   // 비행기 고르는 메뉴
             SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 4;
           }
-          if(mode ==1)
+          if(mode == 1)
             quit2 = true;
           break;
         }
