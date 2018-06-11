@@ -15,6 +15,7 @@ SDL_Surface *bullet_mini;
 SDL_Surface *bullet_boss;
 SDL_Surface *message;
 SDL_Surface *message2;
+SDL_Surface *message3;
 SDL_Surface *title_message;
 SDL_Surface *plane;// 사용자 비행기 이미지
 SDL_Surface *plane2;
@@ -24,6 +25,8 @@ SDL_Surface *plane5;
 SDL_Surface *enemy[4];//회전하는 비행기 이미지
 SDL_Surface *boom[11];// 폭발 이미지
 SDL_Surface *frame;
+SDL_Surface *frame2;
+SDL_Surface *arrow;
 
 SDL_Surface *enemy2;
 
@@ -42,6 +45,7 @@ int EXIT = -1;
 int Continue = 0;
 int craft;
 int SA;
+int mode;
 
 void sprite_surface(SDL_Surface* source, SDL_Rect tmp, SDL_Surface* destination, int w, int h, int step,int mode);
 bool init();//변수들 초기화 함수
@@ -49,6 +53,7 @@ bool load_files();//이미지, 폰트 초기화 함수
 bool SDL_free();// sdl 변수들 free 함수
 void menu();
 void menu2();
+void menu3();
 void game_over();
 void stage_clear();
 void special_ability(int SA);
@@ -67,6 +72,7 @@ int main(){
   {
     return 0;
   }
+  menu3();
   menu2();
 
   Continue = 0;
@@ -131,7 +137,7 @@ int main(){
       A.invisible_mode = 1;
     }
 
-    if(A2.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
+    if(mode = 2 && A2.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
     {
       A.life--;
       A.invisible_mode = 1;
@@ -184,14 +190,14 @@ int main(){
         E2=v_tmp;
     }
 
-    if(tmp3.amount ==1 && tmp3.Got_shot(player_bullets, boom_mode) && score >= 5000) {
+    if(tmp3.amount == 1 && tmp3.Got_shot(player_bullets, boom_mode) && score >= 5000) {
         BOOM tmp(tmp3.Get_plane());
         tmp.three = boom_mode;
         Boss_B.push_back(tmp);
         tmp3.loss_life(score);
     }   // have to add the condition when the mini boss appear
 
-    if(tmp4.amount ==1 && tmp4.Got_shot(player_bullets, boom_mode) && score >= 20000) // have to add the condition when the mini boss appear
+    if(tmp4.amount == 1 && tmp4.Got_shot(player_bullets, boom_mode) && score >= 20000) // have to add the condition when the mini boss appear
     {
       BOOM tmp(tmp4.Get_plane());
       tmp.three = boom_mode;
@@ -295,76 +301,77 @@ int main(){
 
       if(keystates[SDLK_KP6])
         A.control_plane(4, 0);
-
+      if(mode = 2 )
+      {
         if(keystates[SDLK_f])
-        {
-          if(shootcnt == 0) {
-              A2.shooting(player_bullets);
-              shootcnt = 1;
-          }
-        }
-        if(keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
-        {
-            if(A2.SA_count >0){
-               A2.SA_count --; //// Put image for SA
-               switch (SA){
-               case 0:
-                   {
-                       special tmp(0);
-                       special tmp2(100);
-                       special tmp3(200);
-                       special tmp4(300);
-                       special tmp5(400);
-                       special tmp6(500);
-                       special tmp7(600);
-                       special tmp8(700);
-                       sa_1.push_back(tmp);
-                       sa_1.push_back(tmp2);
-                       sa_1.push_back(tmp3);
-                       sa_1.push_back(tmp4);
-                       sa_1.push_back(tmp5);
-                       sa_1.push_back(tmp6);
-                       sa_1.push_back(tmp7);
-                       sa_1.push_back(tmp8);
-                   break;
-                  }
-                   case 1:
-                  {
-                      break;
-                  }
-                   case 2:
-                  {
-                       break;
-                  }
-                   case 3:
-                  {
-                      break;
-                  }
-                   case 4:
-                  {
-                      break;
-                  }
-               }
+          {
+            if(shootcnt == 0) {
+                A2.shooting(player_bullets);
+                shootcnt = 1;
             }
-        }
+          }
+          if(keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
+          {
+              if(A2.SA_count >0){
+                 A2.SA_count --; //// Put image for SA
+                 switch (SA){
+                 case 0:
+                     {
+                         special tmp(0);
+                         special tmp2(100);
+                         special tmp3(200);
+                         special tmp4(300);
+                         special tmp5(400);
+                         special tmp6(500);
+                         special tmp7(600);
+                         special tmp8(700);
+                         sa_1.push_back(tmp);
+                         sa_1.push_back(tmp2);
+                         sa_1.push_back(tmp3);
+                         sa_1.push_back(tmp4);
+                         sa_1.push_back(tmp5);
+                         sa_1.push_back(tmp6);
+                         sa_1.push_back(tmp7);
+                         sa_1.push_back(tmp8);
+                     break;
+                    }
+                     case 1:
+                    {
+                        break;
+                    }
+                     case 2:
+                    {
+                         break;
+                    }
+                     case 3:
+                    {
+                        break;
+                    }
+                     case 4:
+                    {
+                        break;
+                    }
+                 }
+              }
+          }
 
-        if(keystates[SDLK_w])
-          A2.control_plane(0,-4);
+          if(keystates[SDLK_w])
+            A2.control_plane(0,-4);
 
-        if(keystates[SDLK_s])
-          A2.control_plane(0, 4);
+          if(keystates[SDLK_s])
+            A2.control_plane(0, 4);
 
-        if(keystates[SDLK_a])
-          A2.control_plane(-4, 0);
+          if(keystates[SDLK_a])
+            A2.control_plane(-4, 0);
 
-        if(keystates[SDLK_d])
-          A2.control_plane(4, 0);
-
+          if(keystates[SDLK_d])
+            A2.control_plane(4, 0);
+      }
 
     if(A.invisible_mode == 1)//투명화 상태, 투명도 조절
       A.invisible(plane);
 
-    if(A2.invisible_mode == 1)//투명화 상태, 투명도 조절
+    if(mode ==2 &&A2.invisible_mode == 1)//투명화 상태, 투명도 조절
       A2.invisible(plane);
 
       if(background_count++ != 480);
@@ -379,7 +386,10 @@ int main(){
     mini_bullets.bullet_apply_surface(bullet_mini, screen, NULL);
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
-    A2.plane_apply_surface(plane, screen,NULL); //사용자 비행기
+    if(mode ==2)A2.plane_apply_surface(plane, screen,NULL); //사용자 비행기
+    SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+    SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
+
 
     if( E.size() > 0)//적 비행기
     {
@@ -488,6 +498,30 @@ int main(){
       apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL); apply_surface(540, 10, life, screen,NULL);
     }
 
+    if(mode == 2)
+    {
+      if(A2.life == 0)//생명력 0
+      {
+        game_over();
+        if (Continue == 1)
+        {
+          goto loop;
+        }
+        break;
+      }
+
+      else if(A2.life == 1)//생명력 1
+        apply_surface(500, 20, life, screen,NULL);
+      else if(A2.life == 2)
+      {
+        apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL);
+      }
+      else if(A2.life == 3)
+      {
+        apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL); apply_surface(540, 20, life, screen,NULL);
+      }
+    }
+
 
     ostringstream sc;
     sc<< score;
@@ -535,6 +569,8 @@ bool load_files()
   plane4 = load_image("assets/aircraft5.png");
   plane5 = load_image("assets/aircraft6.png");
   frame = load_image("assets/blueframe.png");
+  frame2 = load_image("assets/redframe.png");
+  arrow = load_image("assets/arrow.png");
   font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
   font2 = TTF_OpenFont("assets/Starjout.ttf", 84);//제목 폰트
   font3 = TTF_OpenFont("assets/Starjout.ttf",24);
@@ -561,8 +597,10 @@ bool load_files()
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_boss->format,0,0,0));
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_mini->format,0,0,0));
   SDL_SetColorKey(frame, SDL_SRCCOLORKEY,SDL_MapRGB(frame->format,0,0,0));
+  SDL_SetColorKey(frame2, SDL_SRCCOLORKEY,SDL_MapRGB(frame2->format,0,0,0));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,0,0,0));
   SDL_SetColorKey(bullet_basic, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_basic->format,255,255,255));
+  SDL_SetColorKey(arrow, SDL_SRCCOLORKEY,SDL_MapRGB(arrow->format,0,0,0));
   return true;
 }
 
@@ -629,6 +667,7 @@ void menu()   // 처음 시작 메뉴
 void menu2()   // 비행기 고르는 메뉴
 {
   int selectx = 25;
+  int selectx2 = 525;
 	bool quit = false;
 	while (quit == false)
 	{
@@ -636,10 +675,15 @@ void menu2()   // 비행기 고르는 메뉴
 		{
       font = TTF_OpenFont("assets/Terminus.ttf", 36);//작은 안내문 폰트
       message = TTF_RenderText_Solid(font, "Choose your Aircraft", textColor); // space키는 시작 esc키는 종료
+      message2 = TTF_RenderText_Solid(font3, "1P", textColor);
+      message3 = TTF_RenderText_Solid(font3, "2P", textColor);
       background = load_image("assets/background.png");  // 배경
 			apply_surface(0, 0, background, screen, NULL);
       apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
       apply_surface(selectx, 250, frame, screen, NULL);
+      apply_surface(selectx2, 250, frame2, screen, NULL);
+      apply_surface(selectx+30, 210, message2, screen, NULL);
+      apply_surface(selectx2+30, 345, message3, screen, NULL);
       apply_surface(57, 285, plane, screen, NULL);
       apply_surface(182, 285, plane2, screen, NULL);
       apply_surface(307, 285, plane3, screen, NULL);
@@ -656,7 +700,7 @@ void menu2()   // 비행기 고르는 메뉴
         {
           quit = true;
           if(selectx == 25){
-            plane = load_image("assets/p2.gif");
+            plane = load_image("assets/p2.png");
             SA = 0;
           }
 
@@ -665,7 +709,7 @@ void menu2()   // 비행기 고르는 메뉴
             SA = 1;
           }
           else if(selectx == 275){
-            plane = load_image("assets/aircraft3.png"); ///////////////////////////////////////////////////////////////////////////////////////////////////////////
+            plane = load_image("assets/aircraft3.png");
             SA = 2;
           }
           else if(selectx == 400){
@@ -699,6 +743,101 @@ void menu2()   // 비행기 고르는 메뉴
           }
           break;
         }
+        case SDLK_a:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if (selectx2 == 25)
+          {}
+          else
+          {
+            selectx2 -= 125;
+          }
+          break;
+        }
+        case SDLK_d:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if(selectx2 == 525)
+          {}
+          else
+          {
+            selectx2 += 125;
+          }
+          break;
+        }
+
+
+        case SDLK_ESCAPE:  // esc 키 누르면 종료
+        {
+          EXIT = 1;
+          quit = true;
+          break;
+        }
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
+
+void menu3()   // 비행기 고르는 메뉴
+{
+  int selecty=210;
+	bool quit = false;
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+      font = TTF_OpenFont("assets/Terminus.ttf", 36);//작은 안내문 폰트
+      message = TTF_RenderText_Solid(font, "Choose the game mode", textColor); // space키는 시작 esc키는 종료
+      message2 = TTF_RenderText_Solid(font3, "Single play", textColor);
+      message3 = TTF_RenderText_Solid(font3, "Multi play", textColor);
+      background = load_image("assets/background.png");  // 배경
+			apply_surface(0, 0, background, screen, NULL);
+      apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
+      apply_surface((640 - message2->w) / 2, 210, message2, screen, NULL);
+      apply_surface((640 - message3->w) / 2, 300, message3, screen, NULL);
+      apply_surface(170, selecty-20, arrow, screen, NULL);
+
+			SDL_Flip(screen);
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+
+				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          quit = true;
+          if(selecty == 210)
+            mode = 1;
+          else if(selecty == 300)
+            mode = 2;
+
+          break;
+        }
+        case SDLK_UP:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if (selecty == 210)
+          {}
+          else
+          {
+            selecty -= 90;
+          }
+          break;
+        }
+        case SDLK_DOWN:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if(selecty == 300)
+          {}
+          else
+          {
+            selecty += 90;
+          }
+          break;
+        }
+
         case SDLK_ESCAPE:  // esc 키 누르면 종료
         {
           EXIT = 1;
