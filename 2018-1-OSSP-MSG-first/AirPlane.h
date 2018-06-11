@@ -49,6 +49,7 @@ public:
     item_pos.x = ply_x;
     item_pos.y = ply_y;
   }
+  
   int move_x, move_y;                     // item의 방향성
   SDL_Rect item_pos;                      // item의 위치
 }items;

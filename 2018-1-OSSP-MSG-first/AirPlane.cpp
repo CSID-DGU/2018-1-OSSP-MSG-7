@@ -533,7 +533,7 @@ void Boss::control_plane(_bullets &A){
 
 void Item::add_itm(int x, int y, int ply_x, int ply_y)
 {
-  item = load_image("assets/tem1.png");
+  item = load_image("assets/tem_li.png");
   items tmp(x,y,ply_x,ply_y);
   itm.push_back(tmp);
 }

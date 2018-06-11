@@ -78,7 +78,7 @@ int main()
   int background_count = 0;               //background 움직임 count
   int boom_mode = 0;
   int flag = 0;
-
+  
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
   vector<BOOM>::iterator B_it;
@@ -138,8 +138,11 @@ int main()
         Enemy_standard tmp(0);
         if((*it).Got_shot(player_bullets))//비행기가 격추 당하면
         {
-          I.add_itm((*it).pos_x, (*it).pos_y, (*it).pos_x, (*it).pos_y + 20);
-          flag = 1;
+          if(I.itm.size() == 0)
+          {
+            I.add_itm((*it).pos_x, (*it).pos_y, (*it).pos_x, (*it).pos_y + 20);
+            flag = (rand() % 6);
+          }
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
           (*it).~Enemy_standard();
@@ -153,7 +156,6 @@ int main()
       }
 
       E = v_tmp;
-
     }
     if(E2.size()>0)
     {
@@ -195,7 +197,10 @@ int main()
 
     if(A.Got_item(I.itm))
     {
-      A.increaseLife();
+      if(A.life <3)
+      {
+        A.increaseLife();
+      }
       flag = 0;
       //I.~Item();
     }
