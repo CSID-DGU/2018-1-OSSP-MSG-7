@@ -1,6 +1,5 @@
 #include "AirPlane.h"
 
-
 AirPlane::AirPlane()
 {
   pos_x = SCREEN_WIDTH / 2;//처음 시작 위치 지정

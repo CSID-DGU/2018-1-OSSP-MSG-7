@@ -1,5 +1,6 @@
 #include "helpers.h"
 
+
 class BOOM
 {
 private:
@@ -44,11 +45,10 @@ class special
 {
 public:
     special(int x){
-        pos_x = x;
+        pos_x=x;
         sa1 = load_image("assets/sa1.png");
         SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
     };
-    ~special(){};
 
   void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
   {
@@ -61,8 +61,11 @@ public:
   void control_bullet()
   {
     pos_y -= 4;
-    if(pos_y < -130) {this->~special();}
   };
+
+  int pos(){
+      return pos_y;
+  }
     int pos_y=480;
 private:
     int pos_x;
