@@ -132,11 +132,12 @@ int main(){
     if(E.size() > 0)
     {
       vector<Enemy_standard> v_tmp;
+      it_sa = sa_1.begin();
 
       for(it = E.begin(); it != E.end(); it++)//적 비행기들 피격 판정
       {
         Enemy_standard tmp(0);
-        if((*it).Got_shot(player_bullets))//비행기가 격추 당하면
+        if((*it).Got_shot(player_bullets)) //|| (*it).eliminate((*it_sa).pos_y))//비행기가 격추 당하면   I WAS DOING HEAER GDGJIDOFJDIOAFDFNIOASDFNIDFDAFIONASDFIODNSIOFSNADFIOSDANFIODASNFIDOASFNDISOFNSDAIOFNASDIOFNASDIOF
         {
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
@@ -151,15 +152,15 @@ int main(){
       }
 
       E = v_tmp;
-
     }
     if(E2.size()>0)
     {
         vector<Enemy_standard_2> v_tmp;
+        it_sa = sa_1.begin();
         for(it2 = E2.begin(); it2 != E2.end(); it2++)//적 비행기들 피격 판정
         {
           Enemy_standard_2 tmp(0);
-          if((*it2).Got_shot(player_bullets))
+          if((*it2).Got_shot(player_bullets)) //|| (*it2).eliminate((*it_sa).pos_y))
           {
             BOOM B_tmp((*it2).Get_plane());
             B.push_back(B_tmp);
@@ -189,6 +190,13 @@ int main(){
       tmp.three = boom_mode;
       Boss_B4.push_back(tmp);
       tmp4.loss_life(score);
+    }
+
+    if(sa_1.size()>0){
+        it_sa = sa_1.begin();
+        enemy_bullets.eliminate(*it_sa);
+        boss_bullets.eliminate(*it_sa);
+        mini_bullets.eliminate(*it_sa);
     }
 
     if(SDL_PollEvent(&event)){
