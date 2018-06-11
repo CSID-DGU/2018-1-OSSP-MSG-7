@@ -44,7 +44,135 @@ public:
 class special
 {
 public:
-    special(int x){
+    special(int x, int SA){
+        pos_x=x;
+        if(SA == 0)sa1 = load_image("assets/sa1.png");
+        else if( SA == 1) sa1 = load_image("assets/sa2.png");// gochuya ham
+        else if (SA == 2) sa1 = load_image("assets/sa3.png");
+        else if (SA == 3) sa1 = load_image("assets/sa1.png");
+        else if (SA == 4) sa1 =load_image("assets/sa1.png");
+        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
+    };
+
+  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
+  {
+      SDL_Rect offset;
+      offset.x = pos_x;
+      offset.y = pos_y;
+      SDL_BlitSurface(sa1, clip, destination, &offset);
+  };
+
+  void control_bullet()
+  {
+    pos_y -= 4;
+  };
+
+  int pos(){
+      return pos_y;
+  }
+    int pos_y=480;
+private:
+    int pos_x;
+    SDL_Surface *sa1;
+};
+
+class special2
+{
+public:
+    special2(int x){
+        pos_x=x;
+        sa1 = load_image("assets/sa1.png");
+        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
+    };
+
+  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
+  {
+      SDL_Rect offset;
+      offset.x = pos_x;
+      offset.y = pos_y;
+      SDL_BlitSurface(sa1, clip, destination, &offset);
+  };
+
+  void control_bullet()
+  {
+    pos_y -= 4;
+  };
+
+  int pos(){
+      return pos_y;
+  }
+    int pos_y=480;
+private:
+    int pos_x;
+    SDL_Surface *sa1;
+};
+
+class special3
+{
+public:
+    special3(int x){
+        pos_x=x;
+        sa1 = load_image("assets/sa1.png");
+        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
+    };
+
+  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
+  {
+      SDL_Rect offset;
+      offset.x = pos_x;
+      offset.y = pos_y;
+      SDL_BlitSurface(sa1, clip, destination, &offset);
+  };
+
+  void control_bullet()
+  {
+    pos_y -= 4;
+  };
+
+  int pos(){
+      return pos_y;
+  }
+    int pos_y=480;
+private:
+    int pos_x;
+    SDL_Surface *sa1;
+};
+
+class special4
+{
+public:
+    special4(int x){
+        pos_x=x;
+        sa1 = load_image("assets/sa1.png");
+        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
+    };
+
+  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
+  {
+      SDL_Rect offset;
+      offset.x = pos_x;
+      offset.y = pos_y;
+      SDL_BlitSurface(sa1, clip, destination, &offset);
+  };
+
+  void control_bullet()
+  {
+    pos_y -= 4;
+  };
+
+  int pos(){
+      return pos_y;
+  }
+    int pos_y=480;
+private:
+    int pos_x;
+    SDL_Surface *sa1;
+};
+
+class special5
+{
+public:
+    special5(int x){
         pos_x=x;
         sa1 = load_image("assets/sa1.png");
         SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
