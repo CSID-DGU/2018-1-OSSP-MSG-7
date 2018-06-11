@@ -84,6 +84,7 @@ int main(){
   int delay = 0;
   int count = 0;
   int shootcnt = 0;
+  int shootcnt2 = 0;
   int background_count = 0;               //background 움직임 count
   int boom_mode = 0;
 
@@ -107,6 +108,7 @@ int main(){
 
   while(true){
     if(count % 5 == 0) shootcnt = 0;
+    if(count % 5 == 0) shootcnt2 = 0;
     if(count % 50 == 0)//100count마다 1기씩 생성
     {
       int i = rand()%2;
@@ -138,10 +140,10 @@ int main(){
       A.invisible_mode = 1;
     }
 
-    if(mode == 2 && A2.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
+    if(mode ==2 && A2.Got_shot(enemy_bullets,boss_bullets,mini_bullets) && A.invisible_mode == 0)      //사용자 피격 판정
     {
-      A.life--;
-      A.invisible_mode = 1;
+      A2.life--;
+      A2.invisible_mode = 1;
     }
 
     if(E.size() > 0)
@@ -247,6 +249,13 @@ int main(){
           shootcnt = 1;
       }
     }
+    if(mode ==2&&keystates[SDLK_f])
+      {
+        if(shootcnt2 == 0) {
+            A2.shooting(player_bullets);
+            shootcnt2 = 1;
+        }
+      }
     if(keystates[SDLK_p])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
     {
         if(A.SA_count >0){
@@ -302,16 +311,9 @@ int main(){
 
       if(keystates[SDLK_KP6])
         A.control_plane(4, 0);
-      if(mode == 2 )
-      {
-        if(keystates[SDLK_f])
-          {
-            if(shootcnt == 0) {
-                A2.shooting(player_bullets);
-                shootcnt = 1;
-            }
-          }
-          if(keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
+
+
+          if(mode ==2&&keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
           {
               if(A2.SA_count >0){
                  A2.SA_count --; //// Put image for SA
@@ -356,24 +358,24 @@ int main(){
               }
           }
 
-          if(keystates[SDLK_w])
+          if(mode ==2&&keystates[SDLK_w])
             A2.control_plane(0,-4);
 
-          if(keystates[SDLK_s])
+          if(mode ==2&&keystates[SDLK_s])
             A2.control_plane(0, 4);
 
-          if(keystates[SDLK_a])
+          if(mode ==2&&keystates[SDLK_a])
             A2.control_plane(-4, 0);
 
-          if(keystates[SDLK_d])
+          if(mode ==2&&keystates[SDLK_d])
             A2.control_plane(4, 0);
-      }
+
 
     if(A.invisible_mode == 1)//투명화 상태, 투명도 조절
       A.invisible(plane);
 
-    if(mode ==2 &&A2.invisible_mode == 1)//투명화 상태, 투명도 조절
-      A2.invisible(plane);
+    if( mode ==2&&A2.invisible_mode == 1)//투명화 상태, 투명도 조절
+      A2.invisible(plane_2p);
 
       if(background_count++ != 480);
       else
@@ -387,10 +389,9 @@ int main(){
     mini_bullets.bullet_apply_surface(bullet_mini, screen, NULL);
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
-    if(mode == 2)
-    {
-      A2.plane_apply_surface(plane_2p, screen,NULL); //사용자 비행기
-    }
+
+    if(mode ==2)  A2.plane_apply_surface(plane_2p, screen,NULL); //사용자 비행기
+
     if( E.size() > 0)//적 비행기
     {
       for( it = E.begin(); it != E.end(); it++)
@@ -671,7 +672,7 @@ void menu2()   // 비행기 고르는 메뉴
   int selectx2 = 525;
 	bool quit = false;
   bool quit2 = false;
-	while (quit == false && quit2 == false)
+	while (quit == false || quit2 == false)
 	{
 		if (SDL_PollEvent(&event))
 		{
@@ -735,34 +736,36 @@ void menu2()   // 비행기 고르는 메뉴
             SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 4;
           }
+          if(mode ==1)
+            quit2 = true;
           break;
         }
 
         case SDLK_f:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
         {
           quit2 = true;
-          if(selectx == 25){
+          if(selectx2 == 25){
             plane_2p = load_image("assets/p2.png");
             SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane_2p->format,255,255,255));
             SA = 0;
           }
 
-          else if(selectx == 150){
+          else if(selectx2 == 150){
             plane_2p = load_image("assets/aircraft1.png");
             SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 1;
           }
-          else if(selectx == 275){
+          else if(selectx2 == 275){
             plane_2p = load_image("assets/aircraft3.png");
             SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 2;
           }
-          else if(selectx == 400){
+          else if(selectx2 == 400){
             plane_2p = load_image("assets/aircraft5.png");
             SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 3;
           }
-          else if(selectx == 525){
+          else if(selectx2 == 525){
             plane_2p = load_image("assets/aircraft6.png");
             SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 4;
