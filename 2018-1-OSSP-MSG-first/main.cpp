@@ -87,6 +87,7 @@ int main(){
   int boom_mode = 0;
   int flag_sa = 0;
   int flag_sa2 = 0;
+  int bound = -100;
 
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
@@ -115,6 +116,14 @@ int main(){
         if((*it_sa).pos() > -130) t.push_back(*it_sa);
     }
     sa_1= t;
+
+    if(t.size()>0){
+        vector<special>:: iterator ta;
+        ta= (t.begin());
+        bound = (*ta).pos();
+    }
+
+    if(bound < -130 )bound = -100;
     if(count % 5 == 0) shootcnt = 0;
     if(count % 50 == 0)//100count마다 1기씩 생성
     {
@@ -157,10 +166,11 @@ int main(){
     {
       vector<Enemy_standard> v_tmp;
 
+
       for(it = E.begin(); it != E.end(); it++)//적 비행기들 피격 판정
       {
         Enemy_standard tmp(0);
-        if((*it).Got_shot(player_bullets))//비행기가 격추 당하면
+        if((*it).Got_shot(player_bullets) || (bound < (*it).pos_y+32) && (bound+30 > (*it).pos_y))//비행기가 격추 당하면
         {
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
@@ -179,11 +189,13 @@ int main(){
     }
     if(E2.size()>0)
     {
+        vector<special> t;
         vector<Enemy_standard_2> v_tmp;
+        it_sa = sa_1.begin();
         for(it2 = E2.begin(); it2 != E2.end(); it2++)//적 비행기들 피격 판정
         {
           Enemy_standard_2 tmp(0);
-          if((*it2).Got_shot(player_bullets))
+          if((*it2).Got_shot(player_bullets) || (bound < (*it).pos_y+32) && (bound+30 > (*it).pos_y))
           {
             BOOM B_tmp((*it2).Get_plane());
             B.push_back(B_tmp);
