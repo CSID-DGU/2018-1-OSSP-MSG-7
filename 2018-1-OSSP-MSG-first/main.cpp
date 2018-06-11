@@ -21,6 +21,7 @@ SDL_Surface *plane2;
 SDL_Surface *plane3;
 SDL_Surface *plane4;
 SDL_Surface *plane5;
+SDL_Surface *plane_2p;
 SDL_Surface *enemy[4];//회전하는 비행기 이미지
 SDL_Surface *boom[11];// 폭발 이미지
 SDL_Surface *frame;
@@ -311,6 +312,8 @@ int main(){
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
     SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
     SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
+    SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane_2p->format,0,0,0));
+    SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane_2p->format,255,255,255));
 
 
     if( E.size() > 0)//적 비행기
@@ -466,6 +469,7 @@ bool load_files()
   plane3 = load_image("assets/aircraft3.png");
   plane4 = load_image("assets/aircraft5.png");
   plane5 = load_image("assets/aircraft6.png");
+  plane_2p = load_image("assets/aircraft3.png");
   frame = load_image("assets/blueframe.png");
   frame2 = load_image("assets/redframe.png");
   arrow = load_image("assets/arrow.png");
@@ -568,7 +572,8 @@ void menu2()   // 비행기 고르는 메뉴
   int selectx = 25;
   int selectx2 = 525;
 	bool quit = false;
-	while (quit == false)
+  bool quit2 = false;
+	while (quit == false && quit2 == false)
 	{
 		if (SDL_PollEvent(&event))
 		{
@@ -580,9 +585,12 @@ void menu2()   // 비행기 고르는 메뉴
 			apply_surface(0, 0, background, screen, NULL);
       apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
       apply_surface(selectx, 250, frame, screen, NULL);
-      apply_surface(selectx2, 250, frame2, screen, NULL);
       apply_surface(selectx+30, 210, message2, screen, NULL);
-      apply_surface(selectx2+30, 345, message3, screen, NULL);
+      if(mode==2)
+      {
+        apply_surface(selectx2, 250, frame2, screen, NULL);
+        apply_surface(selectx2+30, 345, message3, screen, NULL);
+      }
       apply_surface(57, 285, plane, screen, NULL);
       apply_surface(182, 285, plane2, screen, NULL);
       apply_surface(307, 285, plane3, screen, NULL);
@@ -595,7 +603,7 @@ void menu2()   // 비행기 고르는 메뉴
 				switch (event.key.keysym.sym)
 				{
 
-				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+				case SDLK_o:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
         {
           quit = true;
           if(selectx == 25){
@@ -621,7 +629,36 @@ void menu2()   // 비행기 고르는 메뉴
           }
           break;
         }
-        case SDLK_LEFT:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+
+        case SDLK_f:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          quit2 = true;
+          if(selectx == 25){
+            plane_2p = load_image("assets/p2.png");
+            SA = 0;
+          }
+
+          else if(selectx == 150){
+            plane_2p = load_image("assets/aircraft1.png");
+            SA = 1;
+          }
+          else if(selectx == 275){
+            plane_2p = load_image("assets/aircraft3.png");
+            SA = 2;
+          }
+          else if(selectx == 400){
+            plane_2p = load_image("assets/aircraft5.png");
+            SA = 3;
+          }
+          else if(selectx == 525){
+            plane_2p = load_image("assets/aircraft6.png");
+            SA = 4;
+          }
+          break;
+        }
+
+
+        case SDLK_KP4:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
         {
           if (selectx == 25)
           {}
@@ -631,7 +668,7 @@ void menu2()   // 비행기 고르는 메뉴
           }
           break;
         }
-        case SDLK_RIGHT:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        case SDLK_KP6:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
         {
           if(selectx == 525)
           {}
