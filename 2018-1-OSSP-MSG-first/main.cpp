@@ -420,7 +420,7 @@ int main(){
               if(A2.SA_count >0 && flag_sa2 == 10){
                  A2.SA_count --; //// Put image for SA
                  flag_sa2= 0;
-                 switch (SA){
+                 switch (SA2){
                  case 0:
                      {
                          special tmp(0, 0);
@@ -540,7 +540,7 @@ int main(){
 
           if(mode ==2&&keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
           {
-              if(A2.SA_count >0){
+              if(A2.SA_count >0&& flag_sa2==10){
                  A2.SA_count --; //// Put image for SA
                  switch (SA2){
                  case 0:
@@ -1025,7 +1025,7 @@ void menu2()   // 비행기 고르는 메뉴
             SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
             SA = 4;
           }
-          if(mode ==1)
+          if(mode == 1)
             quit2 = true;
           break;
         }
@@ -1041,22 +1041,22 @@ void menu2()   // 비행기 고르는 메뉴
 
           else if(selectx2 == 150){
             plane_2p = load_image("assets/aircraft1.png");
-            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane_2p->format,0,0,0));
             SA2 = 1;
           }
           else if(selectx2 == 275){
             plane_2p = load_image("assets/aircraft3.png");
-            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane_2p->format,0,0,0));
             SA2 = 2;
           }
           else if(selectx2 == 400){
             plane_2p = load_image("assets/aircraft5.png");
-            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane_2p->format,0,0,0));
             SA2 = 3;
           }
           else if(selectx2 == 525){
             plane_2p = load_image("assets/aircraft6.png");
-            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,0,0,0));
+            SDL_SetColorKey(plane_2p, SDL_SRCCOLORKEY,SDL_MapRGB(plane_2p->format,0,0,0));
             SA2 = 4;
           }
 
