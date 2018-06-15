@@ -15,15 +15,19 @@ SDL_Surface *bullet_mini;
 SDL_Surface *bullet_boss;
 SDL_Surface *message;
 SDL_Surface *message2;
+SDL_Surface *message3;
 SDL_Surface *title_message;
 SDL_Surface *plane;// 사용자 비행기 이미지
 SDL_Surface *plane2;
 SDL_Surface *plane3;
 SDL_Surface *plane4;
 SDL_Surface *plane5;
+SDL_Surface *plane_2p;
 SDL_Surface *enemy[4];//회전하는 비행기 이미지
 SDL_Surface *boom[11];// 폭발 이미지
 SDL_Surface *frame;
+SDL_Surface *frame2;
+SDL_Surface *arrow;
 
 SDL_Surface *enemy2;
 
@@ -41,6 +45,9 @@ const int INITIAL_MODE = 10;
 int EXIT = -1;
 int Continue = 0;
 int craft;
+int SA;
+int SA2;
+int mode;
 
 void sprite_surface(SDL_Surface* source, SDL_Rect tmp, SDL_Surface* destination, int w, int h, int step,int mode);
 bool init();//변수들 초기화 함수
@@ -48,8 +55,10 @@ bool load_files();//이미지, 폰트 초기화 함수
 bool SDL_free();// sdl 변수들 free 함수
 void menu();
 void menu2();
+void menu3();
 void game_over();
 void stage_clear();
+void special_ability(int SA);
 
 int main()
 {
@@ -65,6 +74,7 @@ int main()
   {
     return 0;
   }
+  menu3();
   menu2();
 
   Continue = 0;
@@ -75,27 +85,52 @@ int main()
   int delay = 0;
   int count = 0;
   int shootcnt = 0;
+  int shootcnt2 = 0;
   int background_count = 0;               //background 움직임 count
   int boom_mode = 0;
   int flag = 0;
-  
+  int flag_sa = 0;
+  int flag_sa2 = 0;
+  int bound = -100;
+
   vector<Enemy_standard_2>::iterator it2;
   vector<Enemy_standard>::iterator it;
   vector<BOOM>::iterator B_it;
+  vector<special>::iterator it_sa;
 
   vector<BOOM> Boss_B;//보스 폭발
   vector<BOOM> Boss_B4;//보스 폭발
   vector<BOOM> B;//폭발
   vector<Enemy_standard> E;//기본1형 비행기
   vector<Enemy_standard_2> E2;// 2nd standard enemy
+  vector<special> sa_1;
 
   AirPlane A;//사용자 비행기
+  AirPlane A2;
   Mini_Boss tmp3;
   Boss tmp4;
   Item I;
 
   while(true){
+      if(flag_sa < 10) flag_sa++;
+      if(flag_sa2 <10) flag_sa2++;
+      vector<special> t;
+      it_sa = sa_1.begin();
+      for(it_sa; it_sa != sa_1.end();it_sa++){
+          if((*it_sa).pos() > -130) t.push_back(*it_sa);
+  }
+  sa_1= t;
+
+    if(t.size()>0){
+        vector<special>:: iterator ta;
+        ta= (t.begin());
+        bound = (*ta).pos();
+    }
+
+
+    if(bound < -130 )bound = -100;
     if(count % 5 == 0) shootcnt = 0;
+    if(count % 5 == 0) shootcnt2 = 0;
     if(count % 50 == 0)//100count마다 1기씩 생성
     {
       int i = rand()%2;
@@ -104,7 +139,7 @@ int main()
       Enemy_standard_2 tmp2(j);
       E.push_back(tmp);
       E2.push_back(tmp2);
-  }
+    }
 
     start_time = SDL_GetTicks();//나중에 프레임 계산할 변수
 
@@ -116,6 +151,7 @@ int main()
 
     if(I.itm.size() > 0)
       I.control_item();
+
     if(boss_bullets.blt.size()>0)
       boss_bullets.control_bullet();
 
@@ -136,7 +172,7 @@ int main()
       for(it = E.begin(); it != E.end(); it++)//적 비행기들 피격 판정
       {
         Enemy_standard tmp(0);
-        if((*it).Got_shot(player_bullets))//비행기가 격추 당하면
+        if((*it).Got_shot(player_bullets) || (bound < (*it).pos_y+32) && (bound+30 > (*it).pos_y))//비행기가 격추 당하면
         {
           if(I.itm.size() == 0)
           {
@@ -159,11 +195,12 @@ int main()
     }
     if(E2.size()>0)
     {
+        vector<special> t;
         vector<Enemy_standard_2> v_tmp;
         for(it2 = E2.begin(); it2 != E2.end(); it2++)//적 비행기들 피격 판정
         {
           Enemy_standard_2 tmp(0);
-          if((*it2).Got_shot(player_bullets))
+          if((*it2).Got_shot(player_bullets) || (bound < (*it).pos_y+32) && (bound+30 > (*it).pos_y))
           {
             BOOM B_tmp((*it2).Get_plane());
             B.push_back(B_tmp);
@@ -205,6 +242,14 @@ int main()
       //I.~Item();
     }
 
+    if(sa_1.size() > 0)
+    {
+      it_sa = sa_1.begin();
+      enemy_bullets.eliminate(*it_sa);
+      boss_bullets.eliminate(*it_sa);
+      mini_bullets.eliminate(*it_sa);
+    }
+
     if(SDL_PollEvent(&event)){
       if(event.type == SDL_QUIT)//버튼 누르면 꺼저야 되는데 안 꺼짐 수정 사항
 			   break;
@@ -212,6 +257,8 @@ int main()
 
     keystates = SDL_GetKeyState(NULL);
 
+    if(keystates[SDLK_ESCAPE])
+      break;
       if(E.size() > 0)//적 비행기 이동 및 발사
       {
         for(it = E.begin(); it != E.end(); it++)
@@ -230,29 +277,398 @@ int main()
 
       if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
 
-      if(keystates[SDLK_a])
+      if(keystates[SDLK_o])
       {
         if(shootcnt == 0) {
             A.shooting(player_bullets);
             shootcnt = 1;
         }
       }
+      if(mode ==2&&keystates[SDLK_f])
+            {
+              if(shootcnt2 == 0) {
+                  A2.shooting(player_bullets);
+                  shootcnt2 = 1;
+              }
+            }
+          if(keystates[SDLK_p] && flag_sa == 10)    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
+          {
+              if(A.SA_count >0){
+                 A.SA_count --; //// Put image for SA
+                 flag_sa = 0;
+                 switch (SA){
+                 case 0:
+                     {
+                         special tmp(0,0);
+                         special tmp2(100,0);
+                         special tmp3(200,0);
+                         special tmp4(300,0);
+                         special tmp5(400,0);
+                         special tmp6(500,0);
+                         special tmp7(600,0);
+                         special tmp8(700,0);
+                         sa_1.push_back(tmp);
+                         sa_1.push_back(tmp2);
+                         sa_1.push_back(tmp3);
+                         sa_1.push_back(tmp4);
+                         sa_1.push_back(tmp5);
+                         sa_1.push_back(tmp6);
+                         sa_1.push_back(tmp7);
+                         sa_1.push_back(tmp8);
+                     break;
+                    }
+                     case 1:
+                    {
+                        special tmp(0,1);
+                        special tmp2(100,1);
+                        special tmp3(200,1);
+                        special tmp4(300,1);
+                        special tmp5(400,1);
+                        special tmp6(500,1);
+                        special tmp7(600,1);
+                        special tmp8(700,1);
+                        sa_1.push_back(tmp);
+                        sa_1.push_back(tmp2);
+                        sa_1.push_back(tmp3);
+                        sa_1.push_back(tmp4);
+                        sa_1.push_back(tmp5);
+                        sa_1.push_back(tmp6);
+                        sa_1.push_back(tmp7);
+                        sa_1.push_back(tmp8);
+                        break;
+                    }
+                     case 2:
+                    {
+                        special tmp(0,2);
+                        special tmp2(100,2);
+                        special tmp3(200,2);
+                        special tmp4(300,2);
+                        special tmp5(400,2);
+                        special tmp6(500,2);
+                        special tmp7(600,2);
+                        special tmp8(700,2);
+                        sa_1.push_back(tmp);
+                        sa_1.push_back(tmp2);
+                        sa_1.push_back(tmp3);
+                        sa_1.push_back(tmp4);
+                        sa_1.push_back(tmp5);
+                        sa_1.push_back(tmp6);
+                        sa_1.push_back(tmp7);
+                        sa_1.push_back(tmp8);
+                         break;
+                    }
+                     case 3:
+                    {
+                        special tmp(0,3);
+                        special tmp2(100,3);
+                        special tmp3(200,3);
+                        special tmp4(300,3);
+                        special tmp5(400,3);
+                        special tmp6(500,3);
+                        special tmp7(600,3);
+                        special tmp8(700,3);
+                        sa_1.push_back(tmp);
+                        sa_1.push_back(tmp2);
+                        sa_1.push_back(tmp3);
+                        sa_1.push_back(tmp4);
+                        sa_1.push_back(tmp5);
+                        sa_1.push_back(tmp6);
+                        sa_1.push_back(tmp7);
+                        sa_1.push_back(tmp8);
+                        break;
+                    }
+                     case 4:
+                    {
+                        special tmp(0,4);
+                        special tmp2(100,4);
+                        special tmp3(200,4);
+                        special tmp4(300,4);
+                        special tmp5(400,4);
+                        special tmp6(500,4);
+                        special tmp7(600,4);
+                        special tmp8(700,4);
+                        sa_1.push_back(tmp);
+                        sa_1.push_back(tmp2);
+                        sa_1.push_back(tmp3);
+                        sa_1.push_back(tmp4);
+                        sa_1.push_back(tmp5);
+                        sa_1.push_back(tmp6);
+                        sa_1.push_back(tmp7);
+                        sa_1.push_back(tmp8);
+                        break;
+                    }
+                 }
+              }
+          }
+          if(keystates[SDLK_KP8])
+              A.control_plane(0,-4);
 
-      if(keystates[SDLK_UP])
-        A.control_plane(0,-4);
+            if(keystates[SDLK_KP5])
+              A.control_plane(0, 4);
 
-      if(keystates[SDLK_DOWN])
-        A.control_plane(0, 4);
+            if(keystates[SDLK_KP4])
+              A.control_plane(-4, 0);
 
-      if(keystates[SDLK_LEFT])
-        A.control_plane(-4, 0);
+            if(keystates[SDLK_KP6])
+              A.control_plane(4, 0);
+            if(mode == 2 )
+            {
+              if(keystates[SDLK_f])
+                {
+                  if(shootcnt == 0) {
+                      A2.shooting(player_bullets);
+                      shootcnt = 1;
+                  }
+                }
+                if(mode == 2 && keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
+                {
+                    if(A2.SA_count >0 && flag_sa2 == 10){
+                       A2.SA_count --; //// Put image for SA
+                       flag_sa2= 0;
+                       switch (SA){
+                       case 0:
+                           {
+                               special tmp(0, 0);
+                               special tmp2(100, 0);
+                               special tmp3(200, 0);
+                               special tmp4(300, 0);
+                               special tmp5(400, 0);
+                               special tmp6(500, 0);
+                               special tmp7(600, 0);
+                               special tmp8(700, 0);
+                               sa_1.push_back(tmp);
+                               sa_1.push_back(tmp2);
+                               sa_1.push_back(tmp3);
+                               sa_1.push_back(tmp4);
+                               sa_1.push_back(tmp5);
+                               sa_1.push_back(tmp6);
+                               sa_1.push_back(tmp7);
+                               sa_1.push_back(tmp8);
+                           break;
+                          }
+                           case 1:
+                          {
+                              special tmp(0, 1);
+                              special tmp2(100, 1);
+                              special tmp3(200, 1);
+                              special tmp4(300, 1);
+                              special tmp5(400, 1);
+                              special tmp6(500, 1);
+                              special tmp7(600, 1);
+                              special tmp8(700, 1);
+                              sa_1.push_back(tmp);
+                              sa_1.push_back(tmp2);
+                              sa_1.push_back(tmp3);
+                              sa_1.push_back(tmp4);
+                              sa_1.push_back(tmp5);
+                              sa_1.push_back(tmp6);
+                              sa_1.push_back(tmp7);
+                              sa_1.push_back(tmp8);
+                              break;
+                          }
+                           case 2:
+                          {
+                              special tmp(0, 2);
+                              special tmp2(100, 2);
+                              special tmp3(200, 2);
+                              special tmp4(300, 2);
+                              special tmp5(400, 2);
+                              special tmp6(500, 2);
+                              special tmp7(600, 2);
+                              special tmp8(700, 2);
+                              sa_1.push_back(tmp);
+                              sa_1.push_back(tmp2);
+                              sa_1.push_back(tmp3);
+                              sa_1.push_back(tmp4);
+                              sa_1.push_back(tmp5);
+                              sa_1.push_back(tmp6);
+                              sa_1.push_back(tmp7);
+                              sa_1.push_back(tmp8);
+                               break;
+                          }
+                           case 3:
+                          {
+                              special tmp(0, 3);
+                              special tmp2(100, 3);
+                              special tmp3(200, 3);
+                              special tmp4(300, 3);
+                              special tmp5(400, 3);
+                              special tmp6(500, 3);
+                              special tmp7(600, 3);
+                              special tmp8(700, 3);
+                              sa_1.push_back(tmp);
+                              sa_1.push_back(tmp2);
+                              sa_1.push_back(tmp3);
+                              sa_1.push_back(tmp4);
+                              sa_1.push_back(tmp5);
+                              sa_1.push_back(tmp6);
+                              sa_1.push_back(tmp7);
+                              sa_1.push_back(tmp8);
+                              break;
+                          }
+                           case 4:
+                          {
+                              special tmp(0, 4);
+                              special tmp2(100, 4);
+                              special tmp3(200, 4);
+                              special tmp4(300, 4);
+                              special tmp5(400, 4);
+                              special tmp6(500, 4);
+                              special tmp7(600, 4);
+                              special tmp8(700, 4);
+                              sa_1.push_back(tmp);
+                              sa_1.push_back(tmp2);
+                              sa_1.push_back(tmp3);
+                              sa_1.push_back(tmp4);
+                              sa_1.push_back(tmp5);
+                              sa_1.push_back(tmp6);
+                              sa_1.push_back(tmp7);
+                              sa_1.push_back(tmp8);
+                              break;
+                          }
+                       }
+                    }
+                }
 
-      if(keystates[SDLK_RIGHT])
-        A.control_plane(4, 0);
+                if(keystates[SDLK_w])
+                  A2.control_plane(0,-4);
 
+                if(keystates[SDLK_s])
+                  A2.control_plane(0, 4);
+
+                if(keystates[SDLK_a])
+                  A2.control_plane(-4, 0);
+
+                if(keystates[SDLK_d])
+                  A2.control_plane(4, 0);
+            }
+
+                if(mode ==2&&keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
+                {
+                    if(A2.SA_count >0){
+                       A2.SA_count --; //// Put image for SA
+                       switch (SA2){
+                       case 0:
+                           {
+                               special tmp(0, 0);
+                               special tmp2(100, 0);
+                               special tmp3(200,0);
+                               special tmp4(300,0);
+                               special tmp5(400,0);
+                               special tmp6(500,0);
+                               special tmp7(600,0);
+                               special tmp8(700,0);
+                               sa_1.push_back(tmp);
+                               sa_1.push_back(tmp2);
+                               sa_1.push_back(tmp3);
+                               sa_1.push_back(tmp4);
+                               sa_1.push_back(tmp5);
+                               sa_1.push_back(tmp6);
+                               sa_1.push_back(tmp7);
+                               sa_1.push_back(tmp8);
+                           break;
+                          }
+                           case 1:
+                          {
+                              special tmp(0,1);
+                              special tmp2(100,1);
+                              special tmp3(200,1);
+                              special tmp4(300,1);
+                              special tmp5(400,1);
+                              special tmp6(500,1);
+                              special tmp7(600,1);
+                              special tmp8(700,1);
+                              sa_1.push_back(tmp);
+                              sa_1.push_back(tmp2);
+                              sa_1.push_back(tmp3);
+                              sa_1.push_back(tmp4);
+                              sa_1.push_back(tmp5);
+                              sa_1.push_back(tmp6);
+                              sa_1.push_back(tmp7);
+                              sa_1.push_back(tmp8);
+                              break;
+                          }
+                           case 2:
+                          {
+                              special tmp(0,2);
+                              special tmp2(100,2);
+                              special tmp3(200,2);
+                              special tmp4(300,2);
+                              special tmp5(400,2);
+                              special tmp6(500,2);
+                              special tmp7(600,2);
+                              special tmp8(700,2);
+                              sa_1.push_back(tmp);
+                              sa_1.push_back(tmp2);
+                              sa_1.push_back(tmp3);
+                              sa_1.push_back(tmp4);
+                              sa_1.push_back(tmp5);
+                              sa_1.push_back(tmp6);
+                              sa_1.push_back(tmp7);
+                              sa_1.push_back(tmp8);
+                              break;
+                          }
+                           case 3:
+                          {
+                              special tmp(0,3);
+                              special tmp2(100,3);
+                              special tmp3(200,3);
+                              special tmp4(300,3);
+                              special tmp5(400,3);
+                              special tmp6(500,3);
+                              special tmp7(600,3);
+                              special tmp8(700,3);
+                              sa_1.push_back(tmp);
+                              sa_1.push_back(tmp2);
+                              sa_1.push_back(tmp3);
+                              sa_1.push_back(tmp4);
+                              sa_1.push_back(tmp5);
+                              sa_1.push_back(tmp6);
+                              sa_1.push_back(tmp7);
+                              sa_1.push_back(tmp8);
+                              break;
+                          }
+                           case 4:
+                          {
+                              special tmp(0,4);
+                              special tmp2(100,4);
+                              special tmp3(200,4);
+                              special tmp4(300,4);
+                              special tmp5(400,4);
+                              special tmp6(500,4);
+                              special tmp7(600,4);
+                              special tmp8(700,4);
+                              sa_1.push_back(tmp);
+                              sa_1.push_back(tmp2);
+                              sa_1.push_back(tmp3);
+                              sa_1.push_back(tmp4);
+                              sa_1.push_back(tmp5);
+                              sa_1.push_back(tmp6);
+                              sa_1.push_back(tmp7);
+                              sa_1.push_back(tmp8);
+                              break;
+                          }
+                       }
+                    }
+                }
+
+                if(mode ==2&&keystates[SDLK_w])
+                  A2.control_plane(0,-4);
+
+                if(mode ==2&&keystates[SDLK_s])
+                  A2.control_plane(0, 4);
+
+                if(mode ==2&&keystates[SDLK_a])
+                  A2.control_plane(-4, 0);
+
+                if(mode ==2&&keystates[SDLK_d])
+                  A2.control_plane(4, 0);
 
     if(A.invisible_mode == 1)//투명화 상태, 투명도 조절
       A.invisible(plane);
+
+      if(mode == 2 && A2.invisible_mode == 1)//투명화 상태, 투명도 조절
+        A.invisible(plane_2p);
 
       if(background_count++ != 480);
       else
@@ -266,6 +682,9 @@ int main()
     mini_bullets.bullet_apply_surface(bullet_mini, screen, NULL);
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
+
+    if(mode == 2) A2.plane_apply_surface(plane_2p, screen, NULL);
+
     if(flag == 1)
     {
       I.item_apply_surface(I.item, screen, NULL);
@@ -278,6 +697,7 @@ int main()
         (*it).enemy_apply_surface(enemy, screen, NULL);
       }
     }
+
     if( E2.size() > 0)
     {
       for( it2 = E2.begin(); it2 != E2.end(); it2++)
@@ -286,13 +706,16 @@ int main()
       }
     }
 
+    if(sa_1.size() > 0)
+    {
+      for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++)
+      {
+        (*it_sa).apply_surface(screen, NULL);
+      }
+    }
+
     if(tmp3.amount ==1 && score >= 5000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
-/*apply_surface(0, 0, background,screen,NULL);//백그라운드 그리는거
-enemy_bullets.bullet_apply_surface(bullet, screen,NULL);//적 총알들 그리는 것
-player_bullets.bullet_apply_surface(bullet, screen, NULL)
-
-if( number == 1 )*/
     if(tmp4.amount == 1 && score>= 20000) tmp4.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
     if( B.size() > 0)//폭발
@@ -376,6 +799,29 @@ if( number == 1 )*/
       apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL); apply_surface(540, 10, life, screen,NULL);
     }
 
+    if(mode == 2)
+        {
+          if(A2.life == 0)//생명력 0
+          {
+            game_over();
+            if (Continue == 1)
+            {
+              goto loop;
+            }
+            break;
+          }
+
+          else if(A2.life == 1)//생명력 1
+            apply_surface(500, 20, life, screen,NULL);
+          else if(A2.life == 2)
+          {
+            apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL);
+          }
+          else if(A2.life == 3)
+          {
+            apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL); apply_surface(540, 20, life, screen,NULL);
+          }
+    }
 
     ostringstream sc;
     sc<< score;
@@ -419,7 +865,10 @@ bool load_files()
   plane3 = load_image("assets/aircraft3.png");
   plane4 = load_image("assets/aircraft5.png");
   plane5 = load_image("assets/aircraft6.png");
+  plane_2p = load_image("assets/aircraft3.png");
   frame = load_image("assets/blueframe.png");
+  frame2 = load_image("assets/redframe.png");
+  arrow = load_image("assets/arrow.png");
   font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
   font2 = TTF_OpenFont("assets/Starjout.ttf", 84);//제목 폰트
   font3 = TTF_OpenFont("assets/Starjout.ttf",24);
@@ -443,12 +892,13 @@ bool load_files()
   }
   SDL_SetColorKey(explosion, SDL_SRCCOLORKEY,SDL_MapRGB(explosion->format,0,0,0));
   SDL_SetColorKey(life, SDL_SRCCOLORKEY,SDL_MapRGB(life->format,255,255,255));
-  SDL_SetColorKey(plane, SDL_SRCCOLORKEY,SDL_MapRGB(plane->format,255,255,255));
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_boss->format,0,0,0));
   SDL_SetColorKey(bullet_boss, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_mini->format,0,0,0));
   SDL_SetColorKey(frame, SDL_SRCCOLORKEY,SDL_MapRGB(frame->format,0,0,0));
+  SDL_SetColorKey(frame2, SDL_SRCCOLORKEY,SDL_MapRGB(frame2->format,0,0,0));
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,0,0,0));
   SDL_SetColorKey(bullet_basic, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_basic->format,255,255,255));
+  SDL_SetColorKey(arrow, SDL_SRCCOLORKEY, SDL_MapRGB(arrow->format,0,0,0));
   return true;
 }
 
@@ -578,6 +1028,79 @@ void menu2()   // 비행기 고르는 메뉴
           }
           break;
         }
+        case SDLK_ESCAPE:  // esc 키 누르면 종료
+        {
+          EXIT = 1;
+          quit = true;
+          break;
+        }
+				}
+			}
+			else if (event.type == SDL_QUIT)
+			{
+				quit = true;
+			}
+		}
+	}
+}
+
+void menu3()   // 비행기 고르는 메뉴
+{
+  int selecty=210;
+	bool quit = false;
+	while (quit == false)
+	{
+		if (SDL_PollEvent(&event))
+		{
+      font = TTF_OpenFont("assets/Terminus.ttf", 36);//작은 안내문 폰트
+      message = TTF_RenderText_Solid(font, "Choose the game mode", textColor); // space키는 시작 esc키는 종료
+      message2 = TTF_RenderText_Solid(font3, "Single play", textColor);
+      message3 = TTF_RenderText_Solid(font3, "Multi play", textColor);
+      background = load_image("assets/background.png");  // 배경
+			apply_surface(0, 0, background, screen, NULL);
+      apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
+      apply_surface((640 - message2->w) / 2, 210, message2, screen, NULL);
+      apply_surface((640 - message3->w) / 2, 300, message3, screen, NULL);
+      apply_surface(170, selecty-20, arrow, screen, NULL);
+
+			SDL_Flip(screen);
+
+			if (event.type == SDL_KEYDOWN)
+			{
+				switch (event.key.keysym.sym)
+				{
+
+				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          quit = true;
+          if(selecty == 210)
+            mode = 1;
+          else if(selecty == 300)
+            mode = 2;
+
+          break;
+        }
+        case SDLK_UP:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if (selecty == 210)
+          {}
+          else
+          {
+            selecty -= 90;
+          }
+          break;
+        }
+        case SDLK_DOWN:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+        {
+          if(selecty == 300)
+          {}
+          else
+          {
+            selecty += 90;
+          }
+          break;
+        }
+
         case SDLK_ESCAPE:  // esc 키 누르면 종료
         {
           EXIT = 1;

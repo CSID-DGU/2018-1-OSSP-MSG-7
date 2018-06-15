@@ -7,6 +7,7 @@ AirPlane::AirPlane()
   life = 1000;
   invisible_mode = 0;
 }
+
 AirPlane::~AirPlane()
 {
 
@@ -23,6 +24,7 @@ void AirPlane::plane_apply_surface(SDL_Surface* source, SDL_Surface* destination
   offset.y = pos_y;
   SDL_BlitSurface( source, clip, destination, &offset );
 }
+
 void AirPlane::control_plane(int x, int y)
 {
   if( pos_x + x >= 0 && (pos_x + PLAYER_WIDTH + x) <= SCREEN_WIDTH &&
@@ -32,6 +34,7 @@ void AirPlane::control_plane(int x, int y)
     pos_y += y;
   }
 }
+
 void AirPlane::invisible(SDL_Surface *plane)
 {
   static int count = 0;                               //투명화 지속 시간
@@ -374,6 +377,7 @@ bool Mini_Boss::Got_shot(_bullets &A, int &x){
 
     return flag;
 };
+
 void Mini_Boss::shooting(_bullets &A){
     A.add_blt( 0, 5,pos_x + 125,pos_y + 82);
     A.add_blt( 3, 5,pos_x + 125,pos_y + 82);
@@ -388,6 +392,7 @@ void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
     offset.x = pos_x;
     SDL_BlitSurface(mini_boss, clip, destination, &offset );
 };
+
 void Mini_Boss::control_plane(_bullets &A){
     if(cont_shoot>=1 && cont_shoot <= 30) {this->cont_shoot ++; if(cont_shoot%6==0)this->shooting(A);} // TO make gap between each bullets in one cycle
     if(cont_shoot > 30) {if(cont_shoot>=50)cont_shoot = 0;else cont_shoot++;} // To make gap between each cycles
@@ -416,6 +421,7 @@ SDL_Rect Mini_Boss::Get_plane()
 
   return offset;
 }
+
 void Mini_Boss::loss_life(int& score)
 {
     this->life--;
@@ -504,12 +510,14 @@ void Boss::shooting(_bullets &A){
     //A.add_blt( 10, 0,pos_x + 35,pos_y + 50);
     //A.add_blt( -10, 0,pos_x + 35,pos_y + 50);
 };
+
 void Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
     SDL_Rect offset;
     offset.y = pos_y;
     offset.x = pos_x;
     SDL_BlitSurface(mini_boss, clip, destination, &offset );
 };
+
 void Boss::control_plane(_bullets &A){
     if(cont_shoot>=1 && cont_shoot <15) {this->cont_shoot ++; if(cont_shoot%3==0)this->shooting(A);}
     if(cont_shoot >=15) cont_shoot = 0;
@@ -528,8 +536,27 @@ void Boss::control_plane(_bullets &A){
             this->pos_x -= 2;
         }
     }
+
     count++;
 };
+
+//SDL_Surface *Enemy_standard::Get_plane()
+SDL_Rect Boss::Get_plane()
+{
+  offset.x = pos_x;
+  offset.y = pos_y;
+
+  return offset;
+}
+
+void Boss::loss_life(int& score)
+{
+    this->life--;
+    score += 50;
+    if( this->life == 0) {this->~Boss();
+    score+=3000;
+  }
+}
 
 void Item::add_itm(int x, int y, int ply_x, int ply_y)
 {
@@ -562,21 +589,4 @@ void Item::control_item()
 Item::~Item()
 {
     SDL_FreeSurface(item);
-}
-
-//SDL_Surface *Enemy_standard::Get_plane()
-SDL_Rect Boss::Get_plane()
-{
-  offset.x = pos_x;
-  offset.y = pos_y;
-
-  return offset;
-}
-void Boss::loss_life(int& score)
-{
-    this->life--;
-    score += 50;
-    if( this->life == 0) {this->~Boss();
-    score+=3000;
-  }
 }
