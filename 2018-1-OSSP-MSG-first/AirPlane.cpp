@@ -204,11 +204,6 @@ bool Enemy_standard_2::Got_shot(_bullets &A)
   return flag;
 }
 
-bool Enemy_standard_2:: eliminate(int y){
-    if(pos_y+32 > y) return true;
-    else return false;
-}
-
 void Enemy_standard_2::shooting(_bullets &A)
 {
   A.add_blt( 0, 5,pos_x + 2,pos_y + 15);
@@ -292,11 +287,6 @@ bool Enemy_standard::Got_shot(_bullets &A)
   A.blt = tmp;
 
   return flag;
-}
-
-bool Enemy_standard:: eliminate(int y){
-    if(pos_y+32 > y) return true;
-    else return false;
 }
 
 void Enemy_standard::shooting(_bullets &A)

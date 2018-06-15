@@ -679,7 +679,6 @@ int main()
 
                 if(keystates[SDLK_d])
                   A2.control_plane(4, 0);
-            }
 
     if(A.invisible_mode == 1)//투명화 상태, 투명도 조절
       A.invisible(plane);
@@ -1130,79 +1129,6 @@ void menu2()   // 비행기 고르는 메뉴
           break;
         }
 
-
-        case SDLK_ESCAPE:  // esc 키 누르면 종료
-        {
-          EXIT = 1;
-          quit = true;
-          break;
-        }
-				}
-			}
-			else if (event.type == SDL_QUIT)
-			{
-				quit = true;
-			}
-		}
-	}
-}
-
-void menu3()   // 비행기 고르는 메뉴
-{
-  int selecty=210;
-	bool quit = false;
-	while (quit == false)
-	{
-		if (SDL_PollEvent(&event))
-		{
-      font = TTF_OpenFont("assets/Terminus.ttf", 36);//작은 안내문 폰트
-      message = TTF_RenderText_Solid(font, "Choose the game mode", textColor); // space키는 시작 esc키는 종료
-      message2 = TTF_RenderText_Solid(font3, "Single play", textColor);
-      message3 = TTF_RenderText_Solid(font3, "Multi play", textColor);
-      background = load_image("assets/background.png");  // 배경
-			apply_surface(0, 0, background, screen, NULL);
-      apply_surface((640 - message->w) / 2, 100, message, screen, NULL);
-      apply_surface((640 - message2->w) / 2, 210, message2, screen, NULL);
-      apply_surface((640 - message3->w) / 2, 300, message3, screen, NULL);
-      apply_surface(170, selecty-20, arrow, screen, NULL);
-
-			SDL_Flip(screen);
-
-			if (event.type == SDL_KEYDOWN)
-			{
-				switch (event.key.keysym.sym)
-				{
-
-				case SDLK_SPACE:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-        {
-          quit = true;
-          if(selecty == 210)
-            mode = 1;
-          else if(selecty == 300)
-            mode = 2;
-
-          break;
-        }
-        case SDLK_UP:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-        {
-          if (selecty == 210)
-          {}
-          else
-          {
-            selecty -= 90;
-          }
-          break;
-        }
-        case SDLK_DOWN:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-        {
-          if(selecty == 300)
-          {}
-          else
-          {
-            selecty += 90;
-          }
-          break;
-        }
 
         case SDLK_ESCAPE:  // esc 키 누르면 종료
         {

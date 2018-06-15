@@ -295,7 +295,6 @@ public:
   Enemy_standard_2(int mode);
   ~Enemy_standard_2();
   bool Got_shot(_bullets &A);
-  bool eliminate ( int y);
   void shooting(_bullets &A);
   void enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(_bullets &A);
@@ -315,7 +314,6 @@ public:
     Enemy_standard(int mode);
     ~Enemy_standard();
     bool Got_shot(_bullets &A);
-    bool eliminate ( int y);
     void shooting(_bullets &A);
     void enemy_apply_surface(SDL_Surface* source[], SDL_Surface* destination, SDL_Rect* clip);
     void control_plane(_bullets &enemey);
