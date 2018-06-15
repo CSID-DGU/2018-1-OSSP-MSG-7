@@ -204,6 +204,11 @@ bool Enemy_standard_2::Got_shot(_bullets &A)
   return flag;
 }
 
+bool Enemy_standard_2:: eliminate(int y){
+    if(pos_y+32 > y) return true;
+    else return false;
+}
+
 void Enemy_standard_2::shooting(_bullets &A)
 {
   A.add_blt( 0, 5,pos_x + 2,pos_y + 15);
@@ -287,6 +292,11 @@ bool Enemy_standard::Got_shot(_bullets &A)
   A.blt = tmp;
 
   return flag;
+}
+
+bool Enemy_standard:: eliminate(int y){
+    if(pos_y+32 > y) return true;
+    else return false;
 }
 
 void Enemy_standard::shooting(_bullets &A)
@@ -382,8 +392,8 @@ void Mini_Boss::shooting(_bullets &A){
     A.add_blt( 0, 5,pos_x + 125,pos_y + 82);
     A.add_blt( 3, 5,pos_x + 125,pos_y + 82);
     A.add_blt( -3, 5,pos_x + 125,pos_y + 82);
-    A.add_blt( -6, 5,pos_x + 125,pos_y + 82);
-    A.add_blt( 6, 5,pos_x + 125,pos_y + 82);
+    A.add_blt( -6, 4,pos_x + 125,pos_y + 82);
+    A.add_blt( 6, 4,pos_x + 125,pos_y + 82);
 };
 
 void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
@@ -458,16 +468,17 @@ bool Boss::Got_shot(_bullets &A, int &x){
         tmp.push_back(*iter);
       else//맞았을때
       {
-        if((*iter).bullet_pos.x <= pos_x + MINI_BOSS_WIDTH / 5)
+        if((*iter).bullet_pos.x <= pos_x + BOSS_WIDTH / 5)
           x = 0;
-        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 2)
+        else if((*iter).bullet_pos.x <= pos_x + (BOSS_WIDTH / 5) * 2)
           x = 1;
-        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 3)
+        else if((*iter).bullet_pos.x <= pos_x + (BOSS_WIDTH / 5) * 3)
           x = 2;
-        else if((*iter).bullet_pos.x <= pos_x + (MINI_BOSS_WIDTH / 5) * 4)
+        else if((*iter).bullet_pos.x <= pos_x + (BOSS_WIDTH / 5) * 4)
           x = 3;
         else
           x = 4;
+
         flag = true;
       }
     }
