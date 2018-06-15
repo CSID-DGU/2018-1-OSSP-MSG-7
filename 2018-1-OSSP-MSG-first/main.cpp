@@ -1,7 +1,7 @@
+#include "AirPlane.h"
+
 #include <string>
 #include <sstream>
-
-#include "AirPlane.h"
 
 SDL_Surface *screen;//화면
 SDL_Surface *background;//배경화면
@@ -37,7 +37,6 @@ TTF_Font *font2;
 TTF_Font *font3;
 SDL_Color textColor = {0, 0, 0};
 SDL_Color textColor2 = {0, 0, 0};
-
 
 Uint8 *keystates;
 
@@ -277,6 +276,13 @@ int main()
 
       if(tmp4.amount == 1 && score >= 20000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
 
+      if(sa_1.size() >0)
+      {
+        for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++)
+        {
+          (*it_sa).control_bullet();
+        }
+      }
       if(keystates[SDLK_o])
       {
         if(shootcnt == 0) {
