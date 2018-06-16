@@ -4,7 +4,7 @@ AirPlane::AirPlane()
 {
   pos_x = SCREEN_WIDTH / 2;//처음 시작 위치 지정
   pos_y = SCREEN_HEIGHT / 2;//처음 시작 위치 지정
-  life = 1000;
+  life = 3;
   invisible_mode = 0;
 }
 AirPlane::~AirPlane()
@@ -404,12 +404,14 @@ SDL_Rect Mini_Boss::Get_plane()
 
   return offset;
 }
+
 void Mini_Boss::loss_life(int& score)
 {
     this->life--;
     score +=50;
-    if( this->life == 0) {this->~Mini_Boss();
-     score+=1000;
+    if( this->life == 0) {
+      this->~Mini_Boss();
+      score+=1000;
    }
 }
 
@@ -419,7 +421,7 @@ Boss::Boss(){
     pos_x = 280;// 처음 시작 위치 지정
     SDL_SetColorKey(mini_boss, SDL_SRCCOLORKEY,SDL_MapRGB(mini_boss->format,0,0,0));
     pos_y = -MINI_BOSS_HEIGHT;//처음 시작 위치 지정
-    life = 20;//has to be changed later (at least 70)
+    life = 60;//has to be changed later (at least 70)
 }
 
 Boss::~Boss(){
@@ -530,7 +532,8 @@ void Boss::loss_life(int& score)
 {
     this->life--;
     score += 50;
-    if( this->life == 0) {this->~Boss();
-    score+=3000;
+    if( this->life == 0) {
+      this->~Boss();
+      score+=3000;
   }
 }

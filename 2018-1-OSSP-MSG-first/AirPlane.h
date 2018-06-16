@@ -1,6 +1,5 @@
 #include "helpers.h"
 
-
 class BOOM
 {
 private:
@@ -44,16 +43,50 @@ public:
 class special
 {
 public:
-    special(int x, int SA){
+    special(int x, int SA) {
         pos_x=x;
+        /*
+        switch(SA)
+				{
+				      case 0:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+              {
+                sa1 = load_image("assets/sa1.png");
+                break;
+              }
+              case 1:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+              {
+                sa1 = load_image("assets/sa2.png");
+                break;
+              }
+              case 2:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+              {
+                sa1 = load_image("assets/sa3.png");
+                break;
+              }
+              case 3:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+              {
+                sa1 = load_image("assets/sa4.png");
+                break;
+              }
+              case 4:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
+              {
+                sa1 = load_image("assets/sa11.png");
+                break;
+              }
+              default :
+              {
+                sa1 = load_image("assets/sa4.png");
+                break;
+              }
+        }*/
+        //sa1 = load_image("assets/sa4.png");
         if(SA == 0) sa1 = load_image("assets/sa1.png");
-        else if( SA == 1) sa1 = load_image("assets/sa2.png");// gochuya ham
+        else if (SA == 1) sa1 = load_image("assets/sa2.png");// gochuya ham
         else if (SA == 2) sa1 = load_image("assets/sa3.png");
         else if (SA == 3) sa1 = load_image("assets/sa4.png");
         else if (SA == 4) sa1 = load_image("assets/sa5.png");
-        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,0,0,0));
-    };
-
+        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
+  };
   void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
   {
       SDL_Rect offset;
@@ -75,6 +108,7 @@ private:
     int pos_x;
     SDL_Surface *sa1;
 };
+
 
 class _bullets
 {
@@ -192,10 +226,10 @@ private:
   SDL_Surface *mini_boss;
   SDL_Rect offset;
   int pos_x, pos_y;
-  int life;
   int count = 0;
   int direction = 0;
   int cont_shoot = 0;
+  int life;
 
 public:
   Mini_Boss();
@@ -230,6 +264,5 @@ public:
   void control_plane(_bullets &A);
   void loss_life(int& score);
   SDL_Rect Get_plane();
-
   int amount = 1;
 };
