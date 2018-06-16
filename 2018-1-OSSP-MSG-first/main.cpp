@@ -1,6 +1,5 @@
 
 #include "AirPlane.h"
-
 #include <string>
 #include <sstream>
 
@@ -39,6 +38,7 @@ TTF_Font *font3;
 SDL_Color textColor = {0, 0, 0};
 SDL_Color textColor2 = {0, 0, 0};
 
+
 Uint8 *keystates;
 
 const int INITIAL_MODE = 10;
@@ -60,8 +60,7 @@ void game_over();
 void stage_clear();
 void special_ability(int SA);
 
-int main()
-{
+int main(){
   loop:
  _bullets enemy_bullets;
  _bullets player_bullets;
@@ -89,7 +88,6 @@ int main()
   int shootcnt2 = 0;
   int background_count = 0;               //background 움직임 count
   int boom_mode = 0;
-  int flag = 0;
   int flag_sa = 0;
   int flag_sa2 = 0;
   int bound = -100;
@@ -113,14 +111,14 @@ int main()
   Item I;
 
   while(true){
-      if(flag_sa < 10) flag_sa++;
-      if(flag_sa2 <10) flag_sa2++;
-      vector<special> t;
-      it_sa = sa_1.begin();
-      for(it_sa; it_sa != sa_1.end();it_sa++){
-          if((*it_sa).pos() > -130) t.push_back(*it_sa);
-  }
-  sa_1= t;
+    if(flag_sa < 10) flag_sa++;
+    if(flag_sa2 <10) flag_sa2++;
+    vector<special> t;
+    it_sa = sa_1.begin();
+    for(it_sa; it_sa != sa_1.end();it_sa++){
+        if((*it_sa).pos() > -130) t.push_back(*it_sa);
+    }
+    sa_1= t;
 
     if(t.size()>0){
         vector<special>:: iterator ta;
@@ -139,7 +137,7 @@ int main()
       Enemy_standard_2 tmp2(j);
       E.push_back(tmp);
       E2.push_back(tmp2);
-    }
+  }
 
     start_time = SDL_GetTicks();//나중에 프레임 계산할 변수
 
@@ -148,9 +146,6 @@ int main()
 
     if(enemy_bullets.blt.size() > 0)//적 총알들 위치 이동
       enemy_bullets.control_bullet();
-
-    if(I.itm.size() > 0)
-      I.control_item();
 
     if(boss_bullets.blt.size()>0)
       boss_bullets.control_bullet();
@@ -181,11 +176,6 @@ int main()
         Enemy_standard tmp(0);
         if((*it).Got_shot(player_bullets) || (bound < (*it).pos_y+32) && (bound+30 > (*it).pos_y))//비행기가 격추 당하면
         {
-          if(I.itm.size() == 0)
-          {
-            I.add_itm((*it).pos_x, (*it).pos_y, (*it).pos_x, (*it).pos_y + 20);
-            flag = (rand() % 6);
-          }
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
           (*it).~Enemy_standard();
@@ -199,6 +189,7 @@ int main()
       }
 
       E = v_tmp;
+
     }
     if(E2.size()>0)
     {
@@ -240,22 +231,11 @@ int main()
       tmp4.loss_life(score);
     }
 
-    if(A.Got_item(I.itm))
-    {
-      if(A.life <3)
-      {
-        A.increaseLife();
-      }
-      flag = 0;
-      //I.~Item();
-    }
-
-    if(sa_1.size() > 0)
-    {
-      it_sa = sa_1.begin();
-      enemy_bullets.eliminate(*it_sa);
-      boss_bullets.eliminate(*it_sa);
-      mini_bullets.eliminate(*it_sa);
+    if(sa_1.size()>0){
+        it_sa = sa_1.begin();
+        enemy_bullets.eliminate(*it_sa);
+        boss_bullets.eliminate(*it_sa);
+        mini_bullets.eliminate(*it_sa);
     }
 
     if(SDL_PollEvent(&event)){
@@ -267,10 +247,9 @@ int main()
 
     if(keystates[SDLK_ESCAPE])
       break;
-
     if(E.size() > 0)//적 비행기 이동 및 발사
     {
-      for(it = E.begin(); it != E.end(); it++)r
+      for(it = E.begin(); it != E.end(); it++)
       {
         (*it).control_plane(enemy_bullets);
       }
@@ -307,16 +286,16 @@ int main()
             shootcnt2 = 1;
         }
       }
-          if(keystates[SDLK_p] && flag_sa == 10)    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
-          {
-              if(A.SA_count >0){
-                 A.SA_count --; //// Put image for SA
-                 flag_sa = 0;
-                 switch (SA){
-                 case 0:
-                     {
-                        special tmp(0,0);
-                        special tmp2(100,0);
+    if(keystates[SDLK_p] && flag_sa == 10)    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
+    {
+        if(A.SA_count >0){
+           A.SA_count --; //// Put image for SA
+           flag_sa = 0;
+           switch (SA){
+           case 0:
+               {
+                   special tmp(0,0);
+                   special tmp2(100,0);
                    special tmp3(200,0);
                    special tmp4(300,0);
                    special tmp5(400,0);
@@ -622,7 +601,7 @@ int main()
                         sa_1.push_back(tmp6);
                         sa_1.push_back(tmp7);
                         sa_1.push_back(tmp8);
-                         break;
+                        break;
                     }
                      case 3:
                     {
@@ -668,23 +647,24 @@ int main()
               }
           }
 
-                if(keystates[SDLK_w])
-                  A2.control_plane(0,-4);
+          if(mode ==2&&keystates[SDLK_w])
+            A2.control_plane(0,-4);
 
-                if(keystates[SDLK_s])
-                  A2.control_plane(0, 4);
+          if(mode ==2&&keystates[SDLK_s])
+            A2.control_plane(0, 4);
 
-                if(keystates[SDLK_a])
-                  A2.control_plane(-4, 0);
+          if(mode ==2&&keystates[SDLK_a])
+            A2.control_plane(-4, 0);
 
-                if(keystates[SDLK_d])
-                  A2.control_plane(4, 0);
+          if(mode ==2&&keystates[SDLK_d])
+            A2.control_plane(4, 0);
+
 
     if(A.invisible_mode == 1)//투명화 상태, 투명도 조절
       A.invisible(plane);
 
-      if(mode == 2 && A2.invisible_mode == 1)//투명화 상태, 투명도 조절
-        A2.invisible(plane_2p);
+    if( mode ==2&&A2.invisible_mode == 1)//투명화 상태, 투명도 조절
+      A2.invisible(plane_2p);
 
       if(background_count++ != 480);
       else
@@ -699,12 +679,7 @@ int main()
     player_bullets.bullet_apply_surface(bullet, screen, NULL);//사용자 총알들
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
 
-    if(mode == 2) A2.plane_apply_surface(plane_2p, screen, NULL);
-
-    if(flag == 1)
-    {
-      I.item_apply_surface(I.item, screen, NULL);
-    }
+    if(mode ==2)  A2.plane_apply_surface(plane_2p, screen,NULL); //사용자 비행기
 
     if( E.size() > 0)//적 비행기
     {
@@ -713,7 +688,6 @@ int main()
         (*it).enemy_apply_surface(enemy, screen, NULL);
       }
     }
-
     if( E2.size() > 0)
     {
       for( it2 = E2.begin(); it2 != E2.end(); it2++)
@@ -722,12 +696,11 @@ int main()
       }
     }
 
-    if(sa_1.size() > 0)
+    if(sa_1.size() >0)
     {
-      for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++)
-      {
-        (*it_sa).apply_surface(screen, NULL);
-      }
+        for(it_sa = sa_1.begin(); it_sa != sa_1.end(); it_sa++){
+            (*it_sa).apply_surface(screen, NULL);
+        }
     }
 
     if(tmp3.amount ==1 && score >= 5000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
@@ -816,28 +789,29 @@ int main()
     }
 
     if(mode == 2)
+    {
+      if(A2.life == 0)//생명력 0
+      {
+        game_over();
+        if (Continue == 1)
         {
-          if(A2.life == 0)//생명력 0
-          {
-            game_over();
-            if (Continue == 1)
-            {
-              goto loop;
-            }
-            break;
-          }
+          goto loop;
+        }
+        break;
+      }
 
-          else if(A2.life == 1)//생명력 1
-            apply_surface(500, 20, life, screen,NULL);
-          else if(A2.life == 2)
-          {
-            apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL);
-          }
-          else if(A2.life == 3)
-          {
-            apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL); apply_surface(540, 20, life, screen,NULL);
-          }
+      else if(A2.life == 1)//생명력 1
+        apply_surface(500, 20, life, screen,NULL);
+      else if(A2.life == 2)
+      {
+        apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL);
+      }
+      else if(A2.life == 3)
+      {
+        apply_surface(500, 20, life, screen,NULL); apply_surface(520, 20, life, screen,NULL); apply_surface(540, 20, life, screen,NULL);
+      }
     }
+
 
     ostringstream sc;
     sc<< score;
@@ -855,6 +829,9 @@ int main()
   SDL_free();
   return 0;
 }
+
+
+
 
 bool init()
 {//고칠 것: if문 추가해서 init했을 때 실패하면 false반환하게끔

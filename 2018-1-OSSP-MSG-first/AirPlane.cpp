@@ -1,5 +1,38 @@
 #include "AirPlane.h"
 
+void Item::add_itm(int x, int y, int ply_x, int ply_y)
+{
+  item = load_image("assets/tem_li.png");
+  items tmp(x,y,ply_x,ply_y);
+  itm.push_back(tmp);
+}
+
+void Item::item_apply_surface(SDL_Surface *item, SDL_Surface* destination, SDL_Rect* clip)  // item들 그리기
+{
+  for(vector<items>::iterator iter = itm.begin(); iter!= itm.end(); iter++)
+  {
+    SDL_BlitSurface( item, clip, destination, &(*iter).item_pos);
+  }
+}
+
+void Item::control_item()
+{
+  vector<items> temp;
+  for(vector<items>::iterator iter = itm.begin(); iter != itm.end(); iter++)
+  {
+    items tmp((*iter).move_x,(*iter).move_y,(*iter).item_pos.x,(*iter).item_pos.y + 2);
+    if( 0 < tmp.item_pos.x + 9 && tmp.item_pos.x< SCREEN_WIDTH && -5 <= tmp.item_pos.y  && tmp.item_pos.y < SCREEN_HEIGHT)
+      temp.push_back(tmp);
+  }
+
+  itm = temp;
+}
+
+Item::~Item()
+{
+    SDL_FreeSurface(item);
+}
+
 AirPlane::AirPlane()
 {
   pos_x = SCREEN_WIDTH / 2;//처음 시작 위치 지정
@@ -7,7 +40,6 @@ AirPlane::AirPlane()
   life = 1000;
   invisible_mode = 0;
 }
-
 AirPlane::~AirPlane()
 {
 
@@ -24,7 +56,6 @@ void AirPlane::plane_apply_surface(SDL_Surface* source, SDL_Surface* destination
   offset.y = pos_y;
   SDL_BlitSurface( source, clip, destination, &offset );
 }
-
 void AirPlane::control_plane(int x, int y)
 {
   if( pos_x + x >= 0 && (pos_x + PLAYER_WIDTH + x) <= SCREEN_WIDTH &&
@@ -34,7 +65,6 @@ void AirPlane::control_plane(int x, int y)
     pos_y += y;
   }
 }
-
 void AirPlane::invisible(SDL_Surface *plane)
 {
   static int count = 0;                               //투명화 지속 시간
@@ -138,29 +168,7 @@ bool AirPlane::Got_shot(_bullets &A,_bullets &B,_bullets &C)
   return flag;
 }
 
-bool AirPlane::Got_item(vector<items> I)
-{
-  vector<items>::iterator iter;
-  bool flag = false;
 
-  for(iter = I.begin(); iter != I.end(); iter++)
-  {
-    if((pos_x + 18 < (*iter).item_pos.x + 9 || pos_y + 20 < (*iter).item_pos.y + 5) ||
-    ((*iter).item_pos.x + 18 < pos_x + 9 || (*iter).item_pos.y + 10 < pos_y + 10));//안 맞았을 때
-    else                                                                           //맞았을때
-    {
-      flag = true;
-      break;
-    }
-  }
-
-  return flag;
-}
-
-void AirPlane::increaseLife()
-{
-  life++;
-}
 
 Enemy_standard_2::Enemy_standard_2(int mode)
 {
@@ -202,6 +210,11 @@ bool Enemy_standard_2::Got_shot(_bullets &A)
   A.blt = tmp;
 
   return flag;
+}
+
+bool Enemy_standard_2:: eliminate(int y){
+    if(pos_y+32 > y) return true;
+    else return false;
 }
 
 void Enemy_standard_2::shooting(_bullets &A)
@@ -287,6 +300,11 @@ bool Enemy_standard::Got_shot(_bullets &A)
   A.blt = tmp;
 
   return flag;
+}
+
+bool Enemy_standard:: eliminate(int y){
+    if(pos_y+32 > y) return true;
+    else return false;
 }
 
 void Enemy_standard::shooting(_bullets &A)
@@ -377,7 +395,6 @@ bool Mini_Boss::Got_shot(_bullets &A, int &x){
 
     return flag;
 };
-
 void Mini_Boss::shooting(_bullets &A){
     A.add_blt( 0, 5,pos_x + 125,pos_y + 82);
     A.add_blt( 3, 5,pos_x + 125,pos_y + 82);
@@ -392,7 +409,6 @@ void Mini_Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
     offset.x = pos_x;
     SDL_BlitSurface(mini_boss, clip, destination, &offset );
 };
-
 void Mini_Boss::control_plane(_bullets &A){
     if(cont_shoot>=1 && cont_shoot <= 30) {this->cont_shoot ++; if(cont_shoot%6==0)this->shooting(A);} // TO make gap between each bullets in one cycle
     if(cont_shoot > 30) {if(cont_shoot>=50)cont_shoot = 0;else cont_shoot++;} // To make gap between each cycles
@@ -421,7 +437,6 @@ SDL_Rect Mini_Boss::Get_plane()
 
   return offset;
 }
-
 void Mini_Boss::loss_life(int& score)
 {
     this->life--;
@@ -477,7 +492,6 @@ bool Boss::Got_shot(_bullets &A, int &x){
 
     return flag;
 };
-
 void Boss::shooting(_bullets &A){
 
     //rhombus
@@ -511,14 +525,12 @@ void Boss::shooting(_bullets &A){
     //A.add_blt( 10, 0,pos_x + 35,pos_y + 50);
     //A.add_blt( -10, 0,pos_x + 35,pos_y + 50);
 };
-
 void Boss::enemy_apply_surface(SDL_Surface* destination, SDL_Rect* clip){
     SDL_Rect offset;
     offset.y = pos_y;
     offset.x = pos_x;
     SDL_BlitSurface(mini_boss, clip, destination, &offset );
 };
-
 void Boss::control_plane(_bullets &A){
     if(cont_shoot>=1 && cont_shoot <15) {this->cont_shoot ++; if(cont_shoot%3==0)this->shooting(A);}
     if(cont_shoot >=15) cont_shoot = 0;
@@ -537,11 +549,9 @@ void Boss::control_plane(_bullets &A){
             this->pos_x -= 2;
         }
     }
-
     count++;
 };
 
-//SDL_Surface *Enemy_standard::Get_plane()
 SDL_Rect Boss::Get_plane()
 {
   offset.x = pos_x;
@@ -549,7 +559,6 @@ SDL_Rect Boss::Get_plane()
 
   return offset;
 }
-
 void Boss::loss_life(int& score)
 {
     this->life--;
@@ -557,37 +566,4 @@ void Boss::loss_life(int& score)
     if( this->life == 0) {this->~Boss();
     score+=3000;
   }
-}
-
-void Item::add_itm(int x, int y, int ply_x, int ply_y)
-{
-  item = load_image("assets/tem_li.png");
-  items tmp(x,y,ply_x,ply_y);
-  itm.push_back(tmp);
-}
-
-void Item::item_apply_surface(SDL_Surface *item, SDL_Surface* destination, SDL_Rect* clip)  // item들 그리기
-{
-  for(vector<items>::iterator iter = itm.begin(); iter!= itm.end(); iter++)
-  {
-    SDL_BlitSurface( item, clip, destination, &(*iter).item_pos);
-  }
-}
-
-void Item::control_item()
-{
-  vector<items> temp;
-  for(vector<items>::iterator iter = itm.begin(); iter != itm.end(); iter++)
-  {
-    items tmp((*iter).move_x,(*iter).move_y,(*iter).item_pos.x,(*iter).item_pos.y + 2);
-    if( 0 < tmp.item_pos.x + 9 && tmp.item_pos.x< SCREEN_WIDTH && -5 <= tmp.item_pos.y  && tmp.item_pos.y < SCREEN_HEIGHT)
-      temp.push_back(tmp);
-  }
-
-  itm = temp;
-}
-
-Item::~Item()
-{
-    SDL_FreeSurface(item);
 }
