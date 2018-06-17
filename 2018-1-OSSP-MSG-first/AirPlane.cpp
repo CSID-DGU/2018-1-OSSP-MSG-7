@@ -103,7 +103,8 @@ AirPlane::AirPlane()
 {
   pos_x = SCREEN_WIDTH / 2;//처음 시작 위치 지정
   pos_y = SCREEN_HEIGHT / 2;//처음 시작 위치 지정
-  life = 1000;
+
+  life = 3;
   SA_count = 3;
   invisible_mode = 0;
 }
@@ -549,24 +550,24 @@ SDL_Rect Mini_Boss::Get_plane()
 
   return offset;
 }
+
 void Mini_Boss::loss_life(int& score)
 {
     this->life--;
     score +=50;
-    if( this->life == 0)
-    {
+    if( this->life == 0) {
       this->~Mini_Boss();
-     score+=1000;
+      score+=1000;
    }
 }
 
 Boss::Boss(){
-    mini_boss = load_image("assets/boss.png");// 비행기 이미지
+    mini_boss = load_image("assets/boss4.png");// 비행기 이미지
     //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거
     pos_x = 280;// 처음 시작 위치 지정
-    SDL_SetColorKey(mini_boss, SDL_SRCCOLORKEY,SDL_MapRGB(mini_boss->format,0,0,0));
+    SDL_SetColorKey(mini_boss, SDL_SRCCOLORKEY,SDL_MapRGB(mini_boss->format,255,255,255));
     pos_y = -MINI_BOSS_HEIGHT;//처음 시작 위치 지정
-    life = 20;//has to be changed later (at least 70)
+    life = 60;//has to be changed later (at least 70)
 }
 
 Boss::~Boss(){
@@ -677,7 +678,8 @@ void Boss::loss_life(int& score)
 {
     this->life--;
     score += 50;
-    if( this->life == 0) {this->~Boss();
-    score+=3000;
+    if( this->life == 0) {
+      this->~Boss();
+      score+=3000;
   }
 }
