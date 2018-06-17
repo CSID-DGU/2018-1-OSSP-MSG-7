@@ -1,6 +1,5 @@
 #include "helpers.h"
 
-
 class BOOM
 {
 private:
@@ -44,161 +43,37 @@ public:
 class special
 {
 public:
-    special(int x, int SA){
-        pos_x=x;
-        if(SA == 0)sa1 = load_image("assets/sa1.png");
-        else if( SA == 1) sa1 = load_image("assets/sa2.png");// gochuya ham
+    special(int x, int SA) {
+        pos_x1=x;
+        if(SA == 0) sa1 = load_image("assets/sa1.png");
+        else if (SA == 1) sa1 = load_image("assets/sa2.png");// gochuya ham
         else if (SA == 2) sa1 = load_image("assets/sa3.png");
-        else if (SA == 3) sa1 = load_image("assets/sa1.png");
-        else if (SA == 4) sa1 =load_image("assets/sa1.png");
+        else if (SA == 3) sa1 = load_image("assets/sa4.png");
+        else if (SA == 4) sa1 = load_image("assets/sa5.png");
         SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
-    };
-
+  };
   void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
   {
       SDL_Rect offset;
-      offset.x = pos_x;
-      offset.y = pos_y;
+      offset.x = pos_x1;
+      offset.y = pos_y1;
       SDL_BlitSurface(sa1, clip, destination, &offset);
   };
 
   void control_bullet()
   {
-    pos_y -= 4;
+    pos_y1 -= 4;
   };
 
   int pos(){
-      return pos_y;
+      return pos_y1;
   }
-    int pos_y=480;
+    int pos_y1=480;
 private:
-    int pos_x;
+    int pos_x1;
     SDL_Surface *sa1;
 };
 
-class special2
-{
-public:
-    special2(int x){
-        pos_x=x;
-        sa1 = load_image("assets/sa1.png");
-        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
-    };
-
-  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
-  {
-      SDL_Rect offset;
-      offset.x = pos_x;
-      offset.y = pos_y;
-      SDL_BlitSurface(sa1, clip, destination, &offset);
-  };
-
-  void control_bullet()
-  {
-    pos_y -= 4;
-  };
-
-  int pos(){
-      return pos_y;
-  }
-    int pos_y=480;
-private:
-    int pos_x;
-    SDL_Surface *sa1;
-};
-
-class special3
-{
-public:
-    special3(int x){
-        pos_x=x;
-        sa1 = load_image("assets/sa1.png");
-        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
-    };
-
-  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
-  {
-      SDL_Rect offset;
-      offset.x = pos_x;
-      offset.y = pos_y;
-      SDL_BlitSurface(sa1, clip, destination, &offset);
-  };
-
-  void control_bullet()
-  {
-    pos_y -= 4;
-  };
-
-  int pos(){
-      return pos_y;
-  }
-    int pos_y=480;
-private:
-    int pos_x;
-    SDL_Surface *sa1;
-};
-
-class special4
-{
-public:
-    special4(int x){
-        pos_x=x;
-        sa1 = load_image("assets/sa1.png");
-        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
-    };
-
-  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
-  {
-      SDL_Rect offset;
-      offset.x = pos_x;
-      offset.y = pos_y;
-      SDL_BlitSurface(sa1, clip, destination, &offset);
-  };
-
-  void control_bullet()
-  {
-    pos_y -= 4;
-  };
-
-  int pos(){
-      return pos_y;
-  }
-    int pos_y=480;
-private:
-    int pos_x;
-    SDL_Surface *sa1;
-};
-
-class special5
-{
-public:
-    special5(int x){
-        pos_x=x;
-        sa1 = load_image("assets/sa1.png");
-        SDL_SetColorKey(sa1, SDL_SRCCOLORKEY, SDL_MapRGB(sa1->format,255,255,255));
-    };
-
-  void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
-  {
-      SDL_Rect offset;
-      offset.x = pos_x;
-      offset.y = pos_y;
-      SDL_BlitSurface(sa1, clip, destination, &offset);
-  };
-
-  void control_bullet()
-  {
-    pos_y -= 4;
-  };
-
-  int pos(){
-      return pos_y;
-  }
-    int pos_y=480;
-private:
-    int pos_x;
-    SDL_Surface *sa1;
-};
 
 class _bullets
 {
@@ -235,7 +110,7 @@ public:
       for(vector<bullets>::iterator iter = blt.begin(); iter != blt.end(); iter++)
       {
           bullets tmp((*iter).move_x,(*iter).move_y,(*iter).bullet_pos.x + (*iter).move_x,(*iter).bullet_pos.y + (*iter).move_y);
-          if(spc.pos_y>tmp.bullet_pos.y+30||spc.pos_y+180 < tmp.bullet_pos.y)temp.push_back(tmp);
+          if(spc.pos_y1>tmp.bullet_pos.y+30||spc.pos_y1+180 < tmp.bullet_pos.y)temp.push_back(tmp);
       }
       blt = temp;
   }
@@ -316,10 +191,10 @@ private:
   SDL_Surface *mini_boss;
   SDL_Rect offset;
   int pos_x, pos_y;
-  int life;
   int count = 0;
   int direction = 0;
   int cont_shoot = 0;
+  int life;
 
 public:
   Mini_Boss();
@@ -354,6 +229,5 @@ public:
   void control_plane(_bullets &A);
   void loss_life(int& score);
   SDL_Rect Get_plane();
-
   int amount = 1;
 };
