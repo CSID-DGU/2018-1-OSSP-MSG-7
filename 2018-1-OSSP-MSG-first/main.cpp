@@ -193,12 +193,12 @@ int main(){
           if(I.itm.size() == 0)
           {
             I.add_itm((*it).pos_x, (*it).pos_y, (*it).pos_x, (*it).pos_y + 20);
-            flag = (rand() % 4);
+            flag = (rand() % 3);
           }
           else if(I3.itm.size() == 0)
           {
             I3.add_itm((*it).pos_x, (*it).pos_y, (*it).pos_x, (*it).pos_y + 20);
-            flag3 = (rand() % 7);
+            flag3 = (rand() % 2);
           }
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
@@ -248,15 +248,15 @@ int main(){
         if(I2.itm.size() == 0 && tmp3.life == 0)
         {
           I2.add_itm(tmp3.pos_x, tmp3.pos_y, tmp3.pos_x, tmp3.pos_y + 20);
-          //flag2 = (rand() % 2);
-          flag2 = 0;
+          flag2 = (rand() % 2);
+          //flag2 = 1;
         }
 
         if(I2.itm.size() == 0 && tmp3.life == 0)
         {
           I3.add_itm(tmp3.pos_x, tmp3.pos_y, tmp3.pos_x, tmp3.pos_y + 20);
-          //flag3 = (rand() % 2);
-          flag3 = 1;
+          flag3 = (rand() % 2);
+          //flag3 = 1;
         }
     }   // have to add the condition when the mini boss appear
 
