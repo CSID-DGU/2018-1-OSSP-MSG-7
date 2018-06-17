@@ -6,7 +6,7 @@
 * 1 player use 8(up), 4(left), 5(down), 6(right) to control and "o" key to select
 * 2 player use w(up), a(left), s(down), d(right) to control and "f" key to select
 
-4. If it is Single play, then selecting aircraft with "o" will automatically start the game. 
+4. If it is Single play, then selecting aircraft with "o" will automatically start the game.<br />
 4-1. If it is Multi play, then you have to press "space bar" after selecting aircrafts with "o" and "f"
 
 5. In game
