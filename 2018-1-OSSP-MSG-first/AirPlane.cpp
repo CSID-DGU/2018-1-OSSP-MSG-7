@@ -33,11 +33,78 @@ Item::~Item()
     SDL_FreeSurface(item);
 }
 
+void Item2::add_itm(int x, int y, int ply_x, int ply_y)
+{
+  item = load_image("assets/tem_sa.png");
+  items tmp(x, y,ply_x,ply_y);
+  itm.push_back(tmp);
+}
+
+void Item2::item_apply_surface(SDL_Surface *item, SDL_Surface* destination, SDL_Rect* clip)  // item들 그리기
+{
+  for(vector<items>::iterator iter = itm.begin(); iter!= itm.end(); iter++)
+  {
+    SDL_BlitSurface( item, clip, destination, &(*iter).item_pos);
+  }
+}
+
+void Item2::control_item()
+{
+  vector<items> temp;
+  for(vector<items>::iterator iter = itm.begin(); iter != itm.end(); iter++)
+  {
+    items tmp((*iter).move_x,(*iter).move_y,(*iter).item_pos.x,(*iter).item_pos.y + 2);
+    if( 0 < tmp.item_pos.x + 9 && tmp.item_pos.x< SCREEN_WIDTH && -5 <= tmp.item_pos.y  && tmp.item_pos.y < SCREEN_HEIGHT)
+      temp.push_back(tmp);
+  }
+
+  itm = temp;
+}
+
+Item2::~Item2()
+{
+    SDL_FreeSurface(item);
+}
+
+void Item3::add_itm(int x, int y, int ply_x, int ply_y)
+{
+  item = load_image("assets/tem_sh.png");
+  items tmp(x,y,ply_x,ply_y);
+  itm.push_back(tmp);
+}
+
+void Item3::item_apply_surface(SDL_Surface *item, SDL_Surface* destination, SDL_Rect* clip)  // item들 그리기
+{
+  for(vector<items>::iterator iter = itm.begin(); iter!= itm.end(); iter++)
+  {
+    SDL_BlitSurface( item, clip, destination, &(*iter).item_pos);
+  }
+}
+
+void Item3::control_item()
+{
+  vector<items> temp;
+  for(vector<items>::iterator iter = itm.begin(); iter != itm.end(); iter++)
+  {
+    items tmp((*iter).move_x,(*iter).move_y,(*iter).item_pos.x,(*iter).item_pos.y + 2);
+    if( 0 < tmp.item_pos.x + 9 && tmp.item_pos.x< SCREEN_WIDTH && -5 <= tmp.item_pos.y  && tmp.item_pos.y < SCREEN_HEIGHT)
+      temp.push_back(tmp);
+  }
+
+  itm = temp;
+}
+
+Item3::~Item3()
+{
+    SDL_FreeSurface(item);
+}
+
 AirPlane::AirPlane()
 {
   pos_x = SCREEN_WIDTH / 2;//처음 시작 위치 지정
   pos_y = SCREEN_HEIGHT / 2;//처음 시작 위치 지정
   life = 1000;
+  SA_count = 3;
   invisible_mode = 0;
 }
 AirPlane::~AirPlane()
@@ -190,6 +257,29 @@ bool AirPlane::Got_item(vector<items> I)
 void AirPlane::increaseLife()
 {
   life++;
+}
+
+void AirPlane::increaseSA()
+{
+  SA_count++;
+}
+
+void AirPlane::Got_shiled(SDL_Surface *plane)
+{
+  static int count = 0;                               //투명화 지속 시간
+  static int i =0;                                    //투명도
+
+  if(count++ != 120)
+  {
+      i -= 50;
+      SDL_SetAlpha(plane,SDL_SRCALPHA,i);
+  }
+  else                                               //불투명화,count 초기화
+  {
+    count = 0;
+    this->invisible_mode = 0;
+    SDL_SetAlpha(plane,SDL_SRCALPHA,255);
+  }
 }
 
 Enemy_standard_2::Enemy_standard_2(int mode)
@@ -463,7 +553,9 @@ void Mini_Boss::loss_life(int& score)
 {
     this->life--;
     score +=50;
-    if( this->life == 0) {this->~Mini_Boss();
+    if( this->life == 0)
+    {
+      this->~Mini_Boss();
      score+=1000;
    }
 }
