@@ -281,7 +281,9 @@ public:
   AirPlane();
   ~AirPlane();
   bool Got_shot(_bullets &A,_bullets &B,_bullets &C);
+  bool Got_item(vector<items> I);
   void shooting(_bullets &A);
+  void increaseLife();
   void plane_apply_surface(SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(int x, int y);
   void invisible(SDL_Surface *plane);

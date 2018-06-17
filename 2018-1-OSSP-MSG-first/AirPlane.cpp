@@ -168,7 +168,29 @@ bool AirPlane::Got_shot(_bullets &A,_bullets &B,_bullets &C)
   return flag;
 }
 
+bool AirPlane::Got_item(vector<items> I)
+{
+  vector<items>::iterator iter;
+  bool flag = false;
 
+  for(iter = I.begin(); iter != I.end(); iter++)
+  {
+    if((pos_x + 18 < (*iter).item_pos.x + 9 || pos_y + 20 < (*iter).item_pos.y + 5) ||
+    ((*iter).item_pos.x + 18 < pos_x + 9 || (*iter).item_pos.y + 10 < pos_y + 10));//안 맞았을 때
+    else                                                                           //맞았을때
+    {
+      flag = true;
+      break;
+    }
+  }
+
+  return flag;
+}
+
+void AirPlane::increaseLife()
+{
+  life++;
+}
 
 Enemy_standard_2::Enemy_standard_2(int mode)
 {

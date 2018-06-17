@@ -88,6 +88,7 @@ int main(){
   int shootcnt2 = 0;
   int background_count = 0;               //background 움직임 count
   int boom_mode = 0;
+  int flag = 0;
   int flag_sa = 0;
   int flag_sa2 = 0;
   int bound = -100;
@@ -147,6 +148,9 @@ int main(){
     if(enemy_bullets.blt.size() > 0)//적 총알들 위치 이동
       enemy_bullets.control_bullet();
 
+    if(I.itm.size() > 0)
+      I.control_item();
+
     if(boss_bullets.blt.size()>0)
       boss_bullets.control_bullet();
 
@@ -176,6 +180,12 @@ int main(){
         Enemy_standard tmp(0);
         if((*it).Got_shot(player_bullets) || (bound < (*it).pos_y+32) && (bound+30 > (*it).pos_y))//비행기가 격추 당하면
         {
+          if(I.itm.size() == 0)
+          {
+            I.add_itm((*it).pos_x, (*it).pos_y, (*it).pos_x, (*it).pos_y + 20);
+            flag = 1;
+            //flag == (rand() % 6);
+          }
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
           (*it).~Enemy_standard();
@@ -231,6 +241,14 @@ int main(){
       tmp4.loss_life(score);
     }
 
+    if(A.Got_item(I.itm))
+    {
+      if(A.life < 3)
+      {
+        A.increaseLife();
+      }
+      flag = 0;
+    }
     if(sa_1.size()>0){
         it_sa = sa_1.begin();
         enemy_bullets.eliminate(*it_sa);
@@ -680,6 +698,11 @@ int main(){
     A.plane_apply_surface(plane, screen,NULL); //사용자 비행기
 
     if(mode ==2)  A2.plane_apply_surface(plane_2p, screen,NULL); //사용자 비행기
+
+    if(flag == 1)
+    {
+      I.item_apply_surface(I.item, screen, NULL);
+    }
 
     if( E.size() > 0)//적 비행기
     {
