@@ -3,6 +3,7 @@
 void Item::add_itm(int x, int y, int ply_x, int ply_y)
 {
   item = load_image("assets/tem_li.png");
+  SDL_SetColorKey(item, SDL_SRCCOLORKEY,SDL_MapRGB(item->format,0,0,0));
   items tmp(x,y,ply_x,ply_y);
   itm.push_back(tmp);
 }
@@ -36,6 +37,7 @@ Item::~Item()
 void Item2::add_itm(int x, int y, int ply_x, int ply_y)
 {
   item = load_image("assets/tem_sa.png");
+  SDL_SetColorKey(item, SDL_SRCCOLORKEY,SDL_MapRGB(item->format,0,0,0));
   items tmp(x, y,ply_x,ply_y);
   itm.push_back(tmp);
 }
@@ -69,6 +71,7 @@ Item2::~Item2()
 void Item3::add_itm(int x, int y, int ply_x, int ply_y)
 {
   item = load_image("assets/tem_sh.png");
+  SDL_SetColorKey(item, SDL_SRCCOLORKEY,SDL_MapRGB(item->format,0,0,0));
   items tmp(x,y,ply_x,ply_y);
   itm.push_back(tmp);
 }
