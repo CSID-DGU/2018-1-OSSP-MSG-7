@@ -94,6 +94,9 @@ int main(){
   int shootcnt2 = 0;
   int background_count = 0;               //background 움직임 count
   int boom_mode = 0;
+  int flag = 0;
+  int flag2 = 0;
+  int flag3 = 0;
   int flag_sa = 0;
   int flag_sa2 = 0;
   int bound = -100;
@@ -117,7 +120,9 @@ int main(){
   AirPlane A3;
   Mini_Boss tmp3;
   Boss tmp4;
-
+  Item I;
+  Item2 I2;
+  Item I3;
 
   while(true){
     if(flag_sa < 10) flag_sa++;
@@ -156,6 +161,15 @@ int main(){
     if(enemy_bullets.blt.size() > 0)//적 총알들 위치 이동
       enemy_bullets.control_bullet();
 
+    if(I.itm.size() > 0)
+      I.control_item();
+
+    if(I2.itm.size() > 0)
+      I2.control_item();
+
+    if(I3.itm.size() > 0)
+      I3.control_item();
+
     if(boss_bullets.blt.size()>0)
       boss_bullets.control_bullet();
 
@@ -185,6 +199,16 @@ int main(){
         Enemy_standard tmp(0);
         if((*it).Got_shot(player_bullets) || (bound < (*it).pos_y+32) && (bound+30 > (*it).pos_y))//비행기가 격추 당하면
         {
+          if(I.itm.size() == 0)
+          {
+            I.add_itm((*it).pos_x, (*it).pos_y, (*it).pos_x, (*it).pos_y + 20);
+            flag = (rand() % 3);
+          }
+          else if(I3.itm.size() == 0)
+          {
+            I3.add_itm((*it).pos_x, (*it).pos_y, (*it).pos_x, (*it).pos_y + 20);
+            flag3 = (rand() % 4);
+          }
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
           (*it).~Enemy_standard();
@@ -230,6 +254,19 @@ int main(){
         tmp.three = boom_mode;
         Boss_B.push_back(tmp);
         tmp3.loss_life(score);
+        if(I2.itm.size() == 0 && tmp3.life == 0)
+        {
+          I2.add_itm(tmp3.pos_x, tmp3.pos_y, tmp3.pos_x, tmp3.pos_y + 20);
+          //flag2 = (rand() % 2);
+          flag2 = 1;
+        }
+
+        if(I2.itm.size() == 0 && tmp3.life == 0)
+        {
+          I3.add_itm(tmp3.pos_x, tmp3.pos_y, tmp3.pos_x, tmp3.pos_y + 20);
+          flag3 = (rand() % 2);
+          //flag3 = 1;
+        }
     }   // have to add the condition when the mini boss appear
 
     if(tmp4.amount == 1 && tmp4.Got_shot(player_bullets, boom_mode) && score >= 5000) // have to add the condition when the mini boss appear
@@ -240,12 +277,35 @@ int main(){
       tmp4.loss_life(score);
     }
 
+    if(A.Got_item(I.itm))
+    {
+      if(A.life < 3)
+      {
+        A.increaseLife();
+      }
+      flag = 0;
+    }
+
+    if(A.Got_item(I2.itm))
+    {
+      if(A.SA_count < 3)
+      {
+        A.increaseSA();
+      }
+      flag2 = 0;
+    }
+
+    if(A.Got_item(I3.itm))
+    {
+      A.Got_shiled(plane);
+      flag3 = 0;
+    }
+
     if(tmp4.amount == 0)
     {
       stage_clear();
       break;
     }
-
 
     if(sa_1.size()>0){
         it_sa = sa_1.begin();
@@ -302,6 +362,7 @@ int main(){
             shootcnt2 = 1;
         }
       }
+
     if(keystates[SDLK_p] && flag_sa == 10 && dead != true)    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
     {
         if(A.SA_count >0){
@@ -702,6 +763,21 @@ int main(){
     }
 
     if(mode == 2 && dead2 != true)  A2.plane_apply_surface(plane_2p, screen,NULL); //사용자 비행기
+
+    if(flag == 1)
+    {
+      I.item_apply_surface(I.item, screen, NULL);
+    }
+
+    if(flag2 == 1)
+    {
+      I2.item_apply_surface(I2.item, screen, NULL);
+    }
+
+    if(flag3 == 1)
+    {
+      I3.item_apply_surface(I3.item, screen, NULL);
+    }
 
     if( E.size() > 0)//적 비행기
     {

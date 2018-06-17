@@ -40,6 +40,60 @@ public:
   SDL_Rect bullet_pos;//총알들의 위치
 }bullets;
 
+typedef struct items
+{
+public:
+  items(int x, int y , int ply_x, int ply_y )
+  {
+    move_x = x;
+    move_y = y;
+    item_pos.x = ply_x;
+    item_pos.y = ply_y;
+  }
+
+  int move_x, move_y;                     // item의 방향성
+  SDL_Rect item_pos;                      // item의 위치
+}items;
+
+class Item
+{
+public:
+  SDL_Surface *item;
+
+  ~Item();
+  void add_itm(int x, int y, int ply_x, int ply_y);                                      //x,y는 item 방향성, ply_x,y는 item의 현재 위치
+  void item_apply_surface(SDL_Surface *item, SDL_Surface* destination, SDL_Rect* clip);  // item들 그리기
+  void control_item();
+
+  vector<items> itm;
+};
+
+class Item2
+{
+public:
+  SDL_Surface *item;
+
+  ~Item2();
+  void add_itm(int x, int y, int ply_x, int ply_y);                                      //x,y는 item 방향성, ply_x,y는 item의 현재 위치
+  void item_apply_surface(SDL_Surface *item, SDL_Surface* destination, SDL_Rect* clip);  // item들 그리기
+  void control_item();
+
+  vector<items> itm;
+};
+
+class Item3
+{
+public:
+  SDL_Surface *item;
+
+  ~Item3();
+  void add_itm(int x, int y, int ply_x, int ply_y);                                      //x,y는 item 방향성, ply_x,y는 item의 현재 위치
+  void item_apply_surface(SDL_Surface *item, SDL_Surface* destination, SDL_Rect* clip);  // item들 그리기
+  void control_item();
+
+  vector<items> itm;
+};
+
 class special
 {
 public:
@@ -128,7 +182,11 @@ public:
   AirPlane();
   ~AirPlane();
   bool Got_shot(_bullets &A,_bullets &B,_bullets &C);
+  bool Got_item(vector<items> I);
   void shooting(_bullets &A);
+  void increaseLife();
+  void increaseSA();
+  void Got_shiled(SDL_Surface *plane);
   void plane_apply_surface(SDL_Surface* source, SDL_Surface* destination, SDL_Rect* clip);
   void control_plane(int x, int y);
   void invisible(SDL_Surface *plane);
@@ -136,7 +194,7 @@ public:
 
   int invisible_mode;
   int life;
-  int SA_count = 3;
+  int SA_count;
 };
 
 class Enemy_standard_2
@@ -187,7 +245,7 @@ private:
 
 class Mini_Boss
 {
-private:
+public:
   SDL_Surface *mini_boss;
   SDL_Rect offset;
   int pos_x, pos_y;
