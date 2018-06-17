@@ -44,42 +44,7 @@ class special
 {
 public:
     special(int x, int SA) {
-        pos_x=x;
-        /*
-        switch(SA)
-				{
-				      case 0:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-              {
-                sa1 = load_image("assets/sa1.png");
-                break;
-              }
-              case 1:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-              {
-                sa1 = load_image("assets/sa2.png");
-                break;
-              }
-              case 2:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-              {
-                sa1 = load_image("assets/sa3.png");
-                break;
-              }
-              case 3:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-              {
-                sa1 = load_image("assets/sa4.png");
-                break;
-              }
-              case 4:  // space 키가 눌리면 게임 배경 가져오고 게임 시작
-              {
-                sa1 = load_image("assets/sa11.png");
-                break;
-              }
-              default :
-              {
-                sa1 = load_image("assets/sa4.png");
-                break;
-              }
-        }*/
-        //sa1 = load_image("assets/sa4.png");
+        pos_x1=x;
         if(SA == 0) sa1 = load_image("assets/sa1.png");
         else if (SA == 1) sa1 = load_image("assets/sa2.png");// gochuya ham
         else if (SA == 2) sa1 = load_image("assets/sa3.png");
@@ -90,22 +55,22 @@ public:
   void apply_surface(SDL_Surface * destination, SDL_Rect* clip)//총알들 그리기
   {
       SDL_Rect offset;
-      offset.x = pos_x;
-      offset.y = pos_y;
+      offset.x = pos_x1;
+      offset.y = pos_y1;
       SDL_BlitSurface(sa1, clip, destination, &offset);
   };
 
   void control_bullet()
   {
-    pos_y -= 4;
+    pos_y1 -= 4;
   };
 
   int pos(){
-      return pos_y;
+      return pos_y1;
   }
-    int pos_y=480;
+    int pos_y1=480;
 private:
-    int pos_x;
+    int pos_x1;
     SDL_Surface *sa1;
 };
 
@@ -145,7 +110,7 @@ public:
       for(vector<bullets>::iterator iter = blt.begin(); iter != blt.end(); iter++)
       {
           bullets tmp((*iter).move_x,(*iter).move_y,(*iter).bullet_pos.x + (*iter).move_x,(*iter).bullet_pos.y + (*iter).move_y);
-          if(spc.pos_y>tmp.bullet_pos.y+30||spc.pos_y+180 < tmp.bullet_pos.y)temp.push_back(tmp);
+          if(spc.pos_y1>tmp.bullet_pos.y+30||spc.pos_y1+180 < tmp.bullet_pos.y)temp.push_back(tmp);
       }
       blt = temp;
   }

@@ -416,10 +416,10 @@ void Mini_Boss::loss_life(int& score)
 }
 
 Boss::Boss(){
-    mini_boss = load_image("assets/boss.png");// 비행기 이미지
+    mini_boss = load_image("assets/boss4.png");// 비행기 이미지
     //Setcolorkey는 네모난 그림에서 비행기로 쓸 그림 빼고 나머지 흰 바탕들만 투명하게 바꾸는거
     pos_x = 280;// 처음 시작 위치 지정
-    SDL_SetColorKey(mini_boss, SDL_SRCCOLORKEY,SDL_MapRGB(mini_boss->format,0,0,0));
+    SDL_SetColorKey(mini_boss, SDL_SRCCOLORKEY,SDL_MapRGB(mini_boss->format,255,255,255));
     pos_y = -MINI_BOSS_HEIGHT;//처음 시작 위치 지정
     life = 60;//has to be changed later (at least 70)
 }

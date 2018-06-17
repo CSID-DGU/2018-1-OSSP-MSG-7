@@ -9,6 +9,7 @@ SDL_Surface *background2;
 SDL_Surface *background3;
 SDL_Surface *explosion; //보스 몹 맞을 때 폭팔
 SDL_Surface *life;
+SDL_Surface *sapoint;
 SDL_Surface *bullet;//총알 이미지
 SDL_Surface *bullet_basic;
 SDL_Surface *bullet_mini;
@@ -224,14 +225,14 @@ int main(){
         E2=v_tmp;
     }
 
-    if(tmp3.amount == 1 && tmp3.Got_shot(player_bullets, boom_mode) && score >= 2000) {
+    if(tmp3.amount == 1 && tmp3.Got_shot(player_bullets, boom_mode) && score >= 500) {
         BOOM tmp(tmp3.Get_plane());
         tmp.three = boom_mode;
         Boss_B.push_back(tmp);
         tmp3.loss_life(score);
     }   // have to add the condition when the mini boss appear
 
-    if(tmp4.amount == 1 && tmp4.Got_shot(player_bullets, boom_mode) && score >= 10000) // have to add the condition when the mini boss appear
+    if(tmp4.amount == 1 && tmp4.Got_shot(player_bullets, boom_mode) && score >= 5000) // have to add the condition when the mini boss appear
     {
       BOOM tmp(tmp4.Get_plane());
       tmp.three = boom_mode;
@@ -276,9 +277,9 @@ int main(){
       }
     }
 
-    if(tmp3.amount == 1 && score >= 2000)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
+    if(tmp3.amount == 1 && score >= 500)tmp3.control_plane(mini_bullets); // have to add the condition when the mini boss appear
 
-    if(tmp4.amount == 1 && score >= 10000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
+    if(tmp4.amount == 1 && score >= 5000)tmp4.control_plane(boss_bullets); // have to add the condition when the mini boss appear
 
     if(sa_1.size() >0)
     {
@@ -541,16 +542,16 @@ int main(){
           }
 
           if(keystates[SDLK_w])
-            A2.control_plane(0,-4);
+            A2.control_plane(0,-0);
 
           if(keystates[SDLK_s])
-            A2.control_plane(0, 4);
+            A2.control_plane(0, 0);
 
           if(keystates[SDLK_a])
-            A2.control_plane(-4, 0);
+            A2.control_plane(-0, 0);
 
           if(keystates[SDLK_d])
-            A2.control_plane(4, 0);
+            A2.control_plane(0, 0);
       }
 
           if(mode ==2&&keystates[SDLK_g])    /// SHOULD HAVE FLAG TO AVOID SPECIAL ABILITY IS USED NUMEROUS TIMES BY PRESSING ONCE.
@@ -724,9 +725,9 @@ int main(){
         }
     }
 
-    if(tmp3.amount ==1 && score >= 2000) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
+    if(tmp3.amount ==1 && score >= 500) tmp3.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
-    if(tmp4.amount == 1 && score>= 10000) tmp4.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
+    if(tmp4.amount == 1 && score>= 5000) tmp4.enemy_apply_surface(screen, NULL); // have to add the condition when the mini boss appear
 
     if( B.size() > 0)//폭발
     {
@@ -800,14 +801,14 @@ int main(){
     }
 
     if(A.life == 1)//생명력 1
-      apply_surface(500, 10, life, screen,NULL);
+      apply_surface(550, 10, life, screen,NULL);
     else if(A.life == 2)
     {
-      apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL);
+      apply_surface(550, 10, life, screen,NULL); apply_surface(580, 10, life, screen,NULL);
     }
     else if(A.life == 3)
     {
-      apply_surface(500, 10, life, screen,NULL); apply_surface(520, 10, life, screen,NULL); apply_surface(540, 10, life, screen,NULL);
+      apply_surface(550, 10, life, screen,NULL); apply_surface(580, 10, life, screen,NULL); apply_surface(610, 10, life, screen,NULL);
     }
 
 
@@ -833,14 +834,52 @@ int main(){
       }
 
       if(A2.life == 1)//생명력 1
-        apply_surface(500, 30, life, screen,NULL);
+        apply_surface(550, 30, life, screen,NULL);
       else if(A2.life == 2)
       {
-        apply_surface(500, 30, life, screen,NULL); apply_surface(520, 30, life, screen,NULL);
+        apply_surface(550, 30, life, screen,NULL); apply_surface(580, 30, life, screen,NULL);
       }
       else if(A2.life == 3)
       {
-        apply_surface(500, 30, life, screen,NULL); apply_surface(520, 30, life, screen,NULL); apply_surface(540, 30, life, screen,NULL);
+        apply_surface(550, 30, life, screen,NULL); apply_surface(580, 30, life, screen,NULL); apply_surface(610, 30, life, screen,NULL);
+      }
+    }
+
+    if (mode == 1) {
+      if(A.SA_count == 1)//생명력 1
+        apply_surface(550, 450, sapoint, screen,NULL);
+        else if(A.SA_count == 2)
+        {
+          apply_surface(550, 450, sapoint, screen,NULL); apply_surface(580, 450, sapoint, screen,NULL);
+        }
+        else if(A.SA_count == 3)
+        {
+          apply_surface(550, 450, sapoint, screen ,NULL); apply_surface(580, 450, sapoint, screen,NULL); apply_surface(610, 450, sapoint, screen,NULL);
+        }
+      }
+
+    if (mode == 2)
+    {
+      if(A.SA_count == 1)//생명력 1
+        apply_surface(550, 430, sapoint, screen,NULL);
+      else if(A.SA_count == 2)
+      {
+        apply_surface(550, 430, sapoint, screen,NULL); apply_surface(580, 430, sapoint, screen,NULL);
+      }
+      else if(A.SA_count == 3)
+      {
+        apply_surface(550, 430, sapoint, screen ,NULL); apply_surface(580, 430, sapoint, screen,NULL); apply_surface(610, 430, sapoint, screen,NULL);
+      }
+
+      if(A2.SA_count == 1)//생명력 1
+        apply_surface(550, 450, sapoint, screen,NULL);
+      else if(A2.SA_count == 2)
+      {
+        apply_surface(550, 450, sapoint, screen,NULL); apply_surface(580, 450, sapoint, screen,NULL);
+      }
+      else if(A2.SA_count == 3)
+      {
+        apply_surface(550, 450, sapoint, screen ,NULL); apply_surface(580, 450, sapoint, screen,NULL); apply_surface(610, 450, sapoint, screen,NULL);
       }
     }
 
@@ -899,6 +938,7 @@ bool load_files()
   font = TTF_OpenFont("assets/Terminus.ttf", 24);//작은 안내문 폰트
   font2 = TTF_OpenFont("assets/Starjout.ttf", 84);//제목 폰트
   font3 = TTF_OpenFont("assets/Starjout.ttf",24);
+  sapoint = load_image("assets/sapoint1.png");
   for(int i = 0 ; i < 4; i++)
   {
     string str = "assets/E_";
@@ -926,6 +966,7 @@ bool load_files()
   SDL_SetColorKey(bullet, SDL_SRCCOLORKEY,SDL_MapRGB(bullet->format,0,0,0));
   SDL_SetColorKey(bullet_basic, SDL_SRCCOLORKEY, SDL_MapRGB(bullet_basic->format,255,255,255));
   SDL_SetColorKey(arrow, SDL_SRCCOLORKEY,SDL_MapRGB(arrow->format,0,0,0));
+  SDL_SetColorKey(sapoint, SDL_SRCCOLORKEY,SDL_MapRGB(sapoint->format,255,255,255));
   return true;
 }
 
