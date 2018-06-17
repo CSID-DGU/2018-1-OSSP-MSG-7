@@ -198,7 +198,7 @@ int main(){
           else if(I3.itm.size() == 0)
           {
             I3.add_itm((*it).pos_x, (*it).pos_y, (*it).pos_x, (*it).pos_y + 20);
-            flag3 = (rand() % 2);
+            flag3 = (rand() % 4);
           }
           BOOM B_tmp((*it).Get_plane());
           B.push_back(B_tmp);
